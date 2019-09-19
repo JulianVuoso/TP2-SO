@@ -1,0 +1,37 @@
+{
+    "files.associations": {
+        "naiveconsole.h": "c",
+        "syscalls.h": "c",
+        "console.h": "c",
+        "types.h": "c",
+        "videodriver.h": "c",
+        "idtloader.h": "c",
+        "interrupts.h": "c",
+        "time.h": "c",
+        "clib.h": "c",
+        "stdint.h": "c",
+        "pixelmap.h": "c",
+        "lib.h": "c",
+        "keyboard.h": "c",
+        "iohandler.h": "c",
+        "sound.h": "c",
+        "sstream": "c",
+        "strings.h": "c",
+        "shell.h": "c",
+        "utils.h": "c"
+    },
+    "files.exclude": {
+        "**/*.o": true,
+        "**/*.ld": true,
+        "**/*.bin": true,
+        "**/*.inc": true,
+        "**/*.txt": true,
+        "**/*.md": true,
+        "**/*.gitignore": true,
+        "**/Makefile": true,
+        "Bootloader": true,
+        "Image": true,
+        "PDF's": true,
+        "Toolchain": true
+    }
+}

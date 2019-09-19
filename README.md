@@ -1,1 +1,2 @@
-# TP2-SO
+# TPOueS
+Trabajo Practico destinado para la materia de Arquitectura de Computadoras.
