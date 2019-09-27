@@ -170,7 +170,7 @@ void free(void * ptr) {
     syscall(FREE_ID, ptr, 0, 0);
 }
 
-/* Guarda en mem_size el tamaño de la memoria, en full_size el tamaño ocupado de memoria, en free_size el tamaño libre de memoria */
-void memStatus(int * memSize, int * fullSize, int * freeSize) {
-    syscall(STATUS_ID, memSize, fullSize, freeSize);
+/* Guarda en mem_size el tamaño de la memoria, en occupiedSize el tamaño ocupado de memoria, en freeSize el tamaño libre de memoria */
+void memStatus(int * memSize, int * occupiedSize, int * freeSize) {
+    syscall(STATUS_ID, memSize, occupiedSize, freeSize);
 }
