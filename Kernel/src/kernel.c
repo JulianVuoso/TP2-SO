@@ -10,6 +10,7 @@
 #include <videoDriver.h>
 #include <console.h>
 //#include <time.h>
+#include <memoryManager.h>
 
 extern uint8_t text;
 extern uint8_t rodata;
@@ -19,6 +20,7 @@ extern uint8_t endOfKernelBinary;
 extern uint8_t endOfKernel;
 
 static const uint64_t PageSize = 0x1000;
+static const uint64_t MaxPages = 1024;
 
 static void * const sampleCodeModuleAddress = (void*)0x400000;
 static void * const sampleDataModuleAddress = (void*)0x500000;
@@ -60,6 +62,8 @@ void * initializeKernelBinary()
 	clearBSS(&bss, &endOfKernel - &bss);
 
 	void * startOfMem = (void *)(((uint8_t *) endOfModules + PageSize - (uint64_t) endOfModules % PageSize));
+	int ret = create_manager(startOfMem, PageSize, MaxPages);
+	if (ret < 0) return 1;
 
 	initVideoDriver();
   	init_console();

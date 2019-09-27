@@ -25,8 +25,7 @@ typedef struct mem_header {
     node * usedList;
  
     //  measured in pages
-    uint64_t total;
-    uint64_t ocupied;
+    uint64_t occupied;
     uint64_t free;
 
     // page size in bytes
@@ -38,33 +37,64 @@ int create_manager(uint8_t * address, uint64_t pageSize, uint64_t maxPages) {
     if (address + pageSize * maxPages > MAX_DIR) return -1;   
     
     // initialize list header
-    memory.total = memory.free = maxPages;
-    memory.freeList = (node *)address;
+    memory.total = maxPages;
+    memory.free = maxPages;
+    memory.occupied = 0;
+    memory.freeList = (node *) address;
+    memory.usedList = 0;
     memory.pageSize = pageSize;
 
     // create first block of maxPages pages
-    node first = {0, 0, address, maxPages};
+    node first;
+    first.next = 0;
+    first.prev = 0;
+    first.address = address;
+    first.size = maxPages;
+
     memcpy(address, &first, sizeof(node));
 
     return 0;
 }
 
 void * malloc(uint64_t bytes) {
-    // convertir a nimero de paginas sumandole aLiGNEMnte node
+    // Obtener numero de paginas solicitadas, tomando en cuenta el espacio del nodo
+    uint64_t pageCount = (bytes + ALIGNEMENT(node)) / memory.pageSize + 1;
+    if (pageCount > memory.free) return 0; // No tengo paginas disponibles
 
-    // recorro nodos hasta encontrar uno de tamano >= a lo que quiero
+    // Recorro nodos de freeList hasta encontrar uno con capacidad suficiente
+    node * found = memory.freeList;
+    while (found != 0 && found->size < pageCount) {
+        found = found->next;
+    }
+    if (found == 0) return 0; // No tengo espacio contiguo suficiente
 
-    // creo nodo nueo que apunte comienzo siguiente bloque si me sobra espacio
+    // Chequeo si me sobran paginas
+    if (found->size > pageCount) {
+        // Creo nodo nuevo que apunte al comienzo del siguiente bloque, con las paginas restantes y lo conecto
+        node newNode;
+        newNode.prev = found->prev;
+        newNode.next = found->next;
+        newNode.address = (node *) (found->address + pageCount * memory.pageSize);
+        newNode.size = found->size - pageCount;
+        memcpy(newNode.address, &newNode, sizeof(node));
+        if (found->prev == 0)
+            memory.freeList = (node *) newNode.address;
+        else 
+            found->prev->next = newNode.address;
+    }
 
-    // lo conecto al anterior si me sobrea espacio (en free list)
+    // Modifico las propiedades del nodo extraido y lo agrego a usedList
+    found->size = pageCount;
+    found->prev = 0;
+    found->next = memory.usedList;
+    memory.usedList = (node *) found->address;
+    
+    // Modifico las propiedades de la memoria
+    memory.occupied += pageCount;
+    memory.free -= pageCount;
 
-    // cambio nodo del bloque a reservar
-
-    // concecto nodo en ocupied
-
-    // cambio variables generales
-
-
+    // Devuelvo la direccion del nodo extraido desfasada ALIGNEMENT(node)
+    return found->address + ALIGNEMENT(node);
 }
 
 void free(void * ptr) {
@@ -122,7 +152,7 @@ void free(void * ptr) {
 }
 
 void status(uint64_t * total, uint64_t * occupied, uint64_t * free) {
-    *total = memory.total * memory.pageSize;
+    *total = (memory.free + memory.occupied) * memory.pageSize;
     *occupied = memory.occupied * memory.pageSize;
     *free = memory.free * memory.pageSize;
 }
