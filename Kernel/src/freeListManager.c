@@ -3,7 +3,7 @@
 #include <memoryManager.h>
 #include <lib.h>
 
-static void check_contiguity(node * block);
+static void merge_next(node * block);
 
 // header of the memory manager
 static header memory;
@@ -116,9 +116,9 @@ void free(void * ptr) {
     memory.occupied -= blockToFree->size;
     memory.free += blockToFree->size;
 
-    // checks for a next contiguous free block and merges them
-    check_contiguity(blockToFree);
-    if (blockToFree->prev != 0) check_contiguity(blockToFree->prev);
+    // checks for a next contiguous free block and merges it
+    merge_next(blockToFree);
+    if (blockToFree->prev != 0) merge_next(blockToFree->prev);
 }
 
 void status(uint64_t * total, uint64_t * occupied, uint64_t * free) {
@@ -127,7 +127,7 @@ void status(uint64_t * total, uint64_t * occupied, uint64_t * free) {
     *free = memory.free * memory.pageSize;
 }
 
-void check_contiguity(node * block) {
+void merge_next(node * block) {
     node * nextBlock = block->next;
     if (nextBlock != 0 && block->address + block->size * memory.pageSize == nextBlock->address) {
         block->size += nextBlock->size;
