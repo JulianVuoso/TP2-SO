@@ -55,9 +55,11 @@ void * initializeKernelBinary()
 		sampleDataModuleAddress
 	};
 
-	loadModules(&endOfKernelBinary, moduleAddresses);
+	void * endOfModules = loadModules(&endOfKernelBinary, moduleAddresses);
 
 	clearBSS(&bss, &endOfKernel - &bss);
+
+	void * startOfMem = (void *)(((uint8_t *) endOfModules + PageSize - (uint64_t) endOfModules % PageSize));
 
 	initVideoDriver();
   	init_console();

@@ -18,7 +18,8 @@
         "sstream": "c",
         "strings.h": "c",
         "shell.h": "c",
-        "utils.h": "c"
+        "utils.h": "c",
+        "moduleloader.h": "c"
     },
     "files.exclude": {
         "**/*.o": true,
