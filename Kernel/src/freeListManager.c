@@ -3,6 +3,9 @@
 #include <memoryManager.h>
 #include <lib.h>
 
+static void check_contiguity(node * block);
+
+// header of the memory manager
 static header memory;
 
 typedef struct mem_node {
@@ -97,7 +100,6 @@ void free(void * ptr) {
     }
     
     // inserts between node prev and iterator
-    
     // if its the first place
     if (prev == iterator) {
         memory.freeList = blockToFree;
@@ -114,8 +116,9 @@ void free(void * ptr) {
     memory.occupied -= blockToFree->size;
     memory.free += blockToFree->size;
 
-    // checks for contiguous free blocks (next or prev) and joins them
+    // checks for a next contiguous free block and merges them
     check_contiguity(blockToFree);
+    if (blockToFree->prev != 0) check_contiguity(blockToFree->prev);
 }
 
 void status(uint64_t * total, uint64_t * occupied, uint64_t * free) {
@@ -125,14 +128,9 @@ void status(uint64_t * total, uint64_t * occupied, uint64_t * free) {
 }
 
 void check_contiguity(node * block) {
-    node * prevBlock = block->prev;
     node * nextBlock = block->next;
-
     if (nextBlock != 0 && block->address + block->size * memory.pageSize == nextBlock->address) {
-        // unimos
-    }
-
-    if (prevBlock != 0 && prevBlock->address + prevBlock->size * memory.pageSize == block->address) {
-        // unimos
+        block->size += nextBlock->size;
+        block->next = nextBlock->next;
     }
 }
