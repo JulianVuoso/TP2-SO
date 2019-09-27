@@ -95,18 +95,57 @@ void * malloc(uint64_t bytes) {
 }
 
 void free(void * ptr) {
+    /* SEARCH of the ptr on used list */
+    // creates a pointer to the real start of the block
+    uint8_t * pointer = (uint8_t *)ptr - ALIGNEMENT(node);
 
-    // checkeo que este en el fucking rango
+    node * iterator = memory.usedList;
+    node * prev = iterator;
+    
+    // search for the pointer
+    while (iterator != 0 && iterator->address != pointer) {
+        prev = iterator;
+        iterator = iterator->next;
+    }
+        
+    // if not found
+    if (iterator == 0) return;
+    node * blockToFree = iterator;
 
-    // ORDEN N, PELOTUDO
+    // updates used list
+    if (memory.usedList == blockToFree) memory.usedList = blockToFree->next;
+    else prev->next = blockToFree->next;
 
-    // recorremos y buscamos bloque con address ptr
+    /* SEARCH found block on free list */
+    iterator = memory.freeList;
+    prev = iterator;
 
-    // recorremos freelist desde principio y comparamos posiciones de memory
+    // searches the correct position to insert
+    while (iterator != 0 && iterator->address < blockToFree->address) {
+        prev = iterator;
+        iterator = iterator->next;
+    }
+    
+    // inserts between node prev and iterator
+    
+    // if its the first place
+    if (prev == iterator) {
+        memory.freeList = blockToFree;
+        blockToFree->prev = 0;
+        blockToFree->next = iterator;
+    } else {
+        blockToFree->prev = prev;
+        blockToFree->next = prev->next;
+        prev->next = blockToFree;
+        if (iterator != 0) iterator->prev = blockToFree; // if not last
+    } 
 
-    // inserto ahi en el medio
+    // updates header values
+    memory.occupied -= blockToFree->size;
+    memory.free += blockToFree->size;
 
-    // funcion check contiguiti
+    // checks for contiguous free blocks (next or prev) and joins them
+    check_contiguity(blockToFree);
 }
 
 void status(uint64_t * total, uint64_t * occupied, uint64_t * free) {
@@ -115,5 +154,15 @@ void status(uint64_t * total, uint64_t * occupied, uint64_t * free) {
     *free = memory.free * memory.pageSize;
 }
 
+void check_contiguity(node * block) {
+    node * prevBlock = block->prev;
+    node * nextBlock = block->next;
 
+    if (nextBlock != 0 && block->address + block->size * memory.pageSize == nextBlock->address) {
+        // unimos
+    }
 
+    if (prevBlock != 0 && prevBlock->address + prevBlock->size * memory.pageSize == block->address) {
+        // unimos
+    }
+}
