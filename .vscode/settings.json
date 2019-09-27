@@ -22,7 +22,6 @@
     },
     "files.exclude": {
         "**/*.o": true,
-        "**/*.ld": true,
         "**/*.bin": true,
         "**/*.inc": true,
         "**/*.txt": true,

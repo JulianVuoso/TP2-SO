@@ -66,30 +66,18 @@ void * initializeKernelBinary()
 
 	return getStackBase();
 }
+/*int main() {
+	clear();
+	// Load IDT table
+	load_idt();	
 
-// int main() {
-// 	clear();
-// 	// Load IDT table
-// 	load_idt();	
+	// Execute userland code
+	((EntryPoint)sampleCodeModuleAddress)();
 
-// 	// Execute userland code
-// 	((EntryPoint)sampleCodeModuleAddress)();
-
-// 	return 0;
-// }
+	return 0;
+}*/
 
 int main() {
-    // ncClear();
     goToUserland();
-	// ncNewline();
-
-	// int i = 0;
-	// char car;
-    // while (i < 10) {
-    //     if ((car = read_character()) != 0){
-	// 		ncPrintChar(car);
-	// 		i++;
-	// 	}
-    // }
 	return 0;
 }
