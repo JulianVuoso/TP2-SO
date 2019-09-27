@@ -32,4 +32,7 @@ void move_all_up();
 void clear_console();
 
 
+void printHex(uint64_t value);
+
+
 #endif /* CONSOLE_H_ */

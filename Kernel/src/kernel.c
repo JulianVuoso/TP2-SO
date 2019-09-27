@@ -63,7 +63,7 @@ void * initializeKernelBinary()
 
 	void * startOfMem = (void *)(((uint8_t *) endOfModules + PageSize - (uint64_t) endOfModules % PageSize));
 	int ret = create_manager(startOfMem, PageSize, MaxPages);
-	if (ret < 0) return 1;
+	// if (ret < 0) return 1; // COMO HACEMOS SI HAY ERROR?
 
 	initVideoDriver();
   	init_console();
@@ -83,7 +83,34 @@ void * initializeKernelBinary()
 	return 0;
 }*/
 
+#include <syscalls.h>
+
 int main() {
-    goToUserland();
+    // goToUserland();
+
+	int i = 0;
+	void * vec[10];
+	clear_console();
+	while (i < 5){
+		printMemState();
+		sleep_handler(3000);
+		vec[i] = malloc(10);
+		i++;
+	}
+
+	
+	printMemState();
+	sleep_handler(3000);
+	free(vec[3]);
+	printMemState();
+	sleep_handler(3000);
+	free(vec[1]);
+	printMemState();
+	sleep_handler(3000);
+	free(vec[2]);
+	printMemState();
+	
+	
+	
 	return 0;
 }

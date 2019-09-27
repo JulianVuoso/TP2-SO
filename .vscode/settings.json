@@ -19,7 +19,8 @@
         "strings.h": "c",
         "shell.h": "c",
         "utils.h": "c",
-        "moduleloader.h": "c"
+        "moduleloader.h": "c",
+        "syscall.h": "c"
     },
     "files.exclude": {
         "**/*.o": true,

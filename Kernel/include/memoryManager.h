@@ -19,4 +19,6 @@ void * malloc(uint64_t bytes);
 void free(void * ptr);
 void status(uint64_t * total, uint64_t * occupied, uint64_t * free);
 
+void printMemState();
+
 #endif

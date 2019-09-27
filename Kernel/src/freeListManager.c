@@ -3,11 +3,6 @@
 #include <memoryManager.h>
 #include <lib.h>
 
-static void merge_next(node * block);
-
-// header of the memory manager
-static header memory;
-
 typedef struct mem_node {
     // pointers to the next and previous memory block nodes
     struct mem_node * next;
@@ -32,12 +27,16 @@ typedef struct mem_header {
     uint64_t pageSize;
 } header;
 
+static void merge_next(node * block);
+
+// header of the memory manager
+static header memory;
+
 int create_manager(uint8_t * address, uint64_t pageSize, uint64_t maxPages) {
     // check for errors
-    if (address + pageSize * maxPages > MAX_DIR) return -1;   
+    if ((uint64_t)(address + pageSize * maxPages) > MAX_DIR) return -1;   
     
     // initialize list header
-    memory.total = maxPages;
     memory.free = maxPages;
     memory.occupied = 0;
     memory.freeList = (node *) address;
@@ -74,27 +73,27 @@ void * malloc(uint64_t bytes) {
         node newNode;
         newNode.prev = found->prev;
         newNode.next = found->next;
-        newNode.address = (node *) (found->address + pageCount * memory.pageSize);
+        newNode.address = found->address + pageCount * memory.pageSize;
         newNode.size = found->size - pageCount;
         memcpy(newNode.address, &newNode, sizeof(node));
         if (found->prev == 0)
             memory.freeList = (node *) newNode.address;
         else 
-            found->prev->next = newNode.address;
+            found->prev->next = (node *) newNode.address;
     }
 
     // Modifico las propiedades del nodo extraido y lo agrego a usedList
     found->size = pageCount;
     found->prev = 0;
     found->next = memory.usedList;
-    memory.usedList = (node *) found->address;
+    memory.usedList = found;
     
     // Modifico las propiedades de la memoria
     memory.occupied += pageCount;
     memory.free -= pageCount;
 
     // Devuelvo la direccion del nodo extraido desfasada ALIGNEMENT(node)
-    return found->address + ALIGNEMENT(node);
+    return (void *) (found->address + ALIGNEMENT(node));
 }
 
 void free(void * ptr) {
@@ -163,4 +162,29 @@ void merge_next(node * block) {
         block->size += nextBlock->size;
         block->next = nextBlock->next;
     }
+}
+
+#include <console.h>
+void printMemState() {
+    node * free = memory.freeList;
+    print("\nLista de frees: \n");
+    while (free != 0) {
+        print("- Size: %d", free->size);
+        print("- Address: 0x");
+        printHex((uint64_t)free->address);
+        print("\n");
+        free = free->next;
+    }
+    print("\n---------------\n: ");
+
+    node * used = memory.usedList;
+    print("\nLista de used: \n");
+    while (used != 0) {
+        print("- Size: %d", used->size);
+        print("- Address: 0x");
+        printHex((uint64_t)used->address);
+        print("\n");
+        used = used->next;
+    }
+    print("\n---------------\n: ");
 }
