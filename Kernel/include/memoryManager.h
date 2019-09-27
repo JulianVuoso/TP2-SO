@@ -10,7 +10,7 @@
 #define MAX_DIR     0xFFFFFFFFFFFFFFFF  // end of the memory of Pure64
 
 /* Memory Manager builder */
-int create_manager(uint8_t * adress, uint64_t pageSize, uint64_t maxPages);
+int create_manager(uint8_t * address, uint64_t pageSize, uint64_t maxPages);
 
 /* Memory Manager user functions */
 void * malloc(uint64_t size);
