@@ -29,6 +29,11 @@ void exit();
 uint64_t getTicks();
 void drawPixel(int x, int y, uint8_t r, uint8_t g, uint8_t b);
 
+// SO Functions
+void * malloc(uint32_t size);
+void free(void * ptr);
+void memStatus(int * memSize, int * fullSize, int * freeSize);
+
 extern uint64_t syscall(uint64_t rax, uint64_t rdi, uint64_t rsi, uint64_t rdx);
 
 #endif /* CLIB_H_ */
