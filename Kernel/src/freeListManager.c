@@ -5,9 +5,21 @@
 
 static header memory;
 
+typedef struct mem_node {
+    // pointers to the next and previous memory block nodes
+    struct mem_node * next;
+    struct mem_node * prev;
+
+    // pointer to start of the block (node)
+    uint8_t * address;
+
+    // quantity of consecutive free pages
+    uint64_t size;
+} node;
+
 typedef struct mem_header {
-    uint8_t * freeList;
-    uint8_t * usedList;
+    node * freeList;
+    node * usedList;
  
     //  measured in pages
     uint64_t total;
@@ -18,25 +30,13 @@ typedef struct mem_header {
     uint64_t pageSize;
 } header;
 
-typedef struct mem_node {
-    // pointers to the next and previous memory block nodes
-    uint8_t * next;
-    uint8_t * prev;
-
-    // pointer to start of the block (node)
-    uint8_t * address;
-
-    // quantity of consecutive free pages
-    uint64_t size;
-} node;
-
 int create_manager(uint8_t * address, uint64_t pageSize, uint64_t maxPages) {
     // check for errors
     if (address + pageSize * maxPages > MAX_DIR) return -1;   
     
     // initialize list header
     memory.total = memory.free = maxPages;
-    memory.freeList = address;
+    memory.freeList = (node *)address;
     memory.pageSize = pageSize;
 
     // create first block of maxPages pages
@@ -65,18 +65,40 @@ void * malloc(uint64_t bytes) {
 }
 
 void free(void * ptr) {
+    /* SEARCH of the ptr on used list */
+    node * iterator = memory.usedList;
 
-    // checkeo que este en el fucking rango
+    // creates a pointer to the real start of the block
+    uint8_t * pointer = (uint8_t *)ptr - ALIGNEMENT(node);
+    
+    // search for the pointer
+    while (iterator != 0 && iterator->address != pointer)
+        iterator = iterator->next;
 
-    // ORDEN N, PELOTUDO
+    // if not found
+    if (iterator == 0) return;
+    node * blockToFree = iterator;
 
-    // recorremos y buscamos bloque con address ptr
+    /* SEARCH found block on free list */
+    iterator = memory.freeList;
+    node * prev = iterator;
 
-    // recorremos freelist desde principio y comparamos posiciones de memoria
+    // searches the correct position to insert
+    while (iterator != 0 && iterator->address < blockToFree->address) {
+        prev = iterator;
+        iterator = iterator->next;
+    }
+    
+    // inserts after the node prev
+    blockToFree->next = prev->next;
+    blockToFree->prev = prev;
+    prev->next = blockToFree;
 
-    // inserto ahi en el medio
+    // updates header values
 
-    // funcion check contiguiti
+
+    // checks for contiguous free blocks (next or prev) and joins them
+    check_contiguity(blockToFree);
 }
 
 void status(uint64_t * total, uint64_t * occupied, uint64_t * free) {
@@ -85,5 +107,15 @@ void status(uint64_t * total, uint64_t * occupied, uint64_t * free) {
     *free = memory.free * memory.pageSize;
 }
 
+void check_contiguity(node * block) {
+    node * prevBlock = block->prev;
+    node * nextBlock = block->next;
 
+    if (nextBlock != 0 && block->address + block->size * memory.pageSize == nextBlock->address) {
+        // unimos
+    }
 
+    if (prevBlock != 0 && prevBlock->address + prevBlock->size * memory.pageSize == block->address) {
+        // unimos
+    }
+}
