@@ -2,6 +2,7 @@
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <syscalls.h>
 #include <stdint.h>
+#include <memoryManager.h>
 
 #define SYSCALL_COUNT	8
 
@@ -15,6 +16,10 @@ static uint64_t syscall_05 (uint64_t rdi, uint64_t rsi, uint64_t rdx);
 static uint64_t syscall_06 (uint64_t rdi, uint64_t rsi, uint64_t rdx);
 static uint64_t syscall_07 (uint64_t rdi, uint64_t rsi, uint64_t rdx);
 static uint64_t syscall_08 (uint64_t rdi, uint64_t rsi, uint64_t rdx);
+
+static uint64_t syscall_10 (uint64_t rdi, uint64_t rsi, uint64_t rdx);
+static uint64_t syscall_11 (uint64_t rdi, uint64_t rsi, uint64_t rdx);
+static uint64_t syscall_12 (uint64_t rdi, uint64_t rsi, uint64_t rdx);
 
 extern void hang(); // Ubicada en loader.asm
 
@@ -68,5 +73,19 @@ uint64_t syscall_07 (uint64_t rdi, uint64_t rsi, uint64_t rdx) {
 
 uint64_t syscall_08 (uint64_t rdi, uint64_t rsi, uint64_t rdx) {
 	pixel_handler(rdi, rsi, rdx);
+	return 0;
+}
+/* -----------------------------------------------------------------*/
+uint64_t syscall_10 (uint64_t rdi, uint64_t rsi, uint64_t rdx) {
+	return malloc(rdi);
+}
+
+uint64_t syscall_11 (uint64_t rdi, uint64_t rsi, uint64_t rdx) {
+	free(rdi);
+	return 0;
+}
+
+uint64_t syscall_12 (uint64_t rdi, uint64_t rsi, uint64_t rdx) {
+	status(rdi, rsi, rdx);
 	return 0;
 }
