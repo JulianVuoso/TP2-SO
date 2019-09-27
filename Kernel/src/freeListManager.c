@@ -46,13 +46,37 @@ int create_manager(uint8_t * address, uint64_t pageSize, uint64_t maxPages) {
     return 0;
 }
 
-
 void * malloc(uint64_t bytes) {
+    // convertir a nimero de paginas sumandole aLiGNEMnte node
+
+    // recorro nodos hasta encontrar uno de tamano >= a lo que quiero
+
+    // creo nodo nueo que apunte comienzo siguiente bloque si me sobra espacio
+
+    // lo conecto al anterior si me sobrea espacio (en free list)
+
+    // cambio nodo del bloque a reservar
+
+    // concecto nodo en ocupied
+
+    // cambio variables generales
+
 
 }
 
 void free(void * ptr) {
 
+    // checkeo que este en el fucking rango
+
+    // ORDEN N, PELOTUDO
+
+    // recorremos y buscamos bloque con address ptr
+
+    // recorremos freelist desde principio y comparamos posiciones de memoria
+
+    // inserto ahi en el medio
+
+    // funcion check contiguiti
 }
 
 void status(uint64_t * total, uint64_t * occupied, uint64_t * free) {
