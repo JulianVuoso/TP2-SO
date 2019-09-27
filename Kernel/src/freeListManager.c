@@ -3,10 +3,12 @@
 #include <memoryManager.h>
 #include <lib.h>
 
+static header memory = 0;
 
 typedef struct mem_header {
-    uint8_t * start;
-
+    uint8_t * startFree;
+    uint8_t * ;
+ 
     uint64_t total;
     uint64_t ocupied;
     uint64_t free;
@@ -21,7 +23,6 @@ typedef struct mem_node {
 
     // quantity of consecutive free pages
     uint64_t size;
-    
 } node;
 
 int create_manager(uint8_t * address, uint64_t pageSize, uint64_t maxPages) {
@@ -36,8 +37,10 @@ void free(void * ptr) {
 
 }
 
-void status(uint64_t * total, uint64_t * ocupied, uint64_t * free) {
-
+void status(uint64_t * total, uint64_t * occupied, uint64_t * free) {
+    *total = memory.total;
+    *occupied = memory.occupied;
+    *free = memory.free;
 }
 
 
