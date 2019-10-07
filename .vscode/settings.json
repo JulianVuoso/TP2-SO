@@ -18,11 +18,12 @@
         "sstream": "c",
         "strings.h": "c",
         "shell.h": "c",
-        "utils.h": "c"
+        "utils.h": "c",
+        "moduleloader.h": "c",
+        "syscall.h": "c"
     },
     "files.exclude": {
         "**/*.o": true,
-        "**/*.ld": true,
         "**/*.bin": true,
         "**/*.inc": true,
         "**/*.txt": true,

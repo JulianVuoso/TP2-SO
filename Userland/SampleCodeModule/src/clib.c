@@ -13,6 +13,10 @@
 #define EXIT_ID     7
 #define PIXEL_ID    8
 
+#define MALLOC_ID   9
+#define FREE_ID     10
+#define STATUS_ID   11
+
 #define STDIN       0
 #define STDOUT      1
 #define STDERR      2
@@ -151,4 +155,22 @@ uint64_t getTicks() {
 void drawPixel(int x, int y, uint8_t r, uint8_t g, uint8_t b) {
     uint64_t rgb = getRGB(r, g, b);
     syscall(PIXEL_ID, x, y, rgb);
+}
+
+/* TP2-SO */
+
+/* Aloca un bloque de al menos size memoria y devuelve un void * apuntando a la direccion del bloque.
+   En caso de no haber memoria disponible, devuelve NULL */
+void * malloc(uint32_t size) {
+    return (void *) syscall(MALLOC_ID, size, 0, 0);
+}
+
+/* Libera el bloque de memoria apuntado por ptr */
+void free(void * ptr) {
+    syscall(FREE_ID, (uint64_t) ptr, 0, 0);
+}
+
+/* Guarda en mem_size el tamaño de la memoria, en occupiedSize el tamaño ocupado de memoria, en freeSize el tamaño libre de memoria */
+void memStatus(int * memSize, int * occupiedSize, int * freeSize) {
+    syscall(STATUS_ID, (uint64_t) memSize, (uint64_t) occupiedSize, (uint64_t) freeSize);
 }
