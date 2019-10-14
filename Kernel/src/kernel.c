@@ -62,8 +62,7 @@ void * initializeKernelBinary()
 	clearBSS(&bss, &endOfKernel - &bss);
 
 	void * startOfMem = (void *)(((uint8_t *) endOfModules + PageSize - (uint64_t) endOfModules % PageSize));
-	int ret = create_manager(startOfMem, PageSize, MaxPages);
-	// if (ret < 0) return 1; // COMO HACEMOS SI HAY ERROR?
+	create_manager(startOfMem, PageSize, MaxPages);
 
 	initVideoDriver();
   	init_console();

@@ -32,10 +32,7 @@ static void merge_next(node * block);
 // header of the memory manager
 static header memory;
 
-int create_manager(uint8_t * address, uint64_t pageSize, uint64_t maxPages) {
-    // check for errors
-    if ((uint64_t)(address + pageSize * maxPages) > MAX_DIR) return -1;   
-    
+void create_manager(uint8_t * address, uint64_t pageSize, uint64_t maxPages) {    
     // initialize list header
     memory.free = maxPages;
     memory.occupied = 0;
@@ -51,8 +48,6 @@ int create_manager(uint8_t * address, uint64_t pageSize, uint64_t maxPages) {
     first.size = maxPages;
 
     memcpy(address, &first, sizeof(node));
-
-    return 0;
 }
 
 void * malloc(uint64_t bytes) {
