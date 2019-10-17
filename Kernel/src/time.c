@@ -16,6 +16,8 @@ int seconds_elapsed() {
 	return ticks / 18;
 }
 
+
+
 void sleep(uint64_t millis) {
 	//Prepara para que pueda recibir iterrupciones
     _sti();

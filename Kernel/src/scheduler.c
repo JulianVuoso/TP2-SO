@@ -1,6 +1,7 @@
 #include <scheduler.h>
 #include <time.h>
 #include <memoryManager.h>
+#include <console.h>
 
 #define MAX_PRIO 3
 #define SIZE 4000
@@ -16,7 +17,7 @@ static Node *address;
 static int init;
 
 uint64_t scheduler(uint64_t sp) {
-
+    timer_handler();
     switch(init){
         case 0: return sp; 
         case 1: init = 2; break;
@@ -39,50 +40,45 @@ uint8_t add(Process p) {
     Node * node = newNode();
     node->n.times = 0;
     node->n.process = p;            
-    // do malloc
-    if (current == 0){
+    if (current == 0) {
         current = node;
         node->n.next = node;
-    }
-    else
-    {
+    } else {
         Node * aux;
         aux = current->n.next;
         current->n.next = node;
         node->n.next = aux;
     }
+    return 0;
 }
 
 uint8_t kill(uint64_t pid) {
     Node * node = current;
     uint64_t first = node->n.process.pid;
-    do
-    {
-        if (pid == node->n.next->n.process.pid)
-        { // si es el de adelante
-            remove(node->n.next->n.process);
-            // free del nodo
-            node->n.next = node->n.next->n.next; // lo puenteo
-            return 1;        // Bien borra2
+    do {
+        if (pid == node->n.next->n.process.pid) { // si es el de adelante
+            Node * aux = node->n.next;            
+            node->n.next = node->n.next->n.next;
+            freeNode(aux);
+            remove(aux->n.process);
+            return 0;
         }
         node = node->n.next;
     } while (node->n.next->n.process.pid != first); // si el siguiente no lo vi aun
-    return -1;               // No existe
+    return 1;               
 }
 
-uint8_t setPriority(uint64_t pid, uint8_t n) {
+void setPriority(uint64_t pid, uint8_t n) {
     Node * node = search(pid);
     node->n.process.priority = n;
 }
 
-uint8_t setState(uint64_t pid, states state)
-{
+void setState(uint64_t pid, states state) {
     Node * node = search(pid);
     node->n.process.state = state;
 }
 
-Node *search(uint64_t pid)
-{
+Node *search(uint64_t pid) {
     Node *node = 0;
     uint64_t first = node->n.process.pid;
     do
@@ -132,7 +128,6 @@ static void freeNode(Node * node) {
 
 /* Sets all available places to free */
 static void cleanMem() {
-    Node * node;
     for (uint64_t i = 0; i < SIZE / sizeof(Node); i++)
         (address+i)->n.used = 0;    
 }

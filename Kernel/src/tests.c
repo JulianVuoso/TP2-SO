@@ -34,15 +34,11 @@ static void * const processAModuleAddress = (void*)0x1000000;
 static void * const processBModuleAddress = (void*)0x1100000;
 
 void testContextSwitch() {
-	Process first = create(processAModuleAddress, "P1");
+	uint64_t first = create(processAModuleAddress, "P1");
 
-	Process second = create(processBModuleAddress, "P2");
+	// uint64_t second = create(processBModuleAddress, "P2");
 
-	sleep_handler(2000);
-
-	// setFirst(first);
-	// setSecond(second);
-	// setGo();
+	sleep_handler(5000);
 	while (1) {
 		
 	}

@@ -70,10 +70,10 @@ void * initializeKernelBinary()
 
 	void * startOfMem = (void *)(((uint8_t *) endOfModules + PageSize - (uint64_t) endOfModules % PageSize));
 	create_manager(startOfMem, PageSize, MaxPages);
-
+	initScheduler();
 	initVideoDriver();
   	init_console();
- 	initScheduler();
+ 	
 	
 	load_idt();
 
@@ -81,6 +81,7 @@ void * initializeKernelBinary()
 }
 
 int main() {
+	
     // goToUserland();
 	// testMemoryManager();
 	testContextSwitch();

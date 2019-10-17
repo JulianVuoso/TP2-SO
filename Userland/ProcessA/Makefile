@@ -7,18 +7,20 @@ OBJECTS=$(SOURCES:.c=.o)
 OBJECTS_ASM=$(SOURCES_ASM:.asm=.o)
 LOADERSRC=_loader.c
 
+LIB_SOURCES=$(wildcard ../Library/src/*.c)
+LIB_ASM=$(wildcard ../Library/asm/*.o)
+
 LOADEROBJECT=$(LOADERSRC:.c=.o)
-STATICLIBS=
 
 all: $(MODULE)
 
 $(MODULE): $(SOURCES) $(OBJECTS_ASM)
-	$(GCC) $(GCCFLAGS) -I./include -T processA.ld _loader.c $(SOURCES) $(OBJECTS_ASM) -o ../$(MODULE)
-	$(GCC) $(GCCFLAGS) -I./include -T processA.ld -Wl,--oformat=elf64-x86-64 _loader.c $(SOURCES) $(OBJECTS_ASM) -o ../0000-processA.elf
+	$(GCC) $(GCCFLAGS) -I./include -I../Library/include -T processA.ld _loader.c $(SOURCES) $(OBJECTS_ASM) $(LIB_ASM) $(LIB_SOURCES) -o ../$(MODULE)
+	$(GCC) $(GCCFLAGS) -I./include -I../Library/include -T processA.ld -Wl,--oformat=elf64-x86-64 _loader.c $(SOURCES) $(OBJECTS_ASM) $(LIB_ASM) $(LIB_SOURCES) -o ../0000-processA.elf
 
 
 %.o: %.c
-	$(GCC) $(GCCFLAGS) -I./include -c $< -o $@
+	$(GCC) $(GCCFLAGS) -I./include -I../library/include -c $< -o $@
 
 %.o : %.asm
 	$(ASM) $(ASMFLAGS) $< -o $@

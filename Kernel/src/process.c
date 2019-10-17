@@ -6,11 +6,8 @@
 #include <console.h>
 
 static uint64_t c_pid;
-static void printData(StackFrame stack, Process p, char * lAddress);
 
-
-
-Process create(void * entryPoint, char * name) {
+uint64_t create(void * entryPoint, char * name) {
     void * processStack = malloc(STACK_SIZE);
     if (processStack == 0) { // ERROR --> NO HAY MAS MEMORIA --> VER QUE DEVUELVO
         
@@ -29,7 +26,7 @@ Process create(void * entryPoint, char * name) {
     data.pid = (uint64_t) c_pid++;
     data.sp = (uint64_t) lastAddress - sizeof(StackFrame);
     data.bp = (uint64_t) stackBase;
-    data.priority = 0;
+    data.priority = 3;
     data.context = FORE;
     data.state = READY;
     data.stack = processStack;
@@ -42,7 +39,7 @@ Process create(void * entryPoint, char * name) {
     /* Prints result on console */
     printProcessStack(data);
     
-    return data;
+    return data.pid;
 }
 
 void remove(Process p) {

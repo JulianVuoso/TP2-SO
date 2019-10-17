@@ -31,10 +31,10 @@ uint8_t add(Process p);
 uint8_t kill(uint64_t pid);
 
 /* Sets priority of the process given its PID */
-uint8_t setPriority(uint64_t pid, uint8_t n);
+void setPriority(uint64_t pid, uint8_t n);
 
 /* Sets the state of the process given its PID */
-uint8_t setState(uint64_t pid, states state);
+void setState(uint64_t pid, states state);
 
 /* Prints all processes */
 void listAll();

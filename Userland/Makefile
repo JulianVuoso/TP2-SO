@@ -2,10 +2,13 @@ include Makefile.inc
 
 SAMPLE_DATA=0001-sampleDataModule.bin
 
-all: sampleCodeModule sampleDataModule processA processB
+all: sampleCodeModule sampleDataModule library processA processB
 
 sampleCodeModule:
 	cd SampleCodeModule; make
+
+library:
+	cd Library; make
 
 processA:
 	cd ProcessA; make
@@ -23,4 +26,4 @@ clean:
 	rm -rf *.bin
 
 
-.PHONY: sampleCodeModule processA processB all clean
+.PHONY: sampleCodeModule library processA processB all clean
