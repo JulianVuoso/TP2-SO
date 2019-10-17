@@ -27,31 +27,23 @@ void testMemoryManager() {
 	printMemState();
 }
 
-void p1 () {
-	while (1) {
-		print("\n----------- p1 -----------\n");
-		sleep_handler(55);
-	}
-}
-
-void p2 () {
-	while (1) {
-		print("\n########### p2 ###########\n");
-		sleep_handler(55);
-	}
-}
-
 #include <process.h>
 #include <scheduler.h>
+
+static void * const processAModuleAddress = (void*)0x1000000;
+static void * const processBModuleAddress = (void*)0x1100000;
+
 void testContextSwitch() {
-	printHex((uint64_t)&p1);
-	Process first = createProcess(&p1, "P1");
-	printHex((uint64_t)&p2);
-	Process second = createProcess(&p2, "P2");
+	Process first = create(processAModuleAddress, "P1");
+
+	Process second = create(processBModuleAddress, "P2");
 
 	sleep_handler(2000);
 
-	setFirst(first);
-	setSecond(second);
-	setGo();
+	// setFirst(first);
+	// setSecond(second);
+	// setGo();
+	while (1) {
+		
+	}
 }

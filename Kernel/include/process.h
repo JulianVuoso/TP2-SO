@@ -32,4 +32,7 @@ Process create(void * entryPoint, char * name);
 /* Deletes process */
 void remove(Process p);
 
+/* Print process stack */
+void printProcessStack(Process p);
+
 #endif /* _PROCESS_H_ */

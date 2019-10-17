@@ -29,13 +29,13 @@
     "files.exclude": {
         "**/*.o": true,
         "**/*.bin": true,
-        "**/*.inc": true,
+        "**/*.inc": false,
         "**/*.txt": true,
         "**/*.md": true,
         "**/*.gitignore": true,
-        "**/Makefile": true,
+        "**/Makefile": false,
         "Bootloader": true,
-        "Image": true,
+        "Image": false,
         "PDF's": true,
         "Toolchain": true
     }

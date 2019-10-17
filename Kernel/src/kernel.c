@@ -59,7 +59,9 @@ void * initializeKernelBinary()
 	// Llena con los addresses a donde copia los modulos
 	void * moduleAddresses[] = {
 		sampleCodeModuleAddress,
-		sampleDataModuleAddress
+		sampleDataModuleAddress,
+		processAModuleAddress,
+		processBModuleAddress
 	};
 
 	void * endOfModules = loadModules(&endOfKernelBinary, moduleAddresses);

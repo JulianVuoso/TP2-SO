@@ -40,7 +40,7 @@ Process create(void * entryPoint, char * name) {
     }
 
     /* Prints result on console */
-    printData(stack, data, lastAddress);
+    printProcessStack(data);
     
     return data;
 }
@@ -49,23 +49,16 @@ void remove(Process p) {
     free(p.stack);
 }
 
-static void printData(StackFrame stack, Process p, char * lAddress) {
-    print("PROCESS STACK: 0x");
-    printHex((uint64_t)p.stack);
-    print("\n");
-    print("PROCESS STACK BASE: 0x");
-    printHex(stack.sp);
-    print("\n");
-    print("PROCESS STACK TOP: 0x");
-    printHex(stack.sp - sizeof(StackFrame));
-    print("\n");
-    print("STACK SIZE: %d\n", sizeof(StackFrame));
+void printProcessStack(Process p) {
+    char * lastAddress = (char *) getLastAddress(p.stack);
+    print("\nProcess %d \n", p.pid);
     uint64_t * aux;
-    for (aux = (uint64_t *) p.sp; aux < (uint64_t *) lAddress; aux++) {
+    for (aux = (uint64_t *) p.sp; aux < (uint64_t *) lastAddress; aux++) {
         print("- Address: 0x");
         printHex((uint64_t)aux);
-        print("- Content: 0x");
+        print(" - Content: 0x");
         printHex(*aux);
         print("\n");
     }
+    print("\n-----------------------\n");
 }
