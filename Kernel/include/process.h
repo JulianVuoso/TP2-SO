@@ -28,7 +28,7 @@ typedef struct {
 Process create(void * entryPoint, char * processName);
 
 /* Deletes process with the given pid */
-void kill(uint64_t pid);
+void remove(Process p);
 
 /* Returns current process pid */
 uint64_t getPid();

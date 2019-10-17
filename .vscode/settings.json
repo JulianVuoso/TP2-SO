@@ -22,7 +22,9 @@
         "moduleloader.h": "c",
         "syscall.h": "c",
         "process.h": "c",
-        "defs.h": "c"
+        "defs.h": "c",
+        "unordered_map": "c",
+        "type_traits": "c"
     },
     "files.exclude": {
         "**/*.o": true,
