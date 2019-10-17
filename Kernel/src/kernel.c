@@ -12,6 +12,7 @@
 //#include <time.h>
 #include <memoryManager.h>
 #include <tests.h>
+#include <scheduler.h>
 
 extern uint8_t text;
 extern uint8_t rodata;
@@ -70,6 +71,7 @@ void * initializeKernelBinary()
 
 	initVideoDriver();
   	init_console();
+ 	initScheduler();
 	
 	load_idt();
 

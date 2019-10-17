@@ -83,7 +83,7 @@ void listAll()
 {
 }
 
-void createScheduler() {
+void initScheduler() {
     current = 0;
     address = (Node *)malloc(SIZE);
     cleanMem();

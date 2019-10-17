@@ -9,7 +9,7 @@
 #include <process.h>
 
 /* Creates the scheduler */
-void createScheduler();
+void initScheduler();
 
 /* Chooses next process to give the CPU */
 uint64_t scheduler(uint64_t sp);
