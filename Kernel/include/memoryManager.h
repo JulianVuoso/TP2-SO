@@ -17,6 +17,9 @@ void * malloc(uint64_t bytes);
 void free(void * ptr);
 void status(uint64_t * total, uint64_t * occupied, uint64_t * free);
 
+// Returns the first address from the next block, assuming ptr is a valid return from malloc
+void * getLastAddress(void * ptr);
+
 void printMemState();
 
 #endif

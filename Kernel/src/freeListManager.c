@@ -159,6 +159,12 @@ void merge_next(node * block) {
     }
 }
 
+void * getLastAddress (void * ptr) {
+    node * aux = (node *) (ptr - ALIGNEMENT(node));
+    return aux->address + aux->size * memory.pageSize;
+}
+
+
 #include <console.h>
 void printMemState() {
     node * free = memory.freeList;
@@ -167,6 +173,8 @@ void printMemState() {
         print("- Size: %d", free->size);
         print("- Address: 0x");
         printHex((uint64_t)free->address);
+        print("\t to Last: 0x");
+        printHex((uint64_t)getLastAddress(free->address + ALIGNEMENT(node)));
         print("\n");
         free = free->next;
     }
