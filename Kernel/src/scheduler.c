@@ -2,14 +2,19 @@
 #include <time.h>
 
 #define MAX_PRIO 3
+#define SIZE 4000
 
 static Node *search(uint64_t pid);
+static Node * newNode();
+static void freeNode(Node * node);
+static void cleanMem();
 
 static Node *current;
-static void *address;
+static Node *address;
 
 typedef union node {
     struct {
+        int used;
         int times;
         Process process;
         Node * next;
@@ -107,8 +112,33 @@ void listAll()
     return 0;
 }
 
-void createScheduler()
-{
+void createScheduler() {
     current = 0;
-    address = malloc(4000);
+    address = (Node *)malloc(SIZE);
+    cleanMem();
+}
+
+/* Memory manager for the nodes */
+/* Returns direction of a new Node */
+static Node * newNode() {
+    for (size_t i = 0; i < SIZE / sizeof(Node); i++) {
+        if ((address+i)->n.used == 0) {
+            (address+i)->n.used = 1;
+            return address+i;
+        }
+    }
+    return 0;    
+}
+
+/* Frees the Node given */
+static void freeNode(Node * node) {
+    node->n.used = 0;
+}
+
+/* Sets all available places to free */
+static void cleanMem() {
+    Node * node;
+    node->n.used = 0;
+    for (size_t i = 0; i < SIZE / sizeof(Node); i++)
+        *(address+i) = node;    
 }
