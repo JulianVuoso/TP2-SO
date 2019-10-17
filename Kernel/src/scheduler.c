@@ -1,7 +1,10 @@
 #include <scheduler.h>
 #include <time.h>
 
+static Node * search(uint64_t pid);
+
 static Node * current;
+static void * address;
 
 typedef struct {
     int times;
@@ -65,6 +68,9 @@ void listAll() {
 
 
 void createScheduler() {
+    current = 0;
+    address = malloc(4000);
+
 
 }
 
