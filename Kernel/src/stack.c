@@ -1,4 +1,5 @@
 #include <stack.h>
+#include <scheduler.h>
 #include <process.h>
 
 StackFrame initStack(void * entryPoint, void * stackBase) {
@@ -24,7 +25,7 @@ StackFrame initStack(void * entryPoint, void * stackBase) {
     ret.eflags = 0x202;
     ret.sp = (uint64_t) stackBase;
     ret.ss = 0x0;
-    ret.returnAddress = (uint64_t)&deleteCurrentProcess;
+    ret.returnAddress = (uint64_t)&kill;
 
     return ret;
 }

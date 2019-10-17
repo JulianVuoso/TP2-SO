@@ -1,5 +1,6 @@
 #include <scheduler.h>
 #include <time.h>
+#include <memoryManager.h>
 
 #define MAX_PRIO 3
 #define SIZE 4000
@@ -8,20 +9,11 @@ static Node *search(uint64_t pid);
 static Node * newNode();
 static void freeNode(Node * node);
 static void cleanMem();
+static uint64_t pow(int base, int exponent);
 
 static Node *current;
 static Node *address;
 static int init;
-
-typedef union node {
-    struct {
-        int used;
-        int times;
-        Process process;
-        Node * next;
-    } n;
-    long x; // Here happens the align 
-} Node;
 
 uint64_t scheduler(uint64_t sp) {
 
@@ -102,8 +94,7 @@ Node *search(uint64_t pid)
     return 0;
 }
 
-void listAll()
-{
+void listAll() {
     Node * node = current;
     uint64_t first = node->n.process.pid;
     print("Name\tPID\tSP\tBP\tPrio\tLevel\tState");
@@ -113,7 +104,6 @@ void listAll()
         char* lvl = p.context==0? "Foreground" : "Background";
         print("\n%s\t%d\t%d\t%d\t%d\t%s\t%s", p.name, p.pid, p.sp, p.bp, p.priority,lvl,stat);
     } while (node->n.next->n.process.pid != first);
-    return 0;
 }
 
 void initScheduler() {
@@ -126,7 +116,7 @@ void initScheduler() {
 /* Memory manager for the nodes */
 /* Returns direction of a new Node */
 static Node * newNode() {
-    for (size_t i = 0; i < SIZE / sizeof(Node); i++) {
+    for (uint64_t i = 0; i < SIZE / sizeof(Node); i++) {
         if ((address+i)->n.used == 0) {
             (address+i)->n.used = 1;
             return address+i;
@@ -143,7 +133,14 @@ static void freeNode(Node * node) {
 /* Sets all available places to free */
 static void cleanMem() {
     Node * node;
-    node->n.used = 0;
-    for (size_t i = 0; i < SIZE / sizeof(Node); i++)
-        *(address+i) = node;    
+    for (uint64_t i = 0; i < SIZE / sizeof(Node); i++)
+        (address+i)->n.used = 0;    
+}
+
+static uint64_t pow(int base, int exponent) {
+	int result = 1;
+	for (uint64_t i = 0; i < exponent; i++){
+		result = result * base;
+	}
+	return result;
 }

@@ -8,6 +8,16 @@
 #include <stdint.h>
 #include <process.h>
 
+typedef union node {
+    struct {
+        int used;
+        int times;
+        Process process;
+        union node * next;
+    } n;
+    long x; // Here happens the align 
+} Node;
+
 /* Creates the scheduler */
 void initScheduler();
 
