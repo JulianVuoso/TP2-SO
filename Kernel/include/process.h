@@ -17,20 +17,19 @@ typedef enum {FORE, BACK} level;
 typedef struct {
     char * name;
     uint64_t pid;
-    uint64_t sp; // Es uint64_t o void *?
+    uint64_t sp;
     uint64_t bp;
     uint8_t priority;
     level context;
-    states state; // VA aca???
+    states state;
+
+    void * stack;
 } Process;
 
 /* Creates a new process */
-Process create(void * entryPoint, char * processName);
+Process create(void * entryPoint, char * name);
 
-/* Deletes process with the given pid */
-void kill(uint64_t pid);
-
-/* Returns current process pid */
-uint64_t getPid();
+/* Deletes process */
+void remove(Process p);
 
 #endif /* _PROCESS_H_ */

@@ -26,4 +26,7 @@ int8_t setState(uint64_t pid, states state);
 /* Prints all processes */
 void listAll();
 
+/* Returns current process pid */
+uint64_t getPid();
+
 #endif /* _SCHEDULER_H_ */
