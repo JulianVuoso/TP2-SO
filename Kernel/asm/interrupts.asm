@@ -19,6 +19,8 @@ GLOBAL _sirqHandler
 GLOBAL _exception00Handler
 GLOBAL _exception06Handler
 
+
+
 EXTERN irqDispatcher
 EXTERN handleSyscall
 EXTERN exceptionDispatcher

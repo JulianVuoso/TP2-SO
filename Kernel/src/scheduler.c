@@ -24,9 +24,17 @@ uint64_t scheduler(uint64_t sp) {
         default: current->n.process.sp = sp; break;
     }
     
-    current->n.times++;
-    if(current->n.times == pow(2,MAX_PRIO - current->n.process.priority)){
+    if (current->n.process.state == BLOCKED) {
         current->n.times = 0;
+        current->n.next->n.process.state = RUNNING;
+        return current->n.next->n.process.sp;
+    }
+
+    current->n.times++;
+    if(current->n.times == pow(2, MAX_PRIO - current->n.process.priority)){
+        current->n.times = 0;
+        current->n.process.state = READY;
+        current->n.next->n.process.state = RUNNING;
         return current->n.next->n.process.sp;
     }
     return current->n.process.sp;
@@ -39,7 +47,7 @@ uint8_t add(Process p) {
 
     Node * node = newNode();
     node->n.times = 0;
-    node->n.process = p;            
+    node->n.process = p;           
     if (current == 0) {
         current = node;
         node->n.next = node;
@@ -52,38 +60,48 @@ uint8_t add(Process p) {
     return 0;
 }
 
-uint8_t kill(uint64_t pid) {
+uint64_t kill(uint64_t pid) {
     Node * node = current;
     uint64_t first = node->n.process.pid;
     do {
-        if (pid == node->n.next->n.process.pid) { // si es el de adelante
-            Node * aux = node->n.next;            
+        if (pid == node->n.next->n.process.pid) {
+            Node * aux = node->n.next; 
+            uint64_t pid = aux->n.process.pid;
             node->n.next = node->n.next->n.next;
             freeNode(aux);
             remove(aux->n.process);
-            return 0;
+            return pid;
         }
         node = node->n.next;
     } while (node->n.next->n.process.pid != first); // si el siguiente no lo vi aun
-    return 1;               
+    return 0;               
 }
 
 void setPriority(uint64_t pid, uint8_t n) {
+    if (n > MAX_PRIO || n < 0 ) return;
     Node * node = search(pid);
     node->n.process.priority = n;
 }
 
 void setState(uint64_t pid, states state) {
+    if (state == RUNNING) return;
     Node * node = search(pid);
-    node->n.process.state = state;
+    /* If not the one currently running */
+    if (node->n.process.pid != current->n.process.pid) {
+        node->n.process.state = state;
+        return;
+    }
+    
+    if (state == BLOCKED) {
+        // TODO what if we block current process
+    }    
 }
 
 Node *search(uint64_t pid) {
     Node *node = 0;
     uint64_t first = node->n.process.pid;
-    do
-    {
-        if (pid == node->n.next->n.process.pid) // si es el de adelante
+    do {
+        if (pid == node->n.next->n.process.pid)
             return node;
         node = node->n.next;
     } while (node->n.next->n.process.pid != first);

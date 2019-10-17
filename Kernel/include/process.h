@@ -10,9 +10,9 @@
 
 #define STACK_SIZE	3000
 
-typedef enum {READY, RUNNING, BLOCKED} states;
+typedef enum {READY = 0, RUNNING, BLOCKED} states;
 
-typedef enum {FORE, BACK} level;
+typedef enum {FORE = 0, BACK} level;
 
 typedef struct {
     char * name;

@@ -28,7 +28,7 @@ uint64_t scheduler(uint64_t sp);
 uint8_t add(Process p);
 
 /* Deletes a process given PID */
-uint8_t kill(uint64_t pid);
+uint64_t kill(uint64_t pid);
 
 /* Sets priority of the process given its PID */
 void setPriority(uint64_t pid, uint8_t n);

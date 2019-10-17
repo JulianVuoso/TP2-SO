@@ -3,8 +3,10 @@
 #include <syscalls.h>
 #include <stdint.h>
 #include <memoryManager.h>
+#include <process.h>
+#include <scheduler.h>
 
-#define SYSCALL_COUNT	11
+#define SYSCALL_COUNT	17
 
 // Software handlers functions
 static uint64_t syscall_00 (uint64_t rdi, uint64_t rsi, uint64_t rdx);
@@ -22,21 +24,28 @@ static uint64_t syscall_10 (uint64_t rdi, uint64_t rsi, uint64_t rdx);
 static uint64_t syscall_11 (uint64_t rdi, uint64_t rsi, uint64_t rdx);
 
 static uint64_t syscall_12 (uint64_t rdi, uint64_t rsi, uint64_t rdx);
+static uint64_t syscall_13 (uint64_t rdi, uint64_t rsi, uint64_t rdx);
+static uint64_t syscall_14 (uint64_t rdi, uint64_t rsi, uint64_t rdx);
+static uint64_t syscall_15 (uint64_t rdi, uint64_t rsi, uint64_t rdx);
+static uint64_t syscall_16 (uint64_t rdi, uint64_t rsi, uint64_t rdx);
+static uint64_t syscall_17 (uint64_t rdi, uint64_t rsi, uint64_t rdx);
 
 extern void hang(); // Ubicada en loader.asm
 
 uint64_t (* syscalls[]) (uint64_t rdi, uint64_t rsi, uint64_t rdx) = {syscall_00, syscall_01, syscall_02, syscall_03, 
-																	syscall_04, syscall_05, syscall_06, syscall_07, syscall_08,
-																	syscall_09, syscall_10, syscall_11, syscall_12};
+																	syscall_04, syscall_05, syscall_06, syscall_07,
+																	syscall_08,	syscall_09, syscall_10, syscall_11,
+																	syscall_12, syscall_13, syscall_14, syscall_15,
+																	syscall_16, syscall_17};
 
 // Dispatcher for software interrupts
 uint64_t handleSyscall(uint64_t sirq, uint64_t rdi, uint64_t rsi, uint64_t rdx) {
 	if (sirq <= SYSCALL_COUNT) {
+		setState(getPid(), BLOCKED); // TODO check this
 		uint64_t ret = syscalls[sirq](rdi, rsi, rdx);
-		// TODO blocking & unblock
+		setState(getPid(), READY);
 		return ret; 
 	}
-		
 	return 1;
 }
 
@@ -82,6 +91,7 @@ uint64_t syscall_08 (uint64_t rdi, uint64_t rsi, uint64_t rdx) {
 	pixel_handler(rdi, rsi, rdx);
 	return 0;
 }
+
 /* -----------------------------------------------------------------*/
 uint64_t syscall_09 (uint64_t rdi, uint64_t rsi, uint64_t rdx) {
 	return (uint64_t) malloc(rdi);
@@ -97,7 +107,30 @@ uint64_t syscall_11 (uint64_t rdi, uint64_t rsi, uint64_t rdx) {
 	return 0;
 }
 
+/* -----------------------------------------------------------------*/
 uint64_t syscall_12 (uint64_t rdi, uint64_t rsi, uint64_t rdx) {
-	// Llamar a createProcess
+	return createProcess((void *)rdi, (char *)rsi);
+}
+
+uint64_t syscall_13 (uint64_t rdi, uint64_t rsi, uint64_t rdx) {
+	return kill(rdi);
+}
+
+uint64_t syscall_14 (uint64_t rdi, uint64_t rsi, uint64_t rdx) {
+	return getPid();
+}
+
+uint64_t syscall_15 (uint64_t rdi, uint64_t rsi, uint64_t rdx) {
+	listAll();
+	return 0;
+}
+
+uint64_t syscall_16 (uint64_t rdi, uint64_t rsi, uint64_t rdx) {
+	setPriority(rdi);
+	return 0;
+}
+
+uint64_t syscall_17 (uint64_t rdi, uint64_t rsi, uint64_t rdx) {
+	setPriority(rdi, rsi);
 	return 0;
 }

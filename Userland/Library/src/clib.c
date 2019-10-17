@@ -17,6 +17,13 @@
 #define FREE_ID     10
 #define STATUS_ID   11
 
+#define NEW_PROC    12
+#define KILL        13
+#define PID         14
+#define PS          15
+#define SET_PRIO    16
+#define SET_STATE   17
+
 #define STDIN       0
 #define STDOUT      1
 #define STDERR      2
@@ -173,4 +180,34 @@ void free(void * ptr) {
 /* Guarda en mem_size el tamaño de la memoria, en occupiedSize el tamaño ocupado de memoria, en freeSize el tamaño libre de memoria */
 void memStatus(int * memSize, int * occupiedSize, int * freeSize) {
     syscall(STATUS_ID, (uint64_t) memSize, (uint64_t) occupiedSize, (uint64_t) freeSize);
+}
+
+/* Crea un nuevo proceso y lo agrega al scheduler y retorna PID */
+uint64_t fork(void * entryPoint, char * name) {
+    syscall(NEW_PROC, (uint64_t) entryPoint, (uint64_t) name, 0);
+}
+
+/* Kills a process given its pid */
+uint64_t kill(uint64_t pid) {
+    syscall(KILL, pid, 0, 0);
+}
+
+/* Returns current process pid */
+uint64_t getPid() {
+    syscall(PID, 0, 0, 0);
+}
+
+/* List all running processes */
+void ps() {
+    syscall(PS, 0, 0, 0);
+}
+
+/* Set process priority to n */
+void setPriority(uint64_t n) {
+    syscall(SET_PRIO, n, 0, 0);
+}
+
+/* Changes process state */
+void setState(uint64_t state) {
+    syscall(SET_STATE, state, 0, 0);
 }
