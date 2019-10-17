@@ -8,6 +8,9 @@
 #include <stdint.h>
 #include <process.h>
 
+/* Creates the scheduler */
+void createScheduler();
+
 /* Chooses next process to give the CPU */
 uint64_t scheduler(uint64_t sp);
 
