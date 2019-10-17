@@ -11,6 +11,7 @@ static void cleanMem();
 
 static Node *current;
 static Node *address;
+static int first;
 
 typedef union node {
     struct {
@@ -22,8 +23,7 @@ typedef union node {
     long x; // Here happens the align 
 } Node;
 
-uint64_t scheduler(uint64_t sp)
-{   
+uint64_t scheduler(uint64_t sp) {   
     if(current == 0)
         return sp;
 
@@ -36,8 +36,7 @@ uint64_t scheduler(uint64_t sp)
     return current->n.process.sp;
 }
 
-uint8_t add(Process p)
-{
+uint8_t add(Process p) {
     Node * node = newNode();
     node->n.times = 0;
     node->n.process = p;            
@@ -55,8 +54,7 @@ uint8_t add(Process p)
     }
 }
 
-uint8_t kill(uint64_t pid)
-{
+uint8_t kill(uint64_t pid) {
     Node * node = current;
     uint64_t first = node->n.process.pid;
     do
@@ -73,8 +71,7 @@ uint8_t kill(uint64_t pid)
     return -1;               // No existe
 }
 
-uint8_t setPriority(uint64_t pid, uint8_t n)
-{
+uint8_t setPriority(uint64_t pid, uint8_t n) {
     Node * node = search(pid);
     node->n.process.priority = n;
 }
