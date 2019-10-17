@@ -6,27 +6,9 @@
 #include <console.h>
 
 static uint64_t c_pid;
+static void printData(StackFrame stack, Process p, char * lAddress);
 
-static void printData(StackFrame stack, Process p, char * lAddress) {
-    print("PROCESS STACK: 0x");
-    printHex((uint64_t)p.stack);
-    print("\n");
-    print("PROCESS STACK BASE: 0x");
-    printHex(stack.sp);
-    print("\n");
-    print("PROCESS STACK TOP: 0x");
-    printHex(stack.sp - sizeof(StackFrame));
-    print("\n");
-    print("STACK SIZE: %d\n", sizeof(StackFrame));
-    uint64_t * aux;
-    for (aux = (uint64_t *) p.sp; aux < (uint64_t *) lAddress; aux++) {
-        print("- Address: 0x");
-        printHex((uint64_t)aux);
-        print("- Content: 0x");
-        printHex(*aux);
-        print("\n");
-    }
-}
+
 
 Process create(void * entryPoint, char * name) {
     void * processStack = malloc(STACK_SIZE);
@@ -65,4 +47,25 @@ Process create(void * entryPoint, char * name) {
 
 void remove(Process p) {
     free(p.stack);
+}
+
+static void printData(StackFrame stack, Process p, char * lAddress) {
+    print("PROCESS STACK: 0x");
+    printHex((uint64_t)p.stack);
+    print("\n");
+    print("PROCESS STACK BASE: 0x");
+    printHex(stack.sp);
+    print("\n");
+    print("PROCESS STACK TOP: 0x");
+    printHex(stack.sp - sizeof(StackFrame));
+    print("\n");
+    print("STACK SIZE: %d\n", sizeof(StackFrame));
+    uint64_t * aux;
+    for (aux = (uint64_t *) p.sp; aux < (uint64_t *) lAddress; aux++) {
+        print("- Address: 0x");
+        printHex((uint64_t)aux);
+        print("- Content: 0x");
+        printHex(*aux);
+        print("\n");
+    }
 }

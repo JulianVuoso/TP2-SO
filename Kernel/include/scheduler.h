@@ -29,9 +29,6 @@ uint8_t setState(uint64_t pid, states state);
 /* Prints all processes */
 void listAll();
 
-/* Search process by pid */
-static Node * search(uint64_t pid);
-
 /* Returns current process pid */
 uint64_t getPid();
 
