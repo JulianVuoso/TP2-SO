@@ -1,26 +1,33 @@
 #include <scheduler.h>
 #include <time.h>
 
-static Node * search(uint64_t pid);
+static Node *search(uint64_t pid);
 
-static Node * current;
-static void * address;
+static Node *current;
+static void *address;
 
-typedef struct {
-    int times;
-    Process process;
-    Node * next;
-} Node;
+typedef long Align;
+union node {
+    struct {
+        int times;
+        Process process;
+        Node * next;
+    } n;
+    Align x;
+};
+typedef union node Node;
 
-uint64_t scheduler(uint64_t sp) {
-     
+uint64_t scheduler(uint64_t sp)
+{
 }
 
-uint8_t add(Process p) {
-    Node * node;            // HACER MALLOC
-    if(current == 0)        
+uint8_t add(Process p)
+{
+    Node *node; // HACER MALLOC
+    if (current == 0)
         current = node;
-    else{
+    else
+    {
         Node aux;
         aux = current->next;
         current->next = node;
@@ -28,52 +35,52 @@ uint8_t add(Process p) {
     }
 }
 
-uint8_t kill(uint64_t pid) {
-    Node * node = current;
+uint8_t kill(uint64_t pid)
+{
+    Node *node = current;
     uint64_t first = node->process.pid;
-    do {
-        if(pid == node->next->process.pid){    // si es el de adelante
+    do
+    {
+        if (pid == node->next->process.pid)
+        { // si es el de adelante
             remove(node->next->process);
             // free del nodo
-            node->next = node->next->next;     // lo puenteo
-            return 1;                          
+            node->next = node->next->next; // lo puenteo
+            return 1;
         }
         node = node->next;
-    } while(node->next->pid != first);         // si el siguiente no lo vi aun 
-    return -1;                                 // No existe
+    } while (node->next->pid != first); // si el siguiente no lo vi aun
+    return -1;                          // No existe
 }
 
-uint8_t setPriority(uint64_t pid, uint8_t n) {
-
+uint8_t setPriority(uint64_t pid, uint8_t n)
+{
 }
 
-uint8_t setState(uint64_t pid, states state) {
-    Node * node = search(pid);
+uint8_t setState(uint64_t pid, states state)
+{
+    Node *node = search(pid);
 }
 
-Node * search(uint64_t pid) {
-   Node * node = 0;
+Node *search(uint64_t pid)
+{
+    Node *node = 0;
     uint64_t first = node->process.pid;
-    do {
-        if(pid == node->next->process.pid)    // si es el de adelante
-            return node;                     
+    do
+    {
+        if (pid == node->next->process.pid) // si es el de adelante
+            return node;
         node = node->next;
-    } while(node->next->pid != first);
+    } while (node->next->pid != first);
     return 0;
 }
 
-void listAll() {
-    
+void listAll()
+{
 }
 
-
-void createScheduler() {
+void createScheduler()
+{
     current = 0;
     address = malloc(4000);
-
-
 }
-
-
-
-
