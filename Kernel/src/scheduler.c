@@ -109,7 +109,7 @@ void listAll()
     return 0;
 }
 
-void createScheduler() {
+void initScheduler() {
     current = 0;
     address = (Node *)malloc(SIZE);
     cleanMem();
