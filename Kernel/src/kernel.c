@@ -11,6 +11,7 @@
 #include <console.h>
 //#include <time.h>
 #include <memoryManager.h>
+#include <tests.h>
 
 extern uint8_t text;
 extern uint8_t rodata;
@@ -24,6 +25,9 @@ static const uint64_t MaxPages = 1024;
 
 static void * const sampleCodeModuleAddress = (void*)0x400000;
 static void * const sampleDataModuleAddress = (void*)0x500000;
+
+static void * const processAModuleAddress = (void*)0x1000000;
+static void * const processBModuleAddress = (void*)0x1100000;
 
 typedef int (*EntryPoint)();
 
@@ -71,45 +75,10 @@ void * initializeKernelBinary()
 
 	return getStackBase();
 }
-/*int main() {
-	clear();
-	// Load IDT table
-	load_idt();	
-
-	// Execute userland code
-	((EntryPoint)sampleCodeModuleAddress)();
-
-	return 0;
-}*/
-
-#include <syscalls.h>
 
 int main() {
     // goToUserland();
-
-	int i = 0;
-	void * vec[10];
-	clear_console();
-	while (i < 5){
-		printMemState();
-		sleep_handler(3000);
-		vec[i] = malloc(10);
-		i++;
-	}
-
-	
-	printMemState();
-	sleep_handler(3000);
-	free(vec[3]);
-	printMemState();
-	sleep_handler(3000);
-	free(vec[1]);
-	printMemState();
-	sleep_handler(3000);
-	free(vec[2]);
-	printMemState();
-	
-	
-	
+	// testMemoryManager();
+	testContextSwitch();
 	return 0;
 }
