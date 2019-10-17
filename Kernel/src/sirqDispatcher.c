@@ -31,8 +31,12 @@ uint64_t (* syscalls[]) (uint64_t rdi, uint64_t rsi, uint64_t rdx) = {syscall_00
 
 // Dispatcher for software interrupts
 uint64_t handleSyscall(uint64_t sirq, uint64_t rdi, uint64_t rsi, uint64_t rdx) {
-	if (sirq <= SYSCALL_COUNT)
-		return syscalls[sirq](rdi, rsi, rdx);
+	if (sirq <= SYSCALL_COUNT) {
+		uint64_t ret = syscalls[sirq](rdi, rsi, rdx);
+		// TODO blocking & unblock
+		return ret; 
+	}
+		
 	return 1;
 }
 

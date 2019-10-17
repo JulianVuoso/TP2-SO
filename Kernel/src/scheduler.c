@@ -1,35 +1,27 @@
 #include <scheduler.h>
 #include <time.h>
 
-Process first;
-Process second;
-int aux = 1;
-int go = 0;
 
 uint64_t scheduler(uint64_t sp) {
-    timer_handler(); // DONDE HAGO PARA PODER HACER LOS SLEEPS?? HAY OTRO TIMER?
-
-    if (go != 0) {
-        if (aux == 1) {
-            first.sp = sp;
-            return second.sp;
-        } else {
-            second.sp = sp;
-            return first.sp;
-        }
-    }
-
-    return sp;
+     
 }
 
-void setFirst (Process p) {
-    first = p;
+int8_t add(Process p) {
+
 }
 
-void setSecond (Process p) {
-    second = p;
+int8_t remove(uint64_t pid) {
+
 }
 
-void setGo () {
-    go = 1;
+int8_t setPriority(uint64_t pid, uint8_t n) {
+
+}
+
+int8_t setState(uint64_t pid, states state) {
+
+}
+
+void listAll() {
+    
 }

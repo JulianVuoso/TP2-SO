@@ -10,16 +10,27 @@
 
 #define STACK_SIZE	3000
 
-enum processState {Ready, Running, Blocked};
+typedef enum {READY, RUNNING, BLOCKED} states;
 
-typedef struct Process {
+typedef enum {FORE, BACK} level;
+
+typedef struct {
+    char * name;
     uint64_t pid;
     uint64_t sp; // Es uint64_t o void *?
+    uint64_t bp;
     uint8_t priority;
-    enum processState state;
+    level context;
+    states state; // VA aca???
 } Process;
 
-Process createProcess(void * entryPoint, char * processName);
-void deleteCurrentProcess();
+/* Creates a new process */
+Process create(void * entryPoint, char * processName);
+
+/* Deletes process with the given pid */
+void kill(uint64_t pid);
+
+/* Returns current process pid */
+uint64_t getPid();
 
 #endif /* _PROCESS_H_ */

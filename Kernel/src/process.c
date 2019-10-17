@@ -5,7 +5,7 @@
 #include <console.h>
 
 // PARA QUE ME SIRVE EL NOMBRE??
-Process createProcess(void * entryPoint, char * processName) {
+Process create(void * entryPoint, char * processName) {
     void * processStack = malloc(STACK_SIZE);
     if (processStack == 0) { // ERROR --> NO HAY MAS MEMORIA --> VER QUE DEVUELVO
         
@@ -19,7 +19,7 @@ Process createProcess(void * entryPoint, char * processName) {
     // CAMBIAR DATOS
     data.pid = (uint64_t) stackBase;
     data.priority = 0;
-    data.state = Ready;
+    data.state = READY;
     data.sp = (uint64_t) lastAddress - sizeof(StackFrame);
 
     print("PROCESS STACK: 0x");
@@ -43,7 +43,11 @@ Process createProcess(void * entryPoint, char * processName) {
     return data;
 }
 
-void deleteCurrentProcess() {
+void kill(uint64_t pid) {
+    
 
 }
 
+uint64_t getPid() {
+
+}
