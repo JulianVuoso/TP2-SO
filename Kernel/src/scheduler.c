@@ -6,16 +6,14 @@ static Node *search(uint64_t pid);
 static Node *current;
 static void *address;
 
-typedef long Align;
-union node {
+typedef union node {
     struct {
         int times;
         Process process;
         Node * next;
     } n;
-    Align x;
-};
-typedef union node Node;
+    long x; // Here happens the align 
+} Node;
 
 uint64_t scheduler(uint64_t sp)
 {
@@ -28,28 +26,28 @@ uint8_t add(Process p)
         current = node;
     else
     {
-        Node aux;
-        aux = current->next;
-        current->next = node;
-        node->next = &aux;
+        Node * aux;
+        aux = current->n.next;
+        current->n.next = node;
+        node->n.next = aux;
     }
 }
 
 uint8_t kill(uint64_t pid)
 {
     Node *node = current;
-    uint64_t first = node->process.pid;
+    uint64_t first = node->n.process.pid;
     do
     {
-        if (pid == node->next->process.pid)
+        if (pid == node->n.next->n.process.pid)
         { // si es el de adelante
-            remove(node->next->process);
+            remove(node->n.next->n.process);
             // free del nodo
-            node->next = node->next->next; // lo puenteo
+            node->n.next = node->n.next->n.next; // lo puenteo
             return 1;
         }
-        node = node->next;
-    } while (node->next->pid != first); // si el siguiente no lo vi aun
+        node = node->n.next;
+    } while (node->n.next->n.process.pid != first); // si el siguiente no lo vi aun
     return -1;                          // No existe
 }
 
@@ -65,13 +63,13 @@ uint8_t setState(uint64_t pid, states state)
 Node *search(uint64_t pid)
 {
     Node *node = 0;
-    uint64_t first = node->process.pid;
+    uint64_t first = node->n.process.pid;
     do
     {
-        if (pid == node->next->process.pid) // si es el de adelante
+        if (pid == node->n.next->n.process.pid) // si es el de adelante
             return node;
-        node = node->next;
-    } while (node->next->pid != first);
+        node = node->n.next;
+    } while (node->n.next->n.process.pid != first);
     return 0;
 }
 
