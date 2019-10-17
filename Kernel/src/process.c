@@ -43,7 +43,7 @@ Process create(void * entryPoint, char * name) {
     
     /* Creates process data */
     Process data;
-    data.name = naem;
+    data.name = name;
     data.pid = (uint64_t) c_pid++;
     data.sp = (uint64_t) lastAddress - sizeof(StackFrame);
     data.bp = (uint64_t) stackBase;
