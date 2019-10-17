@@ -15,13 +15,15 @@ uint64_t scheduler(uint64_t sp) {
 
 uint8_t add(Process p) {
     Node * node;            // HACER MALLOC
-    if(current == 0)        
+    if(current == 0){   
         current = node;
+        node->next = node;
+    }
     else{
-        Node aux;
+        Node * aux;
         aux = current->next;
         current->next = node;
-        node->next = &aux;
+        node->next = aux;
     }
 }
 
@@ -37,15 +39,18 @@ uint8_t kill(uint64_t pid) {
         }
         node = node->next;
     } while(node->next->pid != first);         // si el siguiente no lo vi aun 
-    return -1;                                 // No existe
+    return -1;                                 // No existe    
 }
 
 uint8_t setPriority(uint64_t pid, uint8_t n) {
-
+    Node * node = search(pid);
+    node->process.priority = n;
 }
 
 uint8_t setState(uint64_t pid, states state) {
     Node * node = search(pid);
+    node->process.state = state;
+    return 0;
 }
 
 Node * search(uint64_t pid) {
@@ -59,14 +64,15 @@ Node * search(uint64_t pid) {
     return 0;
 }
 
+void createScheduler() {
+
+}
+
 void listAll() {
     
 }
 
 
-void createScheduler() {
-
-}
 
 
 
