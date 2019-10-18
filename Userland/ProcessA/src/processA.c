@@ -5,7 +5,7 @@
 int main() {
     while (1) {
 		puts("\n########## pA ##########\n");
-		sleep(55);
+		sleep(2000);
 	}	
 	return 0;
 } 

@@ -2,6 +2,7 @@
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <memoryManager.h>
 #include <lib.h>
+#include <console.h>
 
 typedef struct mem_node {
     // pointers to the next and previous memory block nodes
@@ -151,6 +152,15 @@ void status(uint64_t * total, uint64_t * occupied, uint64_t * free) {
     *free = memory.free * memory.pageSize;
 }
 
+void printStatus() {
+    uint64_t total = (memory.free + memory.occupied) * memory.pageSize;
+    uint64_t occupied = memory.occupied * memory.pageSize;
+    uint64_t free = memory.free * memory.pageSize;
+
+    print("\n----- Estado de la memoria -----");
+    print("\nTotal Size: %d\nOcuppied Size: %d\nFree Size: %d", total, occupied, free);
+}
+
 void merge_next(node * block) {
     node * nextBlock = block->next;
     if (nextBlock != 0 && block->address + block->size * memory.pageSize == nextBlock->address) {
@@ -164,8 +174,6 @@ void * getLastAddress (void * ptr) {
     return aux->address + aux->size * memory.pageSize;
 }
 
-
-#include <console.h>
 void printMemState() {
     node * free = memory.freeList;
     print("\nLista de frees: \n");

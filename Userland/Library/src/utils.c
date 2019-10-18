@@ -27,15 +27,18 @@ char* reverse(char *buffer, int i, int j) {
 	return buffer;
 }
 
-int atoi(const char* buffer, int len) {
+int atoi(const char* buffer) {
 	int i = 0;
 	int result = 0;
+	int len = strlen(buffer);
 
-	while(buffer[i] != 0){
-		result += (pow(10, --len) * (buffer[i] - 48));
+	while(buffer[i] != 0 && isNumber(buffer[i])){
+		result += (pow(10, --len) * (buffer[i] - '0'));
 		i++;
 	}
-	return result;
+	if (buffer[i] == 0 && i != 0)
+		return result;
+	return -1;
 }
 
 int pow(int base, int exponent) {
@@ -93,6 +96,36 @@ int strcmp (const char *t, const char *s) {
 		s++;
 	}
 	return *t-*s;
+}
+
+int strcmpUntilSpace (const char *t, const char *s, int * count) {
+	int i = 0;
+	while (*t==*s && *t!=0 && *t!=' '){
+		t++;
+		s++;
+		i++;
+	}
+	if (*t == ' ' && i > 0) {
+		t--;
+		s--;
+		*count = i;	
+	} else {
+		*count = -1;
+	}	
+	return *t - *s;
+}
+
+// Returns cant copied
+int strcpyUntilSpace (char *dest, const char *src) {
+	int count = 0;
+	while (*src != 0 && *src != ' ') {
+		*dest = *src;
+		dest++;
+		src++;
+		count++;
+	};
+	*dest = 0;
+	return count;
 }
 
 char* saveTwoDigit(int number, char * string) {

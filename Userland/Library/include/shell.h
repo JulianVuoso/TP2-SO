@@ -19,18 +19,27 @@
 
 void initShell();
 void initScreen();
-int getCommand(char * input);
-void executeCommand(int command);
+int getCommand(char * input, int * param1, int * param2);
+void executeCommand(int command, int param1, int param2);
 
-void help_cmd();
-void date_cmd();
-void time_cmd();
-void sleep_cmd();
-void clear_cmd();
-void beep_cmd();
-void door_cmd();
-void div_zero_cmd();
-void inv_op_cmd();
-void exit_cmd();
+// Si una funcion que no deberia recibir parametros los recibe, los ignora
+// Si una funcion que debia recibir parametros no los recibe, no se ejecuta
+
+void help_cmd(int param1, int param2);
+void date_cmd(int param1, int param2);
+void time_cmd(int param1, int param2);
+void sleep_cmd(int param1, int param2);
+void clear_cmd(int param1, int param2);
+void beep_cmd(int param1, int param2);
+void door_cmd(int param1, int param2);
+void div_zero_cmd(int param1, int param2);
+void inv_op_cmd(int param1, int param2);
+void exit_cmd(int param1, int param2);
+
+void mem_cmd(int param1, int param2);
+void ps_cmd(int param1, int param2);
+void kill_cmd(int param1, int param2);
+void block_cmd(int param1, int param2);
+void nice_cmd(int param1, int param2);
 
 #endif /* SHELL_H_ */

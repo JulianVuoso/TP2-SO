@@ -73,15 +73,20 @@ void killCurrent() {
 }
 
 uint64_t kill(uint64_t pid) {
+    if (current == 0)
+        return 0;
+
     /* If its the only process */
     if (current == current->n.next) {
-            Node * aux = current; 
-            uint64_t pid = aux->n.process.pid;
-            remove(aux->n.process);
-            freeNode(aux);
-            current = 0;
-            init = 0;
-            return pid;
+        if (current->n.process.pid != pid)
+            return 0;
+        Node * aux = current; 
+        uint64_t pid = aux->n.process.pid;
+        remove(aux->n.process);
+        freeNode(aux);
+        current = 0;
+        init = 0;
+        return pid;
     }
     Node * node = current;
     do {
@@ -105,12 +110,14 @@ uint64_t kill(uint64_t pid) {
 void setPriority(uint64_t pid, uint8_t n) {
     if (n > MAX_PRIO || n < 0 ) return;
     Node * node = search(pid);
-    node->n.process.priority = n;
+    if (node != 0)
+        node->n.process.priority = n;
 }
 
 void setState(uint64_t pid, states state) {
     if (state == RUNNING) return;
     Node * node = search(pid);
+    if (node == 0) return;
     /* If not the one currently running */
     if (node->n.process.pid != current->n.process.pid) {
         node->n.process.state = state;
@@ -137,7 +144,7 @@ Node * search(uint64_t pid) {
 
 void listAll() {
     Node * node = current;
-    print("\nName\tPID\tSP\tBP\tPrio\tLevel\tState\n");
+    print("\nName\tPID\tSP\t\tBP\tPrio\tLevel\t\tState\n");
     if (current == 0) {
         print("NOP\t-1\tThere is no Process in the scheduler");
         return;

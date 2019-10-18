@@ -24,7 +24,9 @@
         "process.h": "c",
         "defs.h": "c",
         "unordered_map": "c",
-        "type_traits": "c"
+        "type_traits": "c",
+        "scheduler.h": "c",
+        "stdarg.h": "c"
     },
     "files.exclude": {
         "**/*.o": true,

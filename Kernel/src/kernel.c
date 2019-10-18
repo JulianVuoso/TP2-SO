@@ -82,8 +82,8 @@ void * initializeKernelBinary()
 
 int main() {
 	
-    // goToUserland();
+    goToUserland();
 	// testMemoryManager();
-	testContextSwitch();
+	// testContextSwitch();
 	return 0;
 }

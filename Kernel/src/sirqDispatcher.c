@@ -104,7 +104,7 @@ uint64_t syscall_10 (uint64_t rdi, uint64_t rsi, uint64_t rdx) {
 }
 
 uint64_t syscall_11 (uint64_t rdi, uint64_t rsi, uint64_t rdx) {
-	status((uint64_t *) rdi,(uint64_t *) rsi,(uint64_t *) rdx);
+	printStatus();
 	return 0;
 }
 
@@ -132,6 +132,6 @@ uint64_t syscall_16 (uint64_t rdi, uint64_t rsi, uint64_t rdx) {
 }
 
 uint64_t syscall_17 (uint64_t rdi, uint64_t rsi, uint64_t rdx) {
-	setPriority(rdi, rsi);
+	setState(rdi, rsi);
 	return 0;
 }

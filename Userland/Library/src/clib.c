@@ -177,9 +177,9 @@ void free(void * ptr) {
     syscall(FREE_ID, (uint64_t) ptr, 0, 0);
 }
 
-/* Guarda en mem_size el tamaño de la memoria, en occupiedSize el tamaño ocupado de memoria, en freeSize el tamaño libre de memoria */
-void memStatus(int * memSize, int * occupiedSize, int * freeSize) {
-    syscall(STATUS_ID, (uint64_t) memSize, (uint64_t) occupiedSize, (uint64_t) freeSize);
+/* Imprime el tamaño de la memoria, el tamaño ocupado de memoria y el tamaño libre de memoria */
+void memStatus() {
+    syscall(STATUS_ID, 0, 0, 0);
 }
 
 /* Crea un nuevo proceso y lo agrega al scheduler y retorna PID */

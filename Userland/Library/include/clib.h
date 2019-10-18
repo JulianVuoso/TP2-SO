@@ -32,7 +32,7 @@ void drawPixel(int x, int y, uint8_t r, uint8_t g, uint8_t b);
 /* Memory functions */
 void * malloc(uint32_t size);
 void free(void * ptr);
-void memStatus(int * memSize, int * occupiedSize, int * freeSize);
+void memStatus();
 
 /* Processes functions */
 uint64_t fork(void * entryPoint, char * name);

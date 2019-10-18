@@ -4,11 +4,13 @@
 #include <shell.h>
 #include <utils.h>
 
-static char * command_strings[] = {"help", "date", "time", "sleep", "clear", "beep", "door", "div_zero", "inv_op", "exit"};
-static int command_count = 10;
-void (* command_functions[]) (void) = {help_cmd, date_cmd, time_cmd, sleep_cmd, clear_cmd, beep_cmd, door_cmd, div_zero_cmd, inv_op_cmd, exit_cmd};
+static char * command_strings[] = {"help", "date", "time", "sleep", "clear", "beep", "door", "div_zero", 
+                                        "inv_op", "exit", "mem", "ps", "kill", "block", "nice"};
+static int command_count = 15;
+void (* command_functions[]) (int p1, int p2) = {help_cmd, date_cmd, time_cmd, sleep_cmd, clear_cmd, beep_cmd, door_cmd, div_zero_cmd, 
+                                            inv_op_cmd, exit_cmd, mem_cmd, ps_cmd, kill_cmd, block_cmd, nice_cmd};
 
-#define MAX_LENGTH  50
+#define MAX_LENGTH  100
 
 static void newLine(){
     putchar('\n');
@@ -17,13 +19,14 @@ static void newLine(){
 void initShell() {
     initScreen();
     int command = NO_CMD;
-    char input[MAX_LENGTH];
+    char input[MAX_LENGTH] = {0};
+    int param1 = -1, param2 = -1;
 
     while (command != EXIT_CMD) {
         puts(PROMPT_STRING);
         gets(input, MAX_LENGTH);
-        command = getCommand(input);
-        executeCommand(command);
+        command = getCommand(input, &param1, &param2);
+        executeCommand(command, param1, param2);
         if (command != CLEAR_CMD) newLine();
     }
 	
@@ -35,22 +38,40 @@ void initScreen() {
     puts("Bienvenido al programa. El comando help lo ayudara\n");
 }
 
-int getCommand(char * input){
+int getCommand(char * input, int * param1, int * param2){
+    char vec1[MAX_LENGTH] = {0}, vec2[MAX_LENGTH] = {0};
+    int j = 0;
+    for (j = 0; j < MAX_LENGTH; j++){
+        vec1[j] = 0;
+        vec2[j] = 0;
+    }
+    int cursor = 0;
     for (int i = 0; i < command_count; i++) {
-        if (strcmp(input, command_strings[i]) == 0)
+        if (strcmpUntilSpace(input, command_strings[i], &cursor) == 0){
+            if (cursor >= 0) {
+                cursor += strcpyUntilSpace(vec1, input + cursor + 1); // +1 por el space
+                *param1 = atoi(vec1);
+                cursor += strcpyUntilSpace(vec2, input + cursor + 2); // +2 por los dos spaces
+                *param2 = atoi(vec2);
+            } else {
+                *param1 = -1;
+                *param2 = -1;
+            }
             return i;
+        }
     }
     return NO_CMD;
 }
 
-void executeCommand(int command) {
-    if (command != NO_CMD)
-        command_functions[command]();
+void executeCommand(int command, int param1, int param2) {
+    if (command != NO_CMD) {
+        command_functions[command](param1, param2);
+    }
     else
         puts("\nInvalid command");
 }
 
-void help_cmd() {
+void help_cmd(int param1, int param2) {
     puts("\nLos comandos validos son los siguientes: ");
     puts("\nhelp ~ Muestra los comandos validos");
     puts("\ndate ~ Muestra la fecha actual");
@@ -60,43 +81,46 @@ void help_cmd() {
     puts("\nbeep ~ Emite un sonido");
     puts("\ndoor ~ Hay alguien en la puerta");
     puts("\ndiv_zero ~ Ejecuta una division por cero");
-    puts("\ninv_op ~ Ejecuta una operacion de codigo invalido ");
+    puts("\ninv_op ~ Ejecuta una operacion de codigo invalido");
+
+    puts("\nmem ~ Imprime el estado de la memoria");
+    puts("\nps ~ Imprime la lista de todos los procesos con sus propiedades");
+    puts("\nkill ~ Mata al proceso de ID recibido");
+    puts("\nnice ~ Cambia la prioridad del proceso de ID recibido a la prioridad recibida");
+    puts("\nblock ~ Cambia el estado del proceso de ID recibido entre BLOCKED y READY");
+
     puts("\nexit ~ Termina la ejecucion");
 }
 
-void date_cmd() {
+void date_cmd(int param1, int param2) {
     char date[11];
     printf("\nHoy es %s", getDate(date));
-    // puts("\nHoy es  ");
-	// puts(getDate(date));
 }
 
-void time_cmd() {
+void time_cmd(int param1, int param2) {
     char time[9];
     puts("\nSon las  ");
 	puts(getTime(time));
 }
 
-void sleep_cmd() {
-    char car;
-    do{
-        puts("\nIngrese el numero de segundos que desea esperar [0-9]: ");
-        car = getchar();
-        putchar(car);
-    } while (!isNumber(car));
-    int millis = (car - '0') * 1000;
-    sleep(millis);
+void sleep_cmd(int param1, int param2) {
+    if (param1 < 0) {
+        puts("\nIngreso invalido. Debe ingresar el numero de segundos que desea esperar como primer argumento.");
+    } else {
+        int millis = param1 * 1000;
+        sleep(millis);
+    }
 }
 
-void clear_cmd() {
+void clear_cmd(int param1, int param2) {
     clearScreen();
 }
 
-void beep_cmd() {
+void beep_cmd(int param1, int param2) {
     beep(BEEP_FREQ, 300);
 }
 
-void door_cmd() {
+void door_cmd(int param1, int param2) {
     beep(DOOR_FREQ, 300);
     sleep(300);
     beep(DOOR_FREQ, 150);
@@ -112,18 +136,45 @@ void door_cmd() {
     beep(DOOR_FREQ, 150);
 }
 
-void div_zero_cmd() {
+void div_zero_cmd(int param1, int param2) {
     int a = 10, b = 0;
     a = a / b;
     printf("%d", a);
 }
 
-void inv_op_cmd() {
+void inv_op_cmd(int param1, int param2) {
     uint64_t invalid = 0xFFFFFFFFFFFF;
 	uint64_t * ptr = &invalid;
 	((void(*)())ptr)();
 }
 
-void exit_cmd() {
+void exit_cmd(int param1, int param2) {
     puts("\nHasta Luego");
+}
+
+/* --------------------------------------- */
+
+void mem_cmd(int param1, int param2) {
+    memStatus();
+}
+
+void ps_cmd(int param1, int param2) {
+    ps();
+}
+
+void kill_cmd(int param1, int param2) {
+    if (param1 < 0) {
+        puts("\nIngreso invalido. Debe ingresar el ID del proceso que desea eliminar como primer argumento.");
+    } else {
+        int ret = kill(param1);
+        printf("\nDelete %s", (ret == 0) ? "unsuccesfull":"successfull");
+    }
+}
+
+void block_cmd(int param1, int param2) {
+    
+}
+
+void nice_cmd(int param1, int param2) {
+    
 }
