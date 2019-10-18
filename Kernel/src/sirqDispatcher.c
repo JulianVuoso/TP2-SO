@@ -41,16 +41,15 @@ uint64_t (* syscalls[]) (uint64_t rdi, uint64_t rsi, uint64_t rdx) = {syscall_00
 // Dispatcher for software interrupts
 uint64_t handleSyscall(uint64_t sirq, uint64_t rdi, uint64_t rsi, uint64_t rdx) {
 	if (sirq <= SYSCALL_COUNT) {
-		setState(getPid(), BLOCKED); // TODO check this
-		uint64_t ret = syscalls[sirq](rdi, rsi, rdx);
-		setState(getPid(), READY);
-		return ret; 
+		return syscalls[sirq](rdi, rsi, rdx); 
 	}
 	return 1;
 }
 
 uint64_t syscall_00 (uint64_t rdi, uint64_t rsi, uint64_t rdx) {
+	// setState(getPid(), BLOCKED);
 	read_handler(rdi, (char *)rsi, rdx);
+	// setState(getPid(), READY);
 	return 0;
 }
 
@@ -73,7 +72,9 @@ uint64_t syscall_04 (uint64_t rdi, uint64_t rsi, uint64_t rdx) {
 }
 
 uint64_t syscall_05 (uint64_t rdi, uint64_t rsi, uint64_t rdx) {
+	// setState(getPid(), BLOCKED);
 	sleep_handler(rdi);
+	// setState(getPid(), READY);
 	return 0;
 }
 
@@ -109,7 +110,7 @@ uint64_t syscall_11 (uint64_t rdi, uint64_t rsi, uint64_t rdx) {
 
 /* -----------------------------------------------------------------*/
 uint64_t syscall_12 (uint64_t rdi, uint64_t rsi, uint64_t rdx) {
-	return createProcess((void *)rdi, (char *)rsi);
+	return create((void *)rdi, (char *)rsi);
 }
 
 uint64_t syscall_13 (uint64_t rdi, uint64_t rsi, uint64_t rdx) {
@@ -126,7 +127,7 @@ uint64_t syscall_15 (uint64_t rdi, uint64_t rsi, uint64_t rdx) {
 }
 
 uint64_t syscall_16 (uint64_t rdi, uint64_t rsi, uint64_t rdx) {
-	setPriority(rdi);
+	setPriority(rdi, rsi);
 	return 0;
 }
 

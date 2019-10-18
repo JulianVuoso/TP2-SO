@@ -42,4 +42,7 @@ void listAll();
 /* Returns current process pid */
 uint64_t getPid();
 
+/* Kills current process */
+void killCurrent();
+
 #endif /* _SCHEDULER_H_ */

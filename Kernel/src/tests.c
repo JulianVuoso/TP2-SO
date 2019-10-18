@@ -29,17 +29,24 @@ void testMemoryManager() {
 
 #include <process.h>
 #include <scheduler.h>
+#include <interrupts.h>
 
 static void * const processAModuleAddress = (void*)0x1000000;
 static void * const processBModuleAddress = (void*)0x1100000;
 
 void testContextSwitch() {
-	uint64_t first = create(processAModuleAddress, "P1");
+	_cli();
+	print("Process A PID: ");
+	printHex(create(processAModuleAddress, "P1"));
+	print("\nProcess B PID: ");
+	printHex(create(processBModuleAddress, "P2"));
 
-	// uint64_t second = create(processBModuleAddress, "P2");
-
-	sleep_handler(5000);
-	while (1) {
-		
-	}
+	listAll();
+	// setPriority(2, 0);
+	listAll();
+	
+	_sti();
+	sleep_handler(10000);
+	// while (1) {
+	// }
 }

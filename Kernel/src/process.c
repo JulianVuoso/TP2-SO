@@ -5,12 +5,12 @@
 
 #include <console.h>
 
-static uint64_t c_pid;
+static uint64_t c_pid = 0;
 
 uint64_t create(void * entryPoint, char * name) {
     void * processStack = malloc(STACK_SIZE);
     if (processStack == 0) { // ERROR --> NO HAY MAS MEMORIA --> VER QUE DEVUELVO
-        
+
         // return 0;
     }
 
@@ -23,7 +23,7 @@ uint64_t create(void * entryPoint, char * name) {
     /* Creates process data */
     Process data;
     data.name = name;
-    data.pid = (uint64_t) c_pid++;
+    data.pid = ++c_pid;
     data.sp = (uint64_t) lastAddress - sizeof(StackFrame);
     data.bp = (uint64_t) stackBase;
     data.priority = 3;
@@ -32,12 +32,10 @@ uint64_t create(void * entryPoint, char * name) {
     data.stack = processStack;
 
     /* Add process to scheduler */
-    if (add(data) == 0) {
-        // ERROR 
-    }
+    add(data);
 
     /* Prints result on console */
-    printProcessStack(data);
+    //printProcessStack(data);
     
     return data.pid;
 }

@@ -4,8 +4,8 @@
 #include <clib.h>
 int main() {
     while (1) {
-		puts("\n########### pA ###########\n");
-		// sleep(55);
+		puts("\n########## pA ##########\n");
+		sleep(55);
 	}	
 	return 0;
 } 

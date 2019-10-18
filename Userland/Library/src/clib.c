@@ -184,17 +184,17 @@ void memStatus(int * memSize, int * occupiedSize, int * freeSize) {
 
 /* Crea un nuevo proceso y lo agrega al scheduler y retorna PID */
 uint64_t fork(void * entryPoint, char * name) {
-    syscall(NEW_PROC, (uint64_t) entryPoint, (uint64_t) name, 0);
+    return syscall(NEW_PROC, (uint64_t) entryPoint, (uint64_t) name, 0);
 }
 
 /* Kills a process given its pid */
 uint64_t kill(uint64_t pid) {
-    syscall(KILL, pid, 0, 0);
+    return syscall(KILL, pid, 0, 0);
 }
 
 /* Returns current process pid */
 uint64_t getPid() {
-    syscall(PID, 0, 0, 0);
+    return syscall(PID, 0, 0, 0);
 }
 
 /* List all running processes */
