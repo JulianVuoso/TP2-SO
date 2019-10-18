@@ -203,11 +203,11 @@ void ps() {
 }
 
 /* Set process priority to n */
-void setPriority(uint64_t n) {
-    syscall(SET_PRIO, n, 0, 0);
+uint64_t setPriority(uint64_t pid, uint64_t n) {
+    return syscall(SET_PRIO, pid, n, 0);
 }
 
-/* Changes process state */
-void setState(uint64_t state) {
-    syscall(SET_STATE, state, 0, 0);
+/* Changes process state between READY and BLOCKED  */
+uint64_t changeState(uint64_t pid) {
+    return syscall(SET_STATE, pid, 0, 0);
 }

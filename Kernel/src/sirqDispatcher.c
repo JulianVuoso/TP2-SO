@@ -126,12 +126,22 @@ uint64_t syscall_15 (uint64_t rdi, uint64_t rsi, uint64_t rdx) {
 	return 0;
 }
 
+// rdi = PID ; rsi = PRIORITY
 uint64_t syscall_16 (uint64_t rdi, uint64_t rsi, uint64_t rdx) {
-	setPriority(rdi, rsi);
-	return 0;
+	return setPriority(rdi, rsi);
 }
 
+// rdi = PID
 uint64_t syscall_17 (uint64_t rdi, uint64_t rsi, uint64_t rdx) {
-	setState(rdi, rsi);
-	return 0;
+	states state = getState(rdi);
+	switch (state)
+	{
+		case READY:
+			return setState(rdi, BLOCKED);
+		case BLOCKED:
+			// DEBERIA HACER ALGO MAS ACA (POR EG VER QUE PUEDA DESBLOQUEARSE)
+			return setState(rdi, READY);
+		default: // RUNNING o UNDEFINED
+			return 1;
+	}
 }

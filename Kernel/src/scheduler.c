@@ -40,7 +40,10 @@ uint64_t scheduler(uint64_t sp) {
         current->n.times = 0;
         current->n.process.state = READY;
         
-        current = current->n.next;
+        do {
+            current = current->n.next;
+        } while (current->n.process.state != READY);
+
         current->n.process.state = RUNNING;
         return current->n.process.sp;
     }
@@ -107,24 +110,32 @@ uint64_t kill(uint64_t pid) {
     return 0;               
 }
 
-void setPriority(uint64_t pid, uint8_t n) {
-    if (n > MAX_PRIO || n < 0 ) return;
+uint64_t setPriority(uint64_t pid, uint8_t n) {
+    if (n > MAX_PRIO || n < 0 ) return 2;
     Node * node = search(pid);
-    if (node != 0)
-        node->n.process.priority = n;
+    if (node == 0) return 1;
+    node->n.process.priority = n;
+    return 0;
 }
 
-void setState(uint64_t pid, states state) {
-    if (state == RUNNING) return;
+states getState(uint64_t pid) {
     Node * node = search(pid);
-    if (node == 0) return;
+    if (node == 0) return UNDEFINED;
+    return node->n.process.state;
+}
+
+uint64_t setState(uint64_t pid, states state) {
+    if (state == RUNNING) return 1;
+    Node * node = search(pid);
+    if (node == 0) return 1;
     /* If not the one currently running */
     if (node->n.process.pid != current->n.process.pid) {
         node->n.process.state = state;
-        return;
+        return 0;
     }
-    if (state == READY) return;
-    node->n.process.state = state;  
+    if (state == READY) return 1;
+    node->n.process.state = state;
+    return 0;
 }
 
 uint64_t getPid() {

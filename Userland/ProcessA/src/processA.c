@@ -3,9 +3,17 @@
 /* sampleCodeModule.c */
 #include <clib.h>
 int main() {
+	int i = 0;
     while (1) {
+		i++;
 		puts("\n########## pA ##########\n");
-		sleep(2000);
+		sleep(200);
+		if (i == 5) {
+			setPriority(2, 0);
+		}
+		if (i == 10) {
+			setPriority(2, 3);
+		}
 	}	
 	return 0;
 } 

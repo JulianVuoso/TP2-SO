@@ -166,15 +166,36 @@ void kill_cmd(int param1, int param2) {
     if (param1 < 0) {
         puts("\nIngreso invalido. Debe ingresar el ID del proceso que desea eliminar como primer argumento.");
     } else {
-        int ret = kill(param1);
+        int ret = kill(param1); // Devuelve el PID del proceso o 0 si no se borro
         printf("\nDelete %s", (ret == 0) ? "unsuccesfull":"successfull");
     }
 }
 
 void block_cmd(int param1, int param2) {
-    
+    if (param1 < 0) {
+        puts("\nIngreso invalido. Debe ingresar el ID del proceso que desea cambiar de estado como primer argumento.");
+    } else {
+        int ret = changeState(param1); // Devuelve 0 si sale bien, 1 sino
+        printf("\nChange %s", (ret != 0) ? "unsuccesfull":"successfull");
+    }
 }
 
 void nice_cmd(int param1, int param2) {
-    
+    if (param1 < 0 || param2 < 0) {
+        puts("\nIngreso invalido. Debe ingresar el ID del proceso que desea cambiar de estado como primer argumento y la nueva prioridad del \nproceso como segundo argumento.");
+    } else {
+        int ret = setPriority(param1, param2); // Devuelve 0 si sale bien, 1 si no encuentra pid, 2 si error en prioridad
+        switch (ret)
+        {
+            case 1:
+                puts("\nPID Invalido.");
+                break;
+            case 2:
+                puts("\nPrioridad Invalida. La prioridad debe estar entre 0 y 3.");
+                break;
+            default: // case 0
+                puts("\nChange successfull");
+                break;
+        }
+    }
 }

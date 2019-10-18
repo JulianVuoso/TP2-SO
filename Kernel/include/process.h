@@ -10,7 +10,7 @@
 
 #define STACK_SIZE	3000
 
-typedef enum {READY = 0, RUNNING, BLOCKED} states;
+typedef enum {READY = 0, RUNNING, BLOCKED, UNDEFINED} states;
 
 typedef enum {FORE = 0, BACK} level;
 

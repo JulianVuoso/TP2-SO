@@ -39,8 +39,8 @@ uint64_t fork(void * entryPoint, char * name);
 uint64_t kill(uint64_t pid);
 uint64_t getPid();
 void ps();
-void setPriority(uint64_t n);
-void setState(uint64_t state);
+uint64_t setPriority(uint64_t pid, uint64_t n);
+uint64_t changeState(uint64_t pid);
 
 extern uint64_t syscall(uint64_t rax, uint64_t rdi, uint64_t rsi, uint64_t rdx);
 
