@@ -15,6 +15,10 @@ sudo ./docker.sh jtallar gdb
 -Para obtener la ip
 ifconfig | grep "status: active" -B4 | grep "inet " | xargs | cut -d " " -f2 | pbcopy
 
+Si eso no funciona, hacer 
+	hostname --ip-address
+Buscar la IP que no sea 192.168.0.XX y que arranque con 192.168, copiar y pegar esa direccion en la primera linea del .gdbinit, donde dice target remote 192.168.122.1:1234 (dejar el :1234 como esta)
+
 -Inicio gdb con: gdb
 target remote ... (direccion ip)
 
@@ -30,6 +34,8 @@ add-symbol-file	0000-sampleCodeModule.elf 0x400000
 - ENTER		ejecuta el ultimo comando
 
 -Si corremos gdb con un .gdbinit, se pone lindo. (en el .gdbinit, habra que cambiar la direccion ip)
+
+	Correr gdb -iex 'add-auto-load-safe-path .' para que busque el .gdbinit
 
 -En la CheatSheet, están los comandos más importantes
 
