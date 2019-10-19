@@ -8,9 +8,7 @@
 #include <sound.h>
 
 void read_handler(uint64_t fd, char * buff, uint64_t count) {
-    // File descriptor doesn't matter
-    for (int i = 0; i < count; i ++)
-        buff[i] = read_character();
+    read(fd, buff, count);
 }
 
 void write_handler(uint64_t fd, const char * buff, uint64_t count) {

@@ -1,10 +1,23 @@
 // This is a personal academic project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
-#include <keyboard.h>
 #include <lib.h>
 #include <naiveConsole.h>
+#include <scheduler.h>
+#include <memoryManager.h>
 
-#define BUFFER_SIZE 50
+#include <keyboard.h>
+
+/* Some static functions for list management */
+static void addNodeR(uint64_t pid, char * buff, uint64_t count);
+static void removeNextR(NodeRead * node);
+static void removeFirstR();
+static void updateCurrentR();
+
+/* Static variables */
+static NodeRead * addressR = 0;
+static NodeRead * firstR = 0;
+static NodeRead * currentR = 0;
+static NodeRead * prevR = 0;
 
 char buffer[BUFFER_SIZE];
 unsigned int save_index = 0;
@@ -62,6 +75,7 @@ void keyboard_handler() {
                     //printChar(car, 0x0F);
                 }
                 save_index++;
+                if (save_index == BUFFER_SIZE) save_index = 0;
                 break;
         }
     } else { // Suelto tecla
@@ -75,13 +89,7 @@ void keyboard_handler() {
                 break;
         }
     }
-
-    // char key = map2[read_port(0x60)];
-    // if (key > 0) {
-    //     buffer[index++] = key;  
-    // }
-    // ncPrintHex(read_port(0x60));
-    // ncPrint(" - ");
+    updateCurrentR();
 }
 
 char toUpper(char car){
@@ -90,9 +98,101 @@ char toUpper(char car){
     return car;
 }
 
-char read_character() {
-    if (read_index == save_index) return 0;
-    unsigned char character = buffer[read_index % BUFFER_SIZE];
-    read_index++;    
-    return character;
+/* WE ARE NOT USING FD */
+uint64_t read(uint64_t fd, char * buff, uint64_t count) {
+    if (count == 0) return 0;
+    uint64_t pid = getPid();
+    addNodeR(pid, buff, count);
+    setState(pid, BLOCKED);
+}
+
+/* Updates the values off all the waiting processes */
+static void updateCurrentR() {
+    if (addressR == 0 || firstR == 0) return;
+    if (currentR == 0) {
+        currentR = firstR;
+        prevR = firstR;
+    }
+    (currentR->n.buff)[(currentR->n.index)++] = buffer[read_index++];
+    if (read_index == BUFFER_SIZE) read_index = 0;
+
+    if (currentR->n.index == currentR->n.count) {
+        uint64_t pid = currentR->n.pid;
+        if (currentR == prevR) removeFirstR();
+        else removeNextR(prevR);
+        setState(pid, READY);
+    }
+    prevR = currentR;
+    currentR = currentR->n.next;
+}
+
+/* Memory manager for the nodes */
+static NodeRead * newNodeR();
+static void freeNodeR(NodeRead * node);
+static void cleanMemR();
+
+/* Removes a node given its pid */
+void removeNodeR(uint64_t pid) {
+    if (addressR == 0 || firstR == 0) return;
+
+    /* If its the first one */
+    if (firstR->n.pid == pid) removeFirstR();
+
+    NodeRead * aux;
+    for (aux = firstR; aux->n.next != 0 && aux->n.next->n.pid != pid; aux = aux->n.next);
+    if (aux->n.next == 0) return; // Not found
+    removeNextR(aux);
+}
+
+/* Removes first node */
+static void removeFirstR() {
+    NodeRead * aux = firstR;
+    firstR = firstR->n.next;
+    freeNodeR(aux);
+}
+
+/* Removes the next node of the given one */
+static void removeNextR(NodeRead * node) {
+    NodeRead * freeAux = node->n.next;
+    node->n.next = node->n.next->n.next;
+    freeNodeR(freeAux);
+}
+
+/* Adds a Node to the begining of the list */
+static void addNodeR(uint64_t pid, char * buff, uint64_t count) {
+    if (addressR == 0) {
+        addressR = (NodeRead *)malloc(SIZE);
+        cleanMemR();  
+    }
+    NodeRead * node = newNodeR();
+    node->n.pid = pid;
+    node->n.buff = buff;
+    node->n.count = count;
+    node->n.index = 0;
+    node->n.next = 0;
+
+    if (firstR != 0) node->n.next = firstR;    
+    firstR = node;
+}
+
+/* Returns direction of a new Node */
+static NodeRead * newNodeR() {
+    for (uint64_t i = 0; i < SIZE / sizeof(NodeRead); i++) {
+        if ((addressR+i)->n.used == 0) {
+            (addressR+i)->n.used = 1;
+            return addressR+i;
+        }
+    }
+    return 0;    
+}
+
+/* Frees the Node given */
+static void freeNodeR(NodeRead * node) {
+    node->n.used = 0;
+}
+
+/* Sets all available places to free */
+static void cleanMemR() {
+    for (uint64_t i = 0; i < SIZE / sizeof(NodeRead); i++)
+        (addressR+i)->n.used = 0;    
 }

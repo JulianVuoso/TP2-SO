@@ -47,9 +47,7 @@ uint64_t handleSyscall(uint64_t sirq, uint64_t rdi, uint64_t rsi, uint64_t rdx) 
 }
 
 uint64_t syscall_00 (uint64_t rdi, uint64_t rsi, uint64_t rdx) {
-	// setState(getPid(), BLOCKED);
 	read_handler(rdi, (char *)rsi, rdx);
-	// setState(getPid(), READY);
 	return 0;
 }
 

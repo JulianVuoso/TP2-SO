@@ -7,7 +7,7 @@
 #define SIZE 4000
 #define TICK_LENGTH     55  // Cantidad de ms que equivalen a un tick
 
-typedef union node {
+typedef union nodeTime {
     struct {
         uint8_t used;
         uint64_t pid;
@@ -22,5 +22,9 @@ void timer_handler();
 int ticks_elapsed();
 int seconds_elapsed();
 void sleep(uint64_t millis);
+
+/* Removes the node from the list given its pid */
+void removeNodeT(uint64_t pid);
+
 
 #endif
