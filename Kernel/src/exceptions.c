@@ -3,7 +3,7 @@
 #include <exceptions.h>
 #include <console.h>
 #include <interrupts.h>
-#include <time.h>	// Para usar la funcion de sleep
+#include <timelib.h>	// Para usar la funcion de sleep
 
 static void zero_division();
 static void invalid_opcode();

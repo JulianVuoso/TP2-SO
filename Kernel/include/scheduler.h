@@ -8,6 +8,9 @@
 #include <stdint.h>
 #include <process.h>
 
+#define MAX_PRIO 3
+#define SIZE 4000
+
 typedef union node {
     struct {
         int used;

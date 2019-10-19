@@ -7,7 +7,7 @@
         "videodriver.h": "c",
         "idtloader.h": "c",
         "interrupts.h": "c",
-        "time.h": "c",
+        "timelib.h": "c",
         "clib.h": "c",
         "stdint.h": "c",
         "pixelmap.h": "c",

@@ -72,9 +72,7 @@ uint64_t syscall_04 (uint64_t rdi, uint64_t rsi, uint64_t rdx) {
 }
 
 uint64_t syscall_05 (uint64_t rdi, uint64_t rsi, uint64_t rdx) {
-	// setState(getPid(), BLOCKED);
 	sleep_handler(rdi);
-	// setState(getPid(), READY);
 	return 0;
 }
 

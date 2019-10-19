@@ -1,10 +1,7 @@
 #include <scheduler.h>
-#include <time.h>
+#include <timelib.h>
 #include <memoryManager.h>
 #include <console.h>
-
-#define MAX_PRIO 3
-#define SIZE 4000
 
 static Node *search(uint64_t pid);
 static Node * newNode();
