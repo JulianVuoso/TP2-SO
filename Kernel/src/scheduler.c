@@ -26,12 +26,7 @@ uint64_t scheduler(uint64_t sp) {
         case 1: init = 2; current->n.process.state = RUNNING; break;
         default: current->n.process.sp = sp; break;
     }
-    
-    // if (current->n.process.state == BLOCKED) {
-    //     current->n.times = 0;
-    //     current->n.next->n.process.state = RUNNING;
-    //     return current->n.next->n.process.sp;
-    // }
+        
     current->n.times++;
     if(current->n.times == pow(2, MAX_PRIO - current->n.process.priority) || current->n.process.state == BLOCKED){
         current->n.times = 0;
@@ -143,6 +138,8 @@ uint64_t setState(uint64_t pid, states state) {
         return 0;
     }
     if (state == READY) return 1;
+
+    /* If we blocked the current process */
     node->n.process.state = state;
     return 0;
 }
