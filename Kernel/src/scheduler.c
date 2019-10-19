@@ -36,9 +36,10 @@ uint64_t scheduler(uint64_t sp) {
     //     return current->n.next->n.process.sp;
     // }
     current->n.times++;
-    if(current->n.times == pow(2, MAX_PRIO - current->n.process.priority)){
+    if(current->n.times == pow(2, MAX_PRIO - current->n.process.priority) || current->n.process.state == BLOCKED){
         current->n.times = 0;
-        current->n.process.state = READY;
+        if (current->n.process.state != BLOCKED)
+            current->n.process.state = READY;
         
         do {
             current = current->n.next;
