@@ -81,8 +81,8 @@ void printf(char * str, ...){
 }
 
 uint8_t getchar() {
-    uint8_t character = 0;
-    while (character == 0) syscall(READ_ID, STDIN, (uint64_t) &character, 1);
+    uint8_t character;
+    syscall(READ_ID, STDIN, (uint64_t) &character, 1);
     return character;
 }
 
