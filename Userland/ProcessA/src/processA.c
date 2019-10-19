@@ -7,13 +7,14 @@ int main() {
     while (1) {
 		i++;
 		puts("\n########## pA ##########\n");
-		sleep(200);
-		if (i == 5) {
-			kill(2);
-		}
-		if (i == 10) {
-			kill(1);
-		}
+		ps();
+		sleep(1000);
+		// if (i == 5) {
+		// 	kill(2);
+		// }
+		// if (i == 10) {
+		// 	kill(1);
+		// }
 	}	
 	return 0;
 } 

@@ -2,6 +2,7 @@
 #include <timelib.h>
 #include <memoryManager.h>
 #include <console.h>
+#include <interrupts.h>
 
 static Node *search(uint64_t pid);
 static Node * newNode();

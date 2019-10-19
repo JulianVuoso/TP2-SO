@@ -7,12 +7,12 @@
 #define SIZE 4000
 #define TICK_LENGTH     55  // Cantidad de ms que equivalen a un tick
 
-typedef union node {
+typedef union NodeTime {
     struct {
         uint8_t used;
         uint64_t pid;
         uint64_t time;
-        union node * next;
+        union NodeTime * next;
     } n;
     long x; // Here happens the align 
 } NodeTime;

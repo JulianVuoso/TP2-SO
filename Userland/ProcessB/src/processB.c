@@ -5,7 +5,8 @@
 int main() {
     while (1) {
 		puts("\n----------- pB -----------\n");
-		sleep(200);
+		ps();
+		sleep(500);
 	}	
 	return 0;
 } 
