@@ -78,6 +78,8 @@ void killCurrent() {
 uint64_t kill(uint64_t pid) {
     if (current == 0)
         return 0;
+    if (pid <= 1)
+        return 0;
 
     /* If its the only process */
     if (current == current->n.next) {
