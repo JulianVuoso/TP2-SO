@@ -152,7 +152,8 @@ void beep(uint32_t frequency, uint64_t millis) {
 }
 
 void exit() {
-    syscall(EXIT_ID, 0, 0, 0);
+    syscall(KILL, getPid(), 0, 0);
+    // syscall(EXIT_ID, 0, 0, 0);
 }
 
 uint64_t getTicks() {

@@ -41,12 +41,18 @@ uint64_t scheduler(uint64_t sp) {
         if (current->n.process.state != BLOCKED)
             current->n.process.state = READY;
         
+        // ToDo Ver si todo esto de aca abajo se va o no
+        Node * aux = current;
         do {
             current = current->n.next;
-        } while (current->n.process.state != READY);
+        } while (current->n.process.state != READY && aux->n.process.pid != current->n.process.pid);
 
-        current->n.process.state = RUNNING;
-        return current->n.process.sp;
+        // Chequeo si pego la vuelta, no hay ninguno para ejecutar
+        if (current->n.process.state != READY) {
+            halt();
+        } else {
+            current->n.process.state = RUNNING;
+        }
     }
     return current->n.process.sp;
 }
@@ -79,8 +85,9 @@ void killCurrent() {
 uint64_t kill(uint64_t pid) {
     if (current == 0)
         return 0;
-    if (pid <= 1)
-        return 0;
+    // ToDo Ver si esto de aca abajo se va o no
+    // if (pid <= 1)
+    //     return 0;
 
     /* If its the only process */
     if (current == current->n.next) {
@@ -92,6 +99,8 @@ uint64_t kill(uint64_t pid) {
         freeNode(aux);
         current = 0;
         init = 0;
+        // ToDo Ver si esto de aca abajo se va o no
+        halt();
         return pid;
     }
     Node * node = current;
