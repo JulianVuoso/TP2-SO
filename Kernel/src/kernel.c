@@ -29,6 +29,7 @@ static void * const sampleDataModuleAddress = (void*)0x500000;
 
 static void * const processAModuleAddress = (void*)0x1000000;
 static void * const processBModuleAddress = (void*)0x1100000;
+static void * const shellModuleAddress = (void*)0x1200000;
 
 typedef int (*EntryPoint)();
 
@@ -61,7 +62,8 @@ void * initializeKernelBinary()
 		sampleCodeModuleAddress,
 		sampleDataModuleAddress,
 		processAModuleAddress,
-		processBModuleAddress
+		processBModuleAddress,
+		shellModuleAddress
 	};
 
 	void * endOfModules = loadModules(&endOfKernelBinary, moduleAddresses);
@@ -81,9 +83,10 @@ void * initializeKernelBinary()
 }
 
 int main() {
-	
+	create(shellModuleAddress, "SHELL");
+	while (!checkLoaded());
     // goToUserland();
 	// testMemoryManager();
-	testContextSwitch();
+	// testContextSwitch();
 	return 0;
 }

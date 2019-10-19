@@ -26,7 +26,7 @@ uint64_t scheduler(uint64_t sp) {
 
     switch(init){
         case 0: return sp; 
-        case 1: init = 2; break;
+        case 1: init = 2; current->n.process.state = RUNNING; break;
         default: current->n.process.sp = sp; break;
     }
     
@@ -177,6 +177,10 @@ void initScheduler() {
     current = 0;
     address = (Node *)malloc(SIZE);
     cleanMem();
+}
+
+int checkLoaded() {
+    return current != 0 && current->n.process.state == RUNNING;
 }
 
 /* Memory manager for the nodes */

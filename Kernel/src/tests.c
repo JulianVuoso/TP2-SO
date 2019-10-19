@@ -35,7 +35,7 @@ static void * const processAModuleAddress = (void*)0x1000000;
 static void * const processBModuleAddress = (void*)0x1100000;
 
 void testContextSwitch() {
-	_cli();
+	// _cli();
 	print("Process A PID: ");
 	uint64_t pidA = create(processAModuleAddress, "P1");
 	printHex(pidA);
@@ -44,14 +44,14 @@ void testContextSwitch() {
 	printHex(pidB);
 
 	listAll();
-	// setPriority(2, 0);
+	setPriority(2, 0);
 	listAll();
 	
-	_sti();
+	// _sti();
 	// sleep_handler(10000);
-	while (1) {
-		sleep_handler(5000);
-		int ret = kill(pidA);
-		print("\nRET: %d\n", ret);
-	}
+	// while (1) {
+	// 	sleep_handler(5000);
+	// 	int ret = kill(pidA);
+	// 	print("\nRET: %d\n", ret);
+	// }
 }

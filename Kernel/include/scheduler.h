@@ -48,4 +48,7 @@ uint64_t getPid();
 /* Kills current process */
 void killCurrent();
 
+/* Checks if a process is loaded */
+int checkLoaded();
+
 #endif /* _SCHEDULER_H_ */

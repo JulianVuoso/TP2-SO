@@ -4,8 +4,8 @@
 	c. Capreta src		--> Archivos .c
 	d. Archivo _loader.c	--> Copiarlo como esta en algun otro
 	e. Archivo Makefile	--> Copiarlo como esta en algun otro y cambiar todo lo que diga processName... por el nombre actual
-	f. Archivo process.ld	--> Copiarlo como esta en algun otro y cambiar la direccion .text 0x... por la que pondre en la constante
-2. Ir a kernel.c. En la parte de constantes, agregar la linea
+	f. Archivo process.ld	--> Copiarlo como esta en algun otro, cambiarle el nombre a processName.ld y cambiar la direccion .text 0x... por la que pondre en la constante
+2. Ir a kernel.c. En la parte de constantes, agregar la linea con la direccion correspondiente
 	static void * const processModuleAddress = (void*) 0x1000000;
    En la funcion initializeKernelBinary, agregar en el vector moduleAddresses el nombre de la constante creada.
 3. Ir al Makefile dentro de la carpeta Userland. 

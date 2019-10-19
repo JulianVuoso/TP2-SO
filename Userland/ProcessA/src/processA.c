@@ -9,7 +9,7 @@ int main() {
 		puts("\n########## pA ##########\n");
 		sleep(200);
 		if (i == 5) {
-			setPriority(2, 0);
+			kill(1);
 		}
 		if (i == 10) {
 			setPriority(2, 3);
