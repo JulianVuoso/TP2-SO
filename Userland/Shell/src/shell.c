@@ -108,11 +108,11 @@ void time_cmd(int param1, int param2) {
 	puts(getTime(time));
 }
 
-void sleep_cmd(int param1, int param2) {
-    if (param1 < 0) {
+void sleep_cmd(int seconds, int param2) {
+    if (seconds < 0) {
         puts("\nIngreso invalido. Debe ingresar el numero de segundos que desea esperar como primer argumento.");
     } else {
-        int millis = param1 * 1000;
+        int millis = seconds * 1000;
         sleep(millis);
     }
 }
@@ -167,29 +167,33 @@ void ps_cmd(int param1, int param2) {
     ps();
 }
 
-void kill_cmd(int param1, int param2) {
-    if (param1 < 0) {
+void kill_cmd(int pid, int param2) {
+    if (pid < 0) {
         puts("\nIngreso invalido. Debe ingresar el ID del proceso que desea eliminar como primer argumento.");
     } else {
-        int ret = kill(param1); // Devuelve el PID del proceso o 0 si no se borro
+        if (pid == 1) {
+            puts("\nDelete unsuccesfull. Shell can't be killed.");
+            return;
+        }
+        int ret = kill(pid); // Devuelve el PID del proceso o 0 si no se borro
         printf("\nDelete %s", (ret == 0) ? "unsuccesfull":"successfull");
     }
 }
 
-void block_cmd(int param1, int param2) {
-    if (param1 < 0) {
+void block_cmd(int pid, int param2) {
+    if (pid < 0) {
         puts("\nIngreso invalido. Debe ingresar el ID del proceso que desea cambiar de estado como primer argumento.");
     } else {
-        int ret = changeState(param1); // Devuelve 0 si sale bien, 1 sino
+        int ret = changeState(pid); // Devuelve 0 si sale bien, 1 sino
         printf("\nChange %s", (ret != 0) ? "unsuccesfull":"successfull");
     }
 }
 
-void nice_cmd(int param1, int param2) {
-    if (param1 < 0 || param2 < 0) {
+void nice_cmd(int pid, int priority) {
+    if (pid < 0 || priority < 0) {
         puts("\nIngreso invalido. Debe ingresar el ID del proceso que desea cambiar de estado como primer argumento y la nueva prioridad del \nproceso como segundo argumento.");
     } else {
-        int ret = setPriority(param1, param2); // Devuelve 0 si sale bien, 1 si no encuentra pid, 2 si error en prioridad
+        int ret = setPriority(pid, priority); // Devuelve 0 si sale bien, 1 si no encuentra pid, 2 si error en prioridad
         switch (ret)
         {
             case 1:
