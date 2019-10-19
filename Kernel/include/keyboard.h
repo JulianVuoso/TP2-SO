@@ -10,21 +10,21 @@
 
 #define SIZE 4000
 
-typedef union nodeRead {
+typedef union NodeRead {
     struct {
         uint8_t used;
         uint64_t pid;
         char * buff;
         uint64_t count;
         uint64_t index;
-        union node * next;
+        union NodeRead * next;
     } n;
     long x; // Here happens the align 
 } NodeRead;
 
 void keyboard_handler();
 char toUpper(char car);
-char read(uint64_t fd, char * buff, uint64_t count);
+uint64_t read(uint64_t fd, char * buff, uint64_t count);
 
 /* Removes a node given its pid */
 void removeNodeR(uint64_t pid);
