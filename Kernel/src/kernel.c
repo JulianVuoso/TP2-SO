@@ -78,10 +78,10 @@ void * initializeKernelBinary()
 }
 
 int main() {
-	// create(shellModuleAddress, "SHELL");
-	// while (!checkLoaded());
-	create(processAModuleAddress, "SHELL");
+	create(shellModuleAddress, "SHELL");
 	while (!checkLoaded());
+	// create(processAModuleAddress, "SHELL");
+	// while (!checkLoaded());
     // goToUserland();
 	// testMemoryManager();
 	// testContextSwitch();

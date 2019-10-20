@@ -1,7 +1,6 @@
 // This is a personal academic project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <lib.h>
-#include <naiveConsole.h>
 #include <scheduler.h>
 #include <memoryManager.h>
 
@@ -75,7 +74,7 @@ void keyboard_handler() {
                     //printChar(car, 0x0F);
                 }
                 save_index++;
-                if (save_index == BUFFER_SIZE) save_index = 0;
+                updateCurrentR();
                 break;
         }
     } else { // Suelto tecla
@@ -89,7 +88,6 @@ void keyboard_handler() {
                 break;
         }
     }
-    updateCurrentR();
 }
 
 char toUpper(char car){
@@ -98,12 +96,26 @@ char toUpper(char car){
     return car;
 }
 
+#include <console.h>
+
 /* WE ARE NOT USING FD */
 uint64_t read(uint64_t fd, char * buff, uint64_t count) {
     if (count == 0) return 0;
-    uint64_t pid = getPid();
-    addNodeR(pid, buff, count);
-    setState(pid, BLOCKED);
+    if (firstR == 0 && (save_index - read_index) >= count) {
+        int i = 0;
+        for (i = 0; i < count; i++) {
+            buff[i] = buffer[read_index % BUFFER_SIZE];
+            read_index++;
+        }
+        if (read_index == save_index) {
+            read_index = 0;
+            save_index = 0;
+        }
+    } else {
+        uint64_t pid = getPid();
+        addNodeR(pid, buff, count);
+        setState(pid, BLOCKED);
+    }
 }
 
 /* Updates the values off all the waiting processes */
@@ -113,8 +125,8 @@ static void updateCurrentR() {
         currentR = firstR;
         prevR = firstR;
     }
-    (currentR->n.buff)[(currentR->n.index)++] = buffer[read_index++];
-    if (read_index == BUFFER_SIZE) read_index = 0;
+    (currentR->n.buff)[(currentR->n.index)++] = buffer[read_index % BUFFER_SIZE];
+    read_index++;
 
     if (currentR->n.index == currentR->n.count) {
         uint64_t pid = currentR->n.pid;
