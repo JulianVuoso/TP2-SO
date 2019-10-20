@@ -12,6 +12,9 @@ static uint64_t pow(int base, int exponent);
 
 static Node *current;
 static Node *address;
+
+static Node *haltProcess;
+
 static int init;
 
 uint64_t scheduler(uint64_t sp) {
@@ -25,25 +28,30 @@ uint64_t scheduler(uint64_t sp) {
     switch(init){
         case 0: return sp; 
         case 1: init = 2; current->n.process.state = RUNNING; break;
-        default: current->n.process.sp = sp; break;
+        case 2: current->n.process.sp = sp; break;
+        default: haltProcess->n.process.sp = sp; break;
     }
         
     current->n.times++;
-    if(current->n.times == pow(2, MAX_PRIO - current->n.process.priority) || current->n.process.state == BLOCKED){
+    if(current->n.times == pow(2, MAX_PRIO - current->n.process.priority) || current->n.process.state == BLOCKED || current->n.process.state == UNDEFINED){
         current->n.times = 0;
-        if (current->n.process.state != BLOCKED)
+        if (current->n.process.state != BLOCKED && current->n.process.state != UNDEFINED)
             current->n.process.state = READY;
         
         // ToDo Ver si todo esto de aca abajo se va o no
         Node * aux = current;
+        // print("\nCURRENT: %s, estado %d",current->n.process.name, current->n.process.state);
         do {
             current = current->n.next;
         } while (current->n.process.state != READY && aux->n.process.pid != current->n.process.pid);
 
         // Chequeo si pego la vuelta, no hay ninguno para ejecutar
         if (current->n.process.state != READY) {
-            halt();
+            // halt();
+            init = 3;
+            return haltProcess->n.process.sp;
         } else {
+            init = 2;
             current->n.process.state = RUNNING;
         }
     }
@@ -138,7 +146,7 @@ uint64_t setState(uint64_t pid, states state) {
         node->n.process.state = state;
         return 0;
     }
-    if (state == READY) return 1;
+    if (current->n.process.state == RUNNING && state == READY) return 1;
 
     /* If we blocked the current process */
     node->n.process.state = state;
@@ -179,11 +187,20 @@ void listAll() {
     print("\n");
 }
 
+static void * const idleModuleAddress = (void*)0x1400000;
+
 void initScheduler() {
     init = 0;
     current = 0;
     address = (Node *)malloc(SIZE);
     cleanMem();
+    // create(idleModuleAddress, "IDLE");
+    Process aux = createNoSched(idleModuleAddress, "IDLE");
+    setState(aux.pid, UNDEFINED);
+    haltProcess = newNode();
+    haltProcess->n.times = 0;
+    haltProcess->n.process = aux;
+    haltProcess->n.next = haltProcess;
 }
 
 int checkLoaded() {

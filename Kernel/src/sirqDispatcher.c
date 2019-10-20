@@ -5,8 +5,9 @@
 #include <memoryManager.h>
 #include <process.h>
 #include <scheduler.h>
+#include <interrupts.h>
 
-#define SYSCALL_COUNT	17
+#define SYSCALL_COUNT	18
 
 // Software handlers functions
 static uint64_t syscall_00 (uint64_t rdi, uint64_t rsi, uint64_t rdx);
@@ -29,6 +30,7 @@ static uint64_t syscall_14 (uint64_t rdi, uint64_t rsi, uint64_t rdx);
 static uint64_t syscall_15 (uint64_t rdi, uint64_t rsi, uint64_t rdx);
 static uint64_t syscall_16 (uint64_t rdi, uint64_t rsi, uint64_t rdx);
 static uint64_t syscall_17 (uint64_t rdi, uint64_t rsi, uint64_t rdx);
+static uint64_t syscall_18 (uint64_t rdi, uint64_t rsi, uint64_t rdx);
 
 extern void hang(); // Ubicada en loader.asm
 
@@ -36,7 +38,7 @@ uint64_t (* syscalls[]) (uint64_t rdi, uint64_t rsi, uint64_t rdx) = {syscall_00
 																	syscall_04, syscall_05, syscall_06, syscall_07,
 																	syscall_08,	syscall_09, syscall_10, syscall_11,
 																	syscall_12, syscall_13, syscall_14, syscall_15,
-																	syscall_16, syscall_17};
+																	syscall_16, syscall_17, syscall_18};
 
 // Dispatcher for software interrupts
 uint64_t handleSyscall(uint64_t sirq, uint64_t rdi, uint64_t rsi, uint64_t rdx) {
@@ -140,4 +142,9 @@ uint64_t syscall_17 (uint64_t rdi, uint64_t rsi, uint64_t rdx) {
 		default: // RUNNING o UNDEFINED
 			return 1;
 	}
+}
+
+uint64_t syscall_18 (uint64_t rdi, uint64_t rsi, uint64_t rdx) {
+	_hlt();
+	return 0;
 }

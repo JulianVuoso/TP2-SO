@@ -26,6 +26,8 @@ char * getTime(char * time);
 void sleep(uint64_t millis);
 void beep(uint32_t frequency, uint64_t millis);
 void exit();
+void halt();
+void finish();
 uint64_t getTicks();
 void drawPixel(int x, int y, uint8_t r, uint8_t g, uint8_t b);
 

@@ -24,6 +24,8 @@
 #define SET_PRIO    16
 #define SET_STATE   17
 
+#define HALT_ID     18
+
 #define STDIN       0
 #define STDOUT      1
 #define STDERR      2
@@ -154,6 +156,14 @@ void beep(uint32_t frequency, uint64_t millis) {
 void exit() {
     syscall(KILL, getPid(), 0, 0);
     // syscall(EXIT_ID, 0, 0, 0);
+}
+
+void halt() {
+    syscall(HALT_ID, 0, 0, 0);
+}
+
+void finish() {
+    syscall(EXIT_ID, 0, 0, 0);
 }
 
 uint64_t getTicks() {
