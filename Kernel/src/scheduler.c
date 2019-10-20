@@ -3,6 +3,7 @@
 #include <memoryManager.h>
 #include <console.h>
 #include <interrupts.h>
+#include <moduleAddresses.h>
 
 static Node *search(uint64_t pid);
 static Node * newNode();
@@ -186,8 +187,6 @@ void listAll() {
     } while (node != current);
     print("\n");
 }
-
-static void * const idleModuleAddress = (void*)0x1400000;
 
 void initScheduler() {
     init = 0;

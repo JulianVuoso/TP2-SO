@@ -13,6 +13,7 @@
 #include <memoryManager.h>
 #include <tests.h>
 #include <scheduler.h>
+#include <moduleAddresses.h>
 
 extern uint8_t text;
 extern uint8_t rodata;
@@ -23,14 +24,6 @@ extern uint8_t endOfKernel;
 
 static const uint64_t PageSize = 0x1000;
 static const uint64_t MaxPages = 1024;
-
-static void * const sampleCodeModuleAddress = (void*)0x400000;
-static void * const sampleDataModuleAddress = (void*)0x500000;
-
-static void * const processAModuleAddress = (void*)0x1000000;
-static void * const processBModuleAddress = (void*)0x1100000;
-static void * const shellModuleAddress = (void*)0x1200000;
-static void * const idleModuleAddress = (void*)0x1400000;
 
 typedef int (*EntryPoint)();
 
