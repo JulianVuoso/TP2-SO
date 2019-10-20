@@ -115,7 +115,7 @@ uint64_t read(uint64_t fd, char * buff, uint64_t count) {
     } else {
         uint64_t pid = getPid();
         addNodeR(pid, buff, count);
-        setState(pid, BLOCKED);
+        block(READ);
         return 0;
     }
 }

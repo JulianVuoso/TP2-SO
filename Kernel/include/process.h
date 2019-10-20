@@ -12,6 +12,8 @@
 
 typedef enum {READY = 0, RUNNING, BLOCKED, UNDEFINED} states;
 
+typedef enum {NONE = 0, TIME, READ, WRITE} resources;
+
 typedef enum {FORE = 0, BACK} level;
 
 typedef struct {
@@ -22,7 +24,7 @@ typedef struct {
     uint8_t priority;
     level context;
     states state;
-    uint64_t resources;
+    resources resource;
     void * stack;
 } Process;
 

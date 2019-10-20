@@ -38,7 +38,7 @@ Process createNoSched(void * entryPoint, char * name, level context) {
     data.context = context;
     data.state = READY;
     data.stack = processStack;
-    data.resources = 0;
+    data.resource = 0;
 
     /* Prints result on console */
     //printProcessStack(data);
@@ -52,11 +52,11 @@ void remove(Process p) {
 
 void freeResources(Process p) {
     if (p.state == BLOCKED) return;
-    switch(p.resources) {
-        case 0: return;
-        case 1: removeNodeT(p.pid); break;
-        case 2: removeNodeR(p.pid); break;
-        case 3: return;
+    switch(p.resource) {
+        case NONE: return;
+        case TIME: removeNodeT(p.pid); break;
+        case READ: removeNodeR(p.pid); break;
+        case WRITE: return;
     }
 }
 
