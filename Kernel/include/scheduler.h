@@ -54,4 +54,7 @@ void killCurrent();
 /* Checks if a process is loaded */
 int checkLoaded();
 
+/* Blocks current process for using resource */
+uint64_t block(uint64_t resource);
+
 #endif /* _SCHEDULER_H_ */
