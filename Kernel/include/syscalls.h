@@ -10,7 +10,7 @@ uint64_t time_handler();
 void clear_handler();
 uint64_t rtc_handler(uint8_t register);
 void sleep_handler(uint64_t millis);
-void beep_handler(uint16_t frequency, uint64_t time);
+void beep_handler(uint16_t frequency, uint64_t state);
 void pixel_handler(uint64_t x, uint64_t y, uint64_t rgb);
 
 uint64_t handleSyscall(uint64_t sirq, uint64_t rdi, uint64_t rsi, uint64_t rdx);

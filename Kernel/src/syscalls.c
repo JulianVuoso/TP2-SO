@@ -46,10 +46,18 @@ void sleep_handler(uint64_t millis){
     sleep(millis);
 }
 
-void beep_handler(uint16_t frequency, uint64_t millis) {
-    play_sound(frequency);
-    sleep_handler(millis);
-    no_sound();
+void beep_handler(uint16_t frequency, uint64_t state) {
+    switch (state)
+    {
+        case 1: // PLAY
+            play_sound(frequency);
+            break;
+        case 0: // STOP
+            no_sound();
+            break;
+        default:
+            break;
+    }
 }
 
 void pixel_handler(uint64_t x, uint64_t y, uint64_t rgb) {

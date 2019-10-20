@@ -150,7 +150,9 @@ void sleep(uint64_t millis) {
 }
 
 void beep(uint32_t frequency, uint64_t millis) {
-    syscall(BEEP_ID, frequency, millis, 0);
+    syscall(BEEP_ID, frequency, 1, 0); // PLAY
+    syscall(SLEEP_ID, millis, 0, 0);
+    syscall(BEEP_ID, frequency, 0, 0); // STOP
 }
 
 void exit() {
