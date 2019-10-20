@@ -111,10 +111,12 @@ uint64_t read(uint64_t fd, char * buff, uint64_t count) {
             read_index = 0;
             save_index = 0;
         }
+        return count;
     } else {
         uint64_t pid = getPid();
         addNodeR(pid, buff, count);
         setState(pid, BLOCKED);
+        return 0;
     }
 }
 
