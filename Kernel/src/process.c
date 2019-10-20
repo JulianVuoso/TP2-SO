@@ -7,40 +7,14 @@
 
 static uint64_t c_pid = 0;
 
-uint64_t create(void * entryPoint, char * name) {
-    void * processStack = malloc(STACK_SIZE);
-    if (processStack == 0) { // ERROR --> NO HAY MAS MEMORIA --> VER QUE DEVUELVO
-
-        // return 0;
-    }
-
-    /* Creates stack for process */
-    char * lastAddress = (char *) getLastAddress(processStack);
-    char * stackBase = lastAddress - sizeof(uint64_t);
-    StackFrame stack = initStack(entryPoint, (void *) stackBase);
-    memcpy(lastAddress - sizeof(StackFrame), &stack, sizeof(StackFrame));
-    
-    /* Creates process data */
-    Process data;
-    data.name = name;
-    data.pid = ++c_pid;
-    data.sp = (uint64_t) lastAddress - sizeof(StackFrame);
-    data.bp = (uint64_t) stackBase;
-    data.priority = 3;
-    data.context = FORE;
-    data.state = READY;
-    data.stack = processStack;
-
+uint64_t create(void * entryPoint, char * name, level context) {
+    Process data = createNoSched(entryPoint, name, context);
     /* Add process to scheduler */
     add(data);
-
-    /* Prints result on console */
-    //printProcessStack(data);
-    
     return data.pid;
 }
 
-Process createNoSched(void * entryPoint, char * name) {
+Process createNoSched(void * entryPoint, char * name, level context) {
     void * processStack = malloc(STACK_SIZE);
     if (processStack == 0) { // ERROR --> NO HAY MAS MEMORIA --> VER QUE DEVUELVO
 
@@ -60,13 +34,12 @@ Process createNoSched(void * entryPoint, char * name) {
     data.sp = (uint64_t) lastAddress - sizeof(StackFrame);
     data.bp = (uint64_t) stackBase;
     data.priority = 3;
-    data.context = FORE;
+    data.context = context;
     data.state = READY;
     data.stack = processStack;
 
     /* Prints result on console */
     //printProcessStack(data);
-    
     return data;
 }
 
