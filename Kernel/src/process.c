@@ -3,6 +3,7 @@
 #include <scheduler.h>
 #include <memoryManager.h>
 
+#include <resources.h>
 #include <console.h>
 
 static uint64_t c_pid = 0;
@@ -37,6 +38,7 @@ Process createNoSched(void * entryPoint, char * name, level context) {
     data.context = context;
     data.state = READY;
     data.stack = processStack;
+    data.resources = 0;
 
     /* Prints result on console */
     //printProcessStack(data);
@@ -44,7 +46,18 @@ Process createNoSched(void * entryPoint, char * name, level context) {
 }
 
 void remove(Process p) {
+    freeResources(p);
     free(p.stack);
+}
+
+void freeResources(Process p) {
+    if (p.state == BLOCKED) return;
+    switch(p.resources) {
+        case 0: return;
+        case 1: removeNodeT(p.pid); break;
+        case 2: removeNodeR(p.pid); break;
+        case 3: return;
+    }
 }
 
 void printProcessStack(Process p) {
