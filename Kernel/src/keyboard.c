@@ -68,10 +68,8 @@ void keyboard_handler() {
             default:
                 if (shift * caps == -1){ // Uno de los dos activos, paso a mayus
                     buffer[save_index % BUFFER_SIZE] = toUpper(car);
-                    //printChar(toUpper(car), 0x0F);
                 } else{
                     buffer[save_index % BUFFER_SIZE] = car;
-                    //printChar(car, 0x0F);
                 }
                 save_index++;
                 updateCurrentR();
@@ -95,8 +93,6 @@ char toUpper(char car){
         car -= ('a' - 'A');
     return car;
 }
-
-#include <console.h>
 
 /* WE ARE NOT USING FD */
 uint64_t read(uint64_t fd, char * buff, uint64_t count) {
