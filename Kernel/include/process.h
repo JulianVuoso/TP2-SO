@@ -22,7 +22,7 @@ typedef struct {
     uint8_t priority;
     level context;
     states state;
-
+    uint64_t resources;
     void * stack;
 } Process;
 
@@ -36,5 +36,8 @@ void remove(Process p);
 
 /* Print process stack */
 void printProcessStack(Process p);
+
+/* Frees all the resources used by the process */
+void freeResources(Process p);
 
 #endif /* _PROCESS_H_ */
