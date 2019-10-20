@@ -17,12 +17,12 @@
 #define FREE_ID     10
 #define STATUS_ID   11
 
-#define NEW_PROC    12
-#define KILL        13
-#define PID         14
-#define PS          15
-#define SET_PRIO    16
-#define SET_STATE   17
+#define NEW_PROC_ID     12
+#define KILL_ID         13
+#define PID_ID          14
+#define PS_ID           15
+#define SET_PRIO_ID     16
+#define SET_STATE_ID    17
 
 #define HALT_ID     18
 
@@ -156,7 +156,7 @@ void beep(uint32_t frequency, uint64_t millis) {
 }
 
 void exit() {
-    syscall(KILL, getPid(), 0, 0);
+    syscall(KILL_ID, getPid(), 0, 0);
     // syscall(EXIT_ID, 0, 0, 0);
 }
 
@@ -197,30 +197,30 @@ void memStatus() {
 
 /* Crea un nuevo proceso y lo agrega al scheduler y retorna PID */
 uint64_t fork(void * entryPoint, char * name) {
-    return syscall(NEW_PROC, (uint64_t) entryPoint, (uint64_t) name, 0);
+    return syscall(NEW_PROC_ID, (uint64_t) entryPoint, (uint64_t) name, 0);
 }
 
 /* Kills a process given its pid */
 uint64_t kill(uint64_t pid) {
-    return syscall(KILL, pid, 0, 0);
+    return syscall(KILL_ID, pid, 0, 0);
 }
 
 /* Returns current process pid */
 uint64_t getPid() {
-    return syscall(PID, 0, 0, 0);
+    return syscall(PID_ID, 0, 0, 0);
 }
 
 /* List all running processes */
 void ps() {
-    syscall(PS, 0, 0, 0);
+    syscall(PS_ID, 0, 0, 0);
 }
 
 /* Set process priority to n */
 uint64_t setPriority(uint64_t pid, uint64_t n) {
-    return syscall(SET_PRIO, pid, n, 0);
+    return syscall(SET_PRIO_ID, pid, n, 0);
 }
 
 /* Changes process state between READY and BLOCKED  */
 uint64_t changeState(uint64_t pid) {
-    return syscall(SET_STATE, pid, 0, 0);
+    return syscall(SET_STATE_ID, pid, 0, 0);
 }

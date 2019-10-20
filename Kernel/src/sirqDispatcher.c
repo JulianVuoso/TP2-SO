@@ -2,12 +2,9 @@
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <syscalls.h>
 #include <stdint.h>
-#include <memoryManager.h>
-#include <process.h>
-#include <scheduler.h>
-#include <interrupts.h>
 
 #define SYSCALL_COUNT	18
+
 
 // Software handlers functions
 static uint64_t syscall_00 (uint64_t rdi, uint64_t rsi, uint64_t rdx);
@@ -31,8 +28,6 @@ static uint64_t syscall_15 (uint64_t rdi, uint64_t rsi, uint64_t rdx);
 static uint64_t syscall_16 (uint64_t rdi, uint64_t rsi, uint64_t rdx);
 static uint64_t syscall_17 (uint64_t rdi, uint64_t rsi, uint64_t rdx);
 static uint64_t syscall_18 (uint64_t rdi, uint64_t rsi, uint64_t rdx);
-
-extern void hang(); // Ubicada en loader.asm
 
 uint64_t (* syscalls[]) (uint64_t rdi, uint64_t rsi, uint64_t rdx) = {syscall_00, syscall_01, syscall_02, syscall_03, 
 																	syscall_04, syscall_05, syscall_06, syscall_07,
@@ -82,7 +77,7 @@ uint64_t syscall_06 (uint64_t rdi, uint64_t rsi, uint64_t rdx) {
 }
 
 uint64_t syscall_07 (uint64_t rdi, uint64_t rsi, uint64_t rdx) {
-	hang();
+	exit_handler();
 	return 0;
 }
 
@@ -93,58 +88,48 @@ uint64_t syscall_08 (uint64_t rdi, uint64_t rsi, uint64_t rdx) {
 
 /* -----------------------------------------------------------------*/
 uint64_t syscall_09 (uint64_t rdi, uint64_t rsi, uint64_t rdx) {
-	return (uint64_t) malloc(rdi);
+	return (uint64_t) malloc_handler(rdi);
 }
 
 uint64_t syscall_10 (uint64_t rdi, uint64_t rsi, uint64_t rdx) {
-	free((void *) rdi);
+	free_handler((void *) rdi);
 	return 0;
 }
 
 uint64_t syscall_11 (uint64_t rdi, uint64_t rsi, uint64_t rdx) {
-	printStatus();
+	printStatus_handler();
 	return 0;
 }
 
 /* -----------------------------------------------------------------*/
 uint64_t syscall_12 (uint64_t rdi, uint64_t rsi, uint64_t rdx) {
-	return create((void *)rdi, (char *)rsi, rdx);
+	return create_handler((void *)rdi, (char *)rsi, rdx);
 }
 
 uint64_t syscall_13 (uint64_t rdi, uint64_t rsi, uint64_t rdx) {
-	return kill(rdi);
+	return kill_handler(rdi);
 }
 
 uint64_t syscall_14 (uint64_t rdi, uint64_t rsi, uint64_t rdx) {
-	return getPid();
+	return getPid_handler();
 }
 
 uint64_t syscall_15 (uint64_t rdi, uint64_t rsi, uint64_t rdx) {
-	listAll();
+	listAllProcess_handler();
 	return 0;
 }
 
 // rdi = PID ; rsi = PRIORITY
 uint64_t syscall_16 (uint64_t rdi, uint64_t rsi, uint64_t rdx) {
-	return setPriority(rdi, rsi);
+	return setPriority_handler(rdi, rsi);
 }
 
 // rdi = PID
 uint64_t syscall_17 (uint64_t rdi, uint64_t rsi, uint64_t rdx) {
-	states state = getState(rdi);
-	switch (state)
-	{
-		case READY:
-			return setState(rdi, BLOCKED);
-		case BLOCKED:
-			// DEBERIA HACER ALGO MAS ACA (POR EG VER QUE PUEDA DESBLOQUEARSE)
-			return setState(rdi, READY);
-		default: // RUNNING o UNDEFINED
-			return 1;
-	}
+	return changeState_handler(rdi);
 }
 
 uint64_t syscall_18 (uint64_t rdi, uint64_t rsi, uint64_t rdx) {
-	_hlt();
+	halt_handler();
 	return 0;
 }
