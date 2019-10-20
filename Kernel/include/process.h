@@ -27,9 +27,9 @@ typedef struct {
 } Process;
 
 /* Creates a new process */
-uint64_t create(void * entryPoint, char * name);
+uint64_t create(void * entryPoint, char * name, level context);
 
-Process createNoSched(void * entryPoint, char * name);
+Process createNoSched(void * entryPoint, char * name, level context);
 
 /* Deletes process */
 void remove(Process p);

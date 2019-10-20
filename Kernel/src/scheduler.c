@@ -34,9 +34,9 @@ uint64_t scheduler(uint64_t sp) {
     }
         
     current->n.times++;
-    if(current->n.times == pow(2, MAX_PRIO - current->n.process.priority) || current->n.process.state == BLOCKED || current->n.process.state == UNDEFINED){
+    if(current->n.times == pow(2, MAX_PRIO - current->n.process.priority) || current->n.process.state == BLOCKED){
         current->n.times = 0;
-        if (current->n.process.state != BLOCKED && current->n.process.state != UNDEFINED)
+        if (current->n.process.state != BLOCKED)
             current->n.process.state = READY;
         
         // ToDo Ver si todo esto de aca abajo se va o no
@@ -193,9 +193,11 @@ void initScheduler() {
     current = 0;
     address = (Node *)malloc(SIZE);
     cleanMem();
-    // create(idleModuleAddress, "IDLE");
-    Process aux = createNoSched(idleModuleAddress, "IDLE");
-    setState(aux.pid, UNDEFINED);
+    // create(idleModuleAddress, "IDLE",  FOREs);
+    Process aux = createNoSched(idleModuleAddress, "IDLE", FORE);
+    setState(aux.pid, BLOCKED);
+
+    /* Initializes the halt process */
     haltProcess = newNode();
     haltProcess->n.times = 0;
     haltProcess->n.process = aux;
