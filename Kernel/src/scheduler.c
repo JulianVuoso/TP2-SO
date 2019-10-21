@@ -1,4 +1,5 @@
 #include <scheduler.h>
+#include <lib.h>
 #include <timelib.h>
 #include <memoryManager.h>
 #include <console.h>
@@ -163,6 +164,7 @@ uint64_t block(uint64_t resource) {
     /* If we blocked the current process */
     current->n.process.state = BLOCKED;
     current->n.process.resource = resource;
+    force_timer_tick();
     return 0;
 }
 

@@ -1,6 +1,7 @@
 GLOBAL cpu_vendor
 GLOBAL write_port
 GLOBAL read_port
+GLOBAL force_timer_tick
 
 
 section .text
@@ -18,6 +19,9 @@ read_port:
 	in al, dx
 	ret
 
+force_timer_tick:
+	int 20h
+	ret
 
 cpu_vendor:
 	push rbp

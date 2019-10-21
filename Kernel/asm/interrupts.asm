@@ -124,7 +124,6 @@ SECTION .text
 %macro sirqHandlerMaster 0
 	pushStateSome	; Todos los registros menos los utilizados por syscalls
 	call handleSyscall
-	int 20h ; Force timer Tick
 	popStateSome
 	iretq
 %endmacro

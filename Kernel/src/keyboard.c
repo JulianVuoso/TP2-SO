@@ -111,7 +111,7 @@ uint64_t read(uint64_t fd, char * buff, uint64_t count) {
         uint64_t pid = getPid();
         addNodeR(pid, buff, count);
         block(READ);
-        return 0;
+        return 0; // deberia devolcer cuantos leyo
     }
 }
 

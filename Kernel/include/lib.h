@@ -11,4 +11,6 @@ char * cpu_vendor(char *result);
 char read_port(char port);
 void write_port(char port, char reg);
 
+uint64_t force_timer_tick();
+
 #endif
