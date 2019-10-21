@@ -56,7 +56,7 @@ void freeResources(Process p) {
         case NONE: return;
         case TIME: removeNodeT(p.pid); break;
         case READ: removeNodeR(p.pid); break;
-        case WRITE: return;
+        case WRITE: removeNodeW(p.pid); break;
     }
 }
 

@@ -10,6 +10,7 @@
 #include <process.h>
 #include <scheduler.h>
 #include <interrupts.h>
+#include <write.h>
 
 extern void hang(); // Ubicada en loader.asm
 
@@ -18,19 +19,7 @@ void read_handler(uint64_t fd, char * buff, uint64_t count) {
 }
 
 void write_handler(uint64_t fd, const char * buff, uint64_t count) {
-    switch (fd) {
-        case STDIN:
-        case STDOUT:
-            print_N(buff, count);
-            //ncPrint(buff);
-            break;
-        case STDERR:
-            printError_N(buff, count);
-            //ncPrintError(buff);
-            break;
-        default:
-            break;
-    }
+    write(fd,buff,count);
 }
 
 uint64_t time_handler() {
