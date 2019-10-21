@@ -3,6 +3,7 @@
 
 #include <timelib.h>
 #include <keyboard.h>
+#include <write.h>
 
 
 #endif

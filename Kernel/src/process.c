@@ -31,7 +31,7 @@ Process createNoSched(void * entryPoint, char * name, level context) {
     /* Creates process data */
     Process data;
     data.name = name;
-    data.pid = ++c_pid;
+    data.pid = c_pid++;
     data.sp = (uint64_t) lastAddress - sizeof(StackFrame);
     data.bp = (uint64_t) stackBase;
     data.priority = 3;

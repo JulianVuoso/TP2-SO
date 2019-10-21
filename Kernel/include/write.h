@@ -9,7 +9,7 @@ typedef union NodeWrite {
     struct {
         uint8_t used;
         uint64_t pid;
-        char * buff;
+        const char * buff;
         uint64_t count;
         union NodeWrite * next;
     } n;
@@ -17,7 +17,7 @@ typedef union NodeWrite {
 } NodeWrite;
 
 
-uint64_t write(uint64_t fd, char * buff, uint64_t count);
+uint64_t write(uint64_t fd, const char * buff, uint64_t count);
 
 /* Removes a node given its pid */
 void removeNodeW(uint64_t pid);

@@ -7,10 +7,10 @@
 #include <console.h>
 
 /* Some static functions for list management */
-static void addNodeW(uint64_t pid, char * buff, uint64_t count);
+static void addNodeW(uint64_t pid, const char * buff, uint64_t count);
 static void removeNextW(NodeWrite * node);
 static void removeFirstW();
-static void writeSync(uint64_t fd, char * buff, uint64_t count, char added);
+static void writeSync(uint64_t fd, const char * buff, uint64_t count, char added);
 //static void updateCurrentW();
 
 /* Static variables */
@@ -21,7 +21,7 @@ static NodeWrite * lastW = 0;
 static int writing = 0;
 
 /* Manage list of pending writes, checking if resource is avaliable */
-uint64_t write(uint64_t fd, char * buff, uint64_t count) {
+uint64_t write(uint64_t fd, const char * buff, uint64_t count) {
     char added = 0;
     if (count == 0) return 0;
     if (writing == 1 || firstW != 0){
@@ -31,10 +31,11 @@ uint64_t write(uint64_t fd, char * buff, uint64_t count) {
         added = 1;
     }
     writeSync(fd,buff,count, added);
+    return 1;
 }
 
 /* Complete printing and set ready another if necessary */
-static void writeSync(uint64_t fd, char * buff, uint64_t count, char added){
+static void writeSync(uint64_t fd, const char * buff, uint64_t count, char added){
     writing = 1;
     /* Print buff in fd */
     switch (fd) {
@@ -97,7 +98,7 @@ static void removeNextW(NodeWrite * node) {
 }
 
 /* Adds a Node to the begining of the list */
-static void addNodeW(uint64_t pid, char * buff, uint64_t count) {
+static void addNodeW(uint64_t pid, const char * buff, uint64_t count) {
     if (addressW == 0) {
         addressW = (NodeWrite *)malloc(SIZE);
         cleanMemW();  

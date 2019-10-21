@@ -209,7 +209,7 @@ void initScheduler() {
     cleanMem();
     // create(idleModuleAddress, "IDLE",  FOREs);
     Process aux = createNoSched(idleModuleAddress, "IDLE", FORE);
-    setState(aux.pid, BLOCKED);
+    // setState(aux.pid, BLOCKED);
 
     /* Initializes the halt process */
     haltProcess = newNode();

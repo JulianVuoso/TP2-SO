@@ -19,7 +19,7 @@ void read_handler(uint64_t fd, char * buff, uint64_t count) {
 }
 
 void write_handler(uint64_t fd, const char * buff, uint64_t count) {
-    write(fd,buff,count);
+    write(fd, buff, count);
 }
 
 uint64_t time_handler() {
