@@ -4,7 +4,7 @@
 #include <clib.h>
 int main() {
 	while(1) {
-		// halt();
+		halt();
 	};
 	return 0;
 } 
