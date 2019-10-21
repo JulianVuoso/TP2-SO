@@ -19,7 +19,7 @@ static Node *haltProcess;
 static int init;
 
 uint64_t scheduler(uint64_t sp) {
-    timer_handler();
+    if (current->n.process.state != BLOCKED || init == 3) timer_handler();
 
     // si se mata ulyimo proceso porque termino, entonces sp que devuelvo es donde
     // ira el programa cuando no tiene procesos para correr?
@@ -32,6 +32,8 @@ uint64_t scheduler(uint64_t sp) {
         case 2: current->n.process.sp = sp; break;
         default: haltProcess->n.process.sp = sp; break;
     }
+
+
         
     current->n.times++;
     if(current->n.times == pow(2, MAX_PRIO - current->n.process.priority) || current->n.process.state == BLOCKED){
