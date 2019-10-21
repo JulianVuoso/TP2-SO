@@ -15,8 +15,7 @@ static void updateCurrentR();
 /* Static variables */
 static NodeRead * addressR = 0;
 static NodeRead * firstR = 0;
-static NodeRead * currentR = 0;
-static NodeRead * prevR = 0;
+static NodeRead * lastR = 0;
 
 char buffer[BUFFER_SIZE];
 unsigned int save_index = 0;
@@ -119,21 +118,12 @@ uint64_t read(uint64_t fd, char * buff, uint64_t count) {
 /* Updates the values off all the waiting processes */
 static void updateCurrentR() {
     if (addressR == 0 || firstR == 0) return;
-    if (currentR == 0) {
-        currentR = firstR;
-        prevR = firstR;
-    }
-    (currentR->n.buff)[(currentR->n.index)++] = buffer[read_index % BUFFER_SIZE];
-    read_index++;
-
-    if (currentR->n.index == currentR->n.count) {
-        uint64_t pid = currentR->n.pid;
-        if (currentR == prevR) removeFirstR();
-        else removeNextR(prevR);
+    (firstR->n.buff)[(firstR->n.index)++] = buffer[read_index++ % BUFFER_SIZE];
+    if (firstR->n.index == firstR->n.count) {
+        uint64_t pid = firstR->n.pid;      
+        removeFirstR();
         setState(pid, READY);
     }
-    prevR = currentR;
-    currentR = currentR->n.next;
 }
 
 /* Memory manager for the nodes */
@@ -157,6 +147,7 @@ void removeNodeR(uint64_t pid) {
 /* Removes first node */
 static void removeFirstR() {
     NodeRead * aux = firstR;
+    if (lastR == firstR) lastR = 0;
     firstR = firstR->n.next;
     freeNodeR(aux);
 }
@@ -164,6 +155,7 @@ static void removeFirstR() {
 /* Removes the next node of the given one */
 static void removeNextR(NodeRead * node) {
     NodeRead * freeAux = node->n.next;
+    if (freeAux == lastR) lastR = node;
     node->n.next = node->n.next->n.next;
     freeNodeR(freeAux);
 }
@@ -180,9 +172,10 @@ static void addNodeR(uint64_t pid, char * buff, uint64_t count) {
     node->n.count = count;
     node->n.index = 0;
     node->n.next = 0;
-
-    if (firstR != 0) node->n.next = firstR;    
-    firstR = node;
+    
+    if (firstR == 0) firstR = node;
+    else lastR->n.next = node;
+    lastR = node;
 }
 
 /* Returns direction of a new Node */
