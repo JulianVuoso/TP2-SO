@@ -40,17 +40,29 @@ void sleep(uint64_t millis) {
 
 /* Updates the values off all the waiting processes */
 static void updateListT() {
+    int var = 0;
     if (addressT == 0) return;
     NodeTime * prev = firstT;
-    for (NodeTime * aux = firstT; aux != 0; aux = aux->n.next) {
-        if (--(aux->n.time) == 0) {
-            uint64_t pid = aux->n.pid;
-            if (prev == aux) removeFirstT();
-            else removeNextT(prev);
-            setState(pid, READY);
+    do {
+        var = 0;
+        for (NodeTime * aux = prev; aux != 0; aux = aux->n.next) {
+            if (--(aux->n.time) == 0) {
+                uint64_t pid = aux->n.pid;
+                if (prev == aux) {
+                    removeFirstT();
+                    prev = firstT;
+                } 
+                else{
+                    removeNextT(prev);
+                    prev = prev->n.next;  
+                } 
+                setState(pid, READY);
+                var = 1;
+                break;
+            }
+            prev = aux;
         }
-        prev = aux;
-    }
+    } while (var);
 }
 
 /* Memory manager for the nodes */
