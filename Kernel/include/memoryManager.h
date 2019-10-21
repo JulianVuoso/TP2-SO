@@ -7,8 +7,6 @@
 
 #include <stdint.h>
 
-#define ALIGNEMENT(x) (sizeof(x) + 10)
-
 /* Memory Manager builder */
 void create_manager(uint8_t * address, uint64_t pageSize, uint64_t maxPages);
 
