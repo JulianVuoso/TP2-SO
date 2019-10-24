@@ -3,7 +3,6 @@
 #include <lib.h>
 #include <scheduler.h>
 #include <memoryManager.h>
-
 #include <keyboard.h>
 
 /* Some static functions for list management */

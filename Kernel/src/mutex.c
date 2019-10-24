@@ -9,6 +9,7 @@ Semaphore * newSem(char * name);
 Semaphore * newSemCount(char * name, int initCount);
 void post(char * name);
 void wait(char * name);
+void removeSem(char * name);
 
 Semaphore * newSem(char * name){
     Semaphore * sem;

@@ -38,6 +38,6 @@ void post(char * name);
 void wait(char * name);
 
 /* Remove Semaphore */
-void remove(char * name);
+void removeSem(char * name);
 
 #endif /* _MUTEX_H_ */
