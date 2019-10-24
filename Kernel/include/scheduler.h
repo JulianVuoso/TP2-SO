@@ -57,4 +57,7 @@ int checkLoaded();
 /* Blocks current process for using resource */
 uint64_t block(uint64_t resource);
 
+/* Return current process */
+Node * getCurrent();
+
 #endif /* _SCHEDULER_H_ */

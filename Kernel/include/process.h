@@ -1,5 +1,5 @@
 /***************************************************
-    Process.h
+                    Process.h
 ****************************************************/
 
 #ifndef _PROCESS_H_
@@ -26,17 +26,19 @@ typedef struct {
     states state;
     resources resource;
     void * stack;
+    fdPointer * first;
 } Process;
 
 typedef struct{
     int fd;
     int alias;
+    fdPointer * next;
 }fdPointer;
 
 /* Creates a new process */
-uint64_t create(void * entryPoint, char * name, level context);
+uint64_t create(void * entryPoint, char * name, level context, int inAlias, int outAlias);
 
-Process createNoSched(void * entryPoint, char * name, level context);
+Process createNoSched(void * entryPoint, char * name, level context, int inAlias, int outAlias);
 
 /* Deletes process */
 void remove(Process p);
@@ -48,9 +50,6 @@ void printProcessStack(Process p);
 void freeResources(Process p);
 
 /* Add new file descriptor to list */
-void addFd(int fd);
-
-/* Make alias from file descriptor */
-void dup(int fd, int alias);
+fdPointer * addFd(int fd);
 
 #endif /* _PROCESS_H_ */

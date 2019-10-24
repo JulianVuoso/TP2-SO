@@ -8,14 +8,23 @@
 
 static uint64_t c_pid = 0;
 
-uint64_t create(void * entryPoint, char * name, level context) {
-    Process data = createNoSched(entryPoint, name, context);
+static fdPointer * first = 0;
+
+uint64_t create(void * entryPoint, char * name, level context, int inAlias, int outAlias) {
+    Process data = createNoSched(entryPoint, name, context, inAlias, outAlias);
     /* Add process to scheduler */
     add(data);
+
     return data.pid;
 }
 
-Process createNoSched(void * entryPoint, char * name, level context) {
+fdPointer * addFd(int fd){
+    Process p = getCurrent()->n.process;
+    //chequeo si first es 0 y appendeo al principio con alias = 0
+    
+}
+
+Process createNoSched(void * entryPoint, char * name, level context, int inAlias, int outAlias) {
     void * processStack = malloc(STACK_SIZE);
     if (processStack == 0) { // ERROR --> NO HAY MAS MEMORIA --> VER QUE DEVUELVO
 

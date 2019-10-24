@@ -10,17 +10,22 @@
 
 #define BUFFER_SIZE 50
 
-typedef struct node {
-    char name[BUFFER_SIZE];
+typedef struct {
+    char * name;
     int fd;
-    char * buffer;
+    char buffer[BUFFER_SIZE];
     int read_index;
     int write_index; 
     Semaphore * sem;
 } FileDescriptor;
 
+typedef struct {
+    FileDescriptor fd;
+    FileDescriptor * next;    
+} NodeFd;
+
 /* Create new FD struct */
-int newFd(char * name);
+int newFd(int fd, char * name);
 
 /*  */
 void write(int fd, char * buffer, int count);
@@ -29,6 +34,6 @@ void write(int fd, char * buffer, int count);
 void read(int fd, char * buffer, int count);
 
 /* Remove File Descriptor */
-void remove(int fd);
+void removeFd(int fd);
 
 #endif /* _FILEDESC_H_ */

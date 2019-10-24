@@ -208,7 +208,7 @@ void initScheduler() {
     address = (Node *)malloc(SIZE);
     cleanMem();
     // create(idleModuleAddress, "IDLE",  FOREs);
-    Process aux = createNoSched(idleModuleAddress, "IDLE", FORE);
+    Process aux = createNoSched(idleModuleAddress, "IDLE", FORE, 0, 0);
     // setState(aux.pid, BLOCKED);
 
     /* Initializes the halt process */
@@ -251,4 +251,8 @@ static uint64_t pow(int base, int exponent) {
 		result = result * base;
 	}
 	return result;
+}
+
+Node * getCurrent(){
+    return current;
 }
