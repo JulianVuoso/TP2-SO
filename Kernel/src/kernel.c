@@ -23,6 +23,7 @@ extern uint8_t endOfKernelBinary;
 extern uint8_t endOfKernel;
 
 static const uint64_t PageSize = 0x1000;
+static const uint64_t Block = PageSize/128;
 static const uint64_t MaxPages = 1024;
 
 typedef int (*EntryPoint)();

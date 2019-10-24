@@ -28,6 +28,11 @@ typedef struct {
     void * stack;
 } Process;
 
+typedef struct{
+    int fd;
+    int alias;
+}fdPointer;
+
 /* Creates a new process */
 uint64_t create(void * entryPoint, char * name, level context);
 
@@ -41,5 +46,11 @@ void printProcessStack(Process p);
 
 /* Frees all the resources used by the process */
 void freeResources(Process p);
+
+/* Add new file descriptor to list */
+void addFd(int fd);
+
+/* Make alias from file descriptor */
+void dup(int fd, int alias);
 
 #endif /* _PROCESS_H_ */

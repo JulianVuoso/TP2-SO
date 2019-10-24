@@ -26,7 +26,8 @@
         "unordered_map": "c",
         "type_traits": "c",
         "scheduler.h": "c",
-        "stdarg.h": "c"
+        "stdarg.h": "c",
+        "memorymanager.h": "c"
     },
     "files.exclude": {
         "**/*.o": true,
