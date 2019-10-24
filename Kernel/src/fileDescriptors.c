@@ -30,7 +30,3 @@ void read(int fd, char * buffer, int count){
 
 }
 
-void removeFd(int fd){
-
-}
-

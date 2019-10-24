@@ -33,7 +33,4 @@ void write(int fd, char * buffer, int count);
 /*  */
 void read(int fd, char * buffer, int count);
 
-/* Remove File Descriptor */
-void removeFd(int fd);
-
 #endif /* _FILEDESC_H_ */
