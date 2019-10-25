@@ -1,48 +1,44 @@
 #include <fileDescriptors.h>
 
-/*
-typedef struct node {
-    char name[BUFFER_SIZE];
-    int fd;
-    char * buffer;
-    int read_index;
-    int write_index; 
-    Semaphore * sem;
-} FileDescriptor;
+/* Find fd in list */ 
+static int searchName(char * name);
+static NodeFd * searchFd(int fd);
 
-typedef struct {
-    FileDescriptor fd;
-    FileDescriptor * next;    
-} NodeFd;
-*/
-
-static int search(char * name);
+/* If empty list, create first node */
+static void initList(char* name);
+/* If node not found, create and add before adding to process list */
+static void addFdList(char* name);
 
 static NodeFd * first = 0;
 static NodeFd * last = 0;
 
 int newFd(char * name){
-    int resultFd = 0;
-    if(first == 0){
-        NodeFd * nodefd = (NodeFd *) malloc(sizeof(NodeFd));
-        nodefd->fd.fd = resultFd;
-        first = nodefd;
-        last = nodefd;
-    }
-    else{
-        if((resultFd = search(name)) == -1){
-            NodeFd * nodefd = (NodeFd *) malloc(sizeof(NodeFd));
-            nodefd->fd.name = name; 
-            nodefd->fd.fd = last->fd.fd + 1;
-            last->next = nodefd;
-            last = nodefd;
-        }
-    }
+    int resultFd;
+    if(first == 0)
+        initList(name);
+    else if((resultFd = searchName(name)) == -1)
+            addFdList(name);
     addFd(resultFd);
     return resultFd;
 }
 
-int search(char * name){
+void initList(char* name){
+    NodeFd * nodefd = (NodeFd *) malloc(sizeof(NodeFd));
+    nodefd->fd.name = name; 
+    nodefd->fd.fd = 0;
+    first = nodefd;
+    last = nodefd;
+}
+
+void addFdList(char* name){
+    NodeFd * nodefd = (NodeFd *) malloc(sizeof(NodeFd));
+    nodefd->fd.name = name; 
+    nodefd->fd.fd = last->fd.fd + 1;
+    last->next = nodefd;
+    last = nodefd;
+}
+
+int searchName(char * name){
     NodeFd * aux = first;
     while(aux != 0){
         if (aux->fd.name == name)
@@ -52,11 +48,30 @@ int search(char * name){
     return -1;
 }
 
-void write(int fd, char * buffer, int count){
+NodeFd * searchFd(int fd){
+    NodeFd * aux = first;
+    while(aux != 0){
+        if (aux->fd.fd == fd)
+            return aux;
+        aux = aux->next;  
+    } 
+    return 0;
+}
 
+/* Write on buffer or Read from it, given fd number */
+void write(int fd, char * buffer, int count){
+    NodeFd * node = searchFd(fd);
+    if(node == 0)
+        return;
+    for(int i=0; i<count; i++)
+        node->fd.buffer[i] = *(buffer++);
 }
 
 void read(int fd, char * buffer, int count){
-
+    NodeFd * node = searchFd(fd);
+    if(node == 0)
+        return;
+    for(int i=0; i<count; i++)
+        *(buffer++) = node->fd.buffer[i];
 }
 
