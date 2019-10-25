@@ -33,15 +33,15 @@
 #define MAX_BUFFER 100
 
 void putchar(uint8_t character) {
-    syscall(WRITE_ID, STDOUT, (uint64_t) &character, 1);
+    syscall(WRITE_ID, STDOUT, (uint64_t) &character, 1, 0, 0, 0);
 }
 
 void puts(const char * string) {
-    syscall(WRITE_ID, STDOUT, (uint64_t) string, strlen(string));
+    syscall(WRITE_ID, STDOUT, (uint64_t) string, strlen(string), 0, 0, 0);
 }
 
 void perror(const char * string) {
-    syscall(WRITE_ID, STDERR, (uint64_t) string, strlen(string));
+    syscall(WRITE_ID, STDERR, (uint64_t) string, strlen(string), 0, 0, 0);
 }
 
 void printf(char * str, ...){
@@ -79,12 +79,12 @@ void printf(char * str, ...){
     va_end(list);
     newStr[len] = 0;
     len++;
-    syscall(WRITE_ID, STDOUT, (uint64_t) newStr, len);
+    syscall(WRITE_ID, STDOUT, (uint64_t) newStr, len, 0, 0, 0);
 }
 
 uint8_t getchar() {
     uint8_t character;
-    syscall(READ_ID, STDIN, (uint64_t) &character, 1);
+    syscall(READ_ID, STDIN, (uint64_t) &character, 1, 0, 0, 0);
     return character;
 }
 
@@ -108,15 +108,15 @@ char * gets(char * string, uint64_t size) {
 }
 
 void clearScreen() {
-    syscall(CLEAR_ID, 0, 0, 0);
+    syscall(CLEAR_ID, 0, 0, 0, 0, 0, 0);
 }
 
 // Formato de fecha: dd-mm-yyyy 
 // date debe ser un vector de al menos 11 posiciones
 char * getDate(char * date) {
-    uint64_t day = syscall(RTC_ID, DAY_REG, 0, 0);
-    uint64_t month = syscall(RTC_ID, MONTH_REG, 0, 0);
-    uint64_t year = 2000 + syscall(RTC_ID, YEAR_REG, 0, 0); // Devuelve numero desde 2000
+    uint64_t day = syscall(RTC_ID, DAY_REG, 0, 0, 0, 0, 0);
+    uint64_t month = syscall(RTC_ID, MONTH_REG, 0, 0, 0, 0, 0);
+    uint64_t year = 2000 + syscall(RTC_ID, YEAR_REG, 0, 0, 0, 0, 0); // Devuelve numero desde 2000
 
     saveTwoDigit(day, date);
     saveTwoDigit(month, date + 3);    
@@ -131,9 +131,9 @@ char * getDate(char * date) {
 // Formato de hora:  hh:mm:ss
 // time debe ser un vector de al menos 9 posiciones
 char * getTime(char * time) {
-    uint64_t hour = syscall(RTC_ID, HOUR_REG, 0, 0);
-    uint64_t min = syscall(RTC_ID, MIN_REG, 0, 0);
-    uint64_t sec = syscall(RTC_ID, SEC_REG, 0, 0); // Devuelve numero desde 2000
+    uint64_t hour = syscall(RTC_ID, HOUR_REG, 0, 0, 0, 0, 0);
+    uint64_t min = syscall(RTC_ID, MIN_REG, 0, 0, 0, 0, 0);
+    uint64_t sec = syscall(RTC_ID, SEC_REG, 0, 0, 0, 0, 0); // Devuelve numero desde 2000
 
     saveTwoDigit(hour, time);
     saveTwoDigit(min, time + 3);    
@@ -146,35 +146,35 @@ char * getTime(char * time) {
 }
 
 void sleep(uint64_t millis) {
-    syscall(SLEEP_ID, millis, 0, 0);
+    syscall(SLEEP_ID, millis, 0, 0, 0, 0, 0);
 }
 
 void beep(uint32_t frequency, uint64_t millis) {
-    syscall(BEEP_ID, frequency, 1, 0); // PLAY
-    syscall(SLEEP_ID, millis, 0, 0);
-    syscall(BEEP_ID, frequency, 0, 0); // STOP
+    syscall(BEEP_ID, frequency, 1, 0, 0, 0, 0); // PLAY
+    syscall(SLEEP_ID, millis, 0, 0, 0, 0, 0);
+    syscall(BEEP_ID, frequency, 0, 0, 0, 0, 0); // STOP
 }
 
 void exit() {
-    syscall(KILL_ID, getPid(), 0, 0);
-    // syscall(EXIT_ID, 0, 0, 0);
+    syscall(KILL_ID, getPid(), 0, 0, 0, 0, 0);
+    // syscall(EXIT_ID, 0, 0, 0, 0, 0, 0);
 }
 
 void halt() {
-    syscall(HALT_ID, 0, 0, 0);
+    syscall(HALT_ID, 0, 0, 0, 0, 0, 0);
 }
 
 void finish() {
-    syscall(EXIT_ID, 0, 0, 0);
+    syscall(EXIT_ID, 0, 0, 0, 0, 0, 0);
 }
 
 uint64_t getTicks() {
-    return syscall(TICKS_ID, 0, 0, 0);
+    return syscall(TICKS_ID, 0, 0, 0, 0, 0, 0);
 }
 
 void drawPixel(int x, int y, uint8_t r, uint8_t g, uint8_t b) {
     uint64_t rgb = getRGB(r, g, b);
-    syscall(PIXEL_ID, x, y, rgb);
+    syscall(PIXEL_ID, x, y, rgb, 0, 0, 0);
 }
 
 /* TP2-SO */
@@ -182,45 +182,45 @@ void drawPixel(int x, int y, uint8_t r, uint8_t g, uint8_t b) {
 /* Aloca un bloque de al menos size memoria y devuelve un void * apuntando a la direccion del bloque.
    En caso de no haber memoria disponible, devuelve NULL */
 void * malloc(uint32_t size) {
-    return (void *) syscall(MALLOC_ID, size, 0, 0);
+    return (void *) syscall(MALLOC_ID, size, 0, 0, 0, 0, 0);
 }
 
 /* Libera el bloque de memoria apuntado por ptr */
 void free(void * ptr) {
-    syscall(FREE_ID, (uint64_t) ptr, 0, 0);
+    syscall(FREE_ID, (uint64_t) ptr, 0, 0, 0, 0, 0);
 }
 
 /* Imprime el tamaño de la memoria, el tamaño ocupado de memoria y el tamaño libre de memoria */
 void memStatus() {
-    syscall(STATUS_ID, 0, 0, 0);
+    syscall(STATUS_ID, 0, 0, 0, 0, 0, 0);
 }
 
 /* Crea un nuevo proceso y lo agrega al scheduler y retorna PID */
 uint64_t fork(void * entryPoint, char * name) {
-    return syscall(NEW_PROC_ID, (uint64_t) entryPoint, (uint64_t) name, 0);
+    return syscall(NEW_PROC_ID, (uint64_t) entryPoint, (uint64_t) name, 0, 0, 0, 0);
 }
 
 /* Kills a process given its pid */
 uint64_t kill(uint64_t pid) {
-    return syscall(KILL_ID, pid, 0, 0);
+    return syscall(KILL_ID, pid, 0, 0, 0, 0, 0);
 }
 
 /* Returns current process pid */
 uint64_t getPid() {
-    return syscall(PID_ID, 0, 0, 0);
+    return syscall(PID_ID, 0, 0, 0, 0, 0, 0);
 }
 
 /* List all running processes */
 void ps() {
-    syscall(PS_ID, 0, 0, 0);
+    syscall(PS_ID, 0, 0, 0, 0, 0, 0);
 }
 
 /* Set process priority to n */
 uint64_t setPriority(uint64_t pid, uint64_t n) {
-    return syscall(SET_PRIO_ID, pid, n, 0);
+    return syscall(SET_PRIO_ID, pid, n, 0, 0, 0, 0);
 }
 
 /* Changes process state between READY and BLOCKED  */
 uint64_t changeState(uint64_t pid) {
-    return syscall(SET_STATE_ID, pid, 0, 0);
+    return syscall(SET_STATE_ID, pid, 0, 0, 0, 0, 0);
 }

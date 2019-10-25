@@ -108,11 +108,21 @@ int strcmpUntilSpace (const char *t, const char *s, int * count) {
 	if (*t == ' ' && i > 0) {
 		t--;
 		s--;
-		*count = i;	
-	} else {
-		*count = -1;
-	}	
+		(*count) += i;	
+	}
 	return *t - *s;
+}
+
+int strcpy (char *dest, const char *src) {
+	int count = 0;
+	while (*src != 0) {
+		*dest = *src;
+		dest++;
+		src++;
+		count++;
+	};
+	*dest = 0;
+	return count;
 }
 
 // Returns cant copied

@@ -13,6 +13,13 @@
 #define INV_OP_CMD      8
 #define EXIT_CMD        9
 
+#define BACKGROUND      0
+#define FOREGROUND      1
+
+#define STDIN           0
+#define STDOUT          1
+#define STDERROR        2
+
 #define PROMPT_STRING   "mjj@itba.edu.ar $ "
 #define BEEP_FREQ       400
 #define DOOR_FREQ       600

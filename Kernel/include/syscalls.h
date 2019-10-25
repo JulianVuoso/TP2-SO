@@ -26,6 +26,6 @@ uint64_t setPriority_handler(uint64_t pid, uint8_t prio);
 uint64_t changeState_handler(uint64_t pid);
 void halt_handler();
 
-uint64_t handleSyscall(uint64_t sirq, uint64_t rdi, uint64_t rsi, uint64_t rdx);
+uint64_t handleSyscall(uint64_t sirq, uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t rcx, uint64_t r8, uint64_t r9);
 
 #endif
