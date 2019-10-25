@@ -9,6 +9,7 @@ static void initList(char* name);
 /* If node not found, create and add before adding to process list */
 static void addFdList(char* name);
 
+/* Useful pointers to list ends */
 static NodeFd * first = 0;
 static NodeFd * last = 0;
 
@@ -58,19 +59,32 @@ NodeFd * searchFd(int fd){
     return 0;
 }
 
-/* Write on buffer or Read from it, given fd number */
 void write(int fd, char * buffer, int count){
-    NodeFd * node = searchFd(fd);
-    if(node == 0)
+    
+    /* PARA PROBAR */
+    if(fd == 1){
+        print_N(buffer,count);
         return;
+    }
+    if(fd == 2){
+        printError_N(buffer,count);
+    }
+
+    NodeFd * node = searchFd(fd);
+    if(node == 0)    // Returns if FD not found
+        return;
+    
+    /* Copy buffer in FD */
     for(int i=0; i<count; i++)
         node->fd.buffer[i] = *(buffer++);
 }
 
 void read(int fd, char * buffer, int count){
     NodeFd * node = searchFd(fd);
-    if(node == 0)
+    if(node == 0)    // Returns if FD not found      
         return;
+
+    /* Copy buffer from FD */    
     for(int i=0; i<count; i++)
         *(buffer++) = node->fd.buffer[i];
 }
