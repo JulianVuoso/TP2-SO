@@ -1,22 +1,7 @@
 #include <fileDescriptors.h>
 
-/*
-typedef struct node {
-    char name[BUFFER_SIZE];
-    int fd;
-    char * buffer;
-    int read_index;
-    int write_index; 
-    Semaphore * sem;
-} FileDescriptor;
-
-typedef struct {
-    FileDescriptor fd;
-    FileDescriptor * next;    
-} NodeFd;
-*/
-
-static int search(char * name);
+static int searchName(char * name);
+static int searchFd(int fd);
 
 static NodeFd * first = 0;
 static NodeFd * last = 0;
@@ -30,7 +15,7 @@ int newFd(char * name){
         last = nodefd;
     }
     else{
-        if((resultFd = search(name)) == -1){
+        if((resultFd = searchName(name)) == -1){
             NodeFd * nodefd = (NodeFd *) malloc(sizeof(NodeFd));
             nodefd->fd.name = name; 
             nodefd->fd.fd = last->fd.fd + 1;
@@ -42,7 +27,7 @@ int newFd(char * name){
     return resultFd;
 }
 
-int search(char * name){
+int searchName(char * name){
     NodeFd * aux = first;
     while(aux != 0){
         if (aux->fd.name == name)
@@ -52,11 +37,30 @@ int search(char * name){
     return -1;
 }
 
-void write(int fd, char * buffer, int count){
+NodeFd * searcFd(int fd){
+    NodeFd * aux = first;
+    while(aux != 0){
+        if (aux->fd.fd == fd)
+            return aux;
+        aux = aux->next;  
+    } 
+    return 0;
+}
 
+/* Write on buffer or Read from it, given fd number */
+void write(int fd, char * buffer, int count){
+    NodeFd * node = searcFd(fd);
+    if(node == 0)
+        return;
+    for(int i=0; i<count; i++)
+        node->fd.buffer[i] = *(buffer++);
 }
 
 void read(int fd, char * buffer, int count){
-
+    NodeFd * node = searcFd(fd);
+    if(node == 0)
+        return;
+    for(int i=0; i<count; i++)
+        *(buffer++) = node->fd.buffer[i];
 }
 
