@@ -4,6 +4,15 @@
 #include <stdint.h>
 #include <lib.h>
 #include <process.h>
+#include <keyboard.h>
+#include <timelib.h>
+#include <console.h>
+#include <naiveConsole.h>
+#include <sound.h>
+#include <memoryManager.h>
+#include <scheduler.h>
+#include <interrupts.h>
+#include <fileDescriptors.h>
 
 void read_handler(uint64_t fd, char * buff, uint64_t count);
 void write_handler(uint64_t fd, const char * buff, uint64_t count);

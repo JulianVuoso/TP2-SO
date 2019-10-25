@@ -7,6 +7,10 @@
 
 #include <stdint.h>
 #include <lib.h>
+#include <stack.h>
+#include <scheduler.h>
+#include <memoryManager.h>
+#include <console.h>
 #include <mutex.h>
 
 #define STACK_SIZE	3000
@@ -15,11 +19,11 @@ typedef enum {READY = 0, RUNNING, BLOCKED, UNDEFINED} states;
 
 typedef enum {FORE = 0, BACK} level;
 
-typedef struct node{
+typedef struct nodeFdp{
     int fd;
     int alias;
-    fdPointer * next;
-}fdPointer;
+    struct nodeFdp * next;
+} fdPointer;
 
 typedef struct {
     char * name;

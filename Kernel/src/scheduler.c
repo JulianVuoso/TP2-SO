@@ -1,18 +1,13 @@
 #include <scheduler.h>
-#include <lib.h>
-#include <timelib.h>
-#include <memoryManager.h>
-#include <console.h>
-#include <interrupts.h>
-#include <moduleAddresses.h>
-#include <mutex.h>
 
 /* Static search of a node */
 static Node *search(uint64_t pid);
 
+/* Node of process running */
 static Node *current;
 static Node *haltProcess;
 
+/* Synchronization variable for different stages */
 static int init;
 
 /* Gives control to processes on list   */

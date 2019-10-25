@@ -37,10 +37,10 @@ static void * const processBModuleAddress = (void*)0x1100000;
 void testContextSwitch() {
 	// _cli();
 	print("Process A PID: ");
-	uint64_t pidA = create(processAModuleAddress, "P1", FORE);
+	uint64_t pidA = create(processAModuleAddress, "P1", FORE,0,0);
 	printHex(pidA);
 	print("\nProcess B PID: ");
-	uint64_t pidB = create(processBModuleAddress, "P2", FORE);
+	uint64_t pidB = create(processBModuleAddress, "P2", FORE,0,0);
 	printHex(pidB);
 
 	listAll();

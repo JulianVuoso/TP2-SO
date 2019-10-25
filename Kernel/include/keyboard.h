@@ -5,6 +5,9 @@
 #ifndef _KEYBOARD_H_
 #define _KEYBOARD_H_
 
+#include <lib.h>
+#include <fileDescriptors.h>
+
 #define BUFFER_SIZE 50
 
 #define UP_KEY  24
