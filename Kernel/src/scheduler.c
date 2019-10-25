@@ -5,6 +5,7 @@
 #include <console.h>
 #include <interrupts.h>
 #include <moduleAddresses.h>
+#include <mutex.h>
 
 static Node *search(uint64_t pid);
 static Node * newNode();
@@ -148,7 +149,7 @@ uint64_t setState(uint64_t pid, states state) {
     /* If not the one currently running */
     if (node->n.process.pid != current->n.process.pid) {
         node->n.process.state = state;
-        node->n.process.resource = 0;
+        node->n.process.sem = 0;
         return 0;
     }
     if (current->n.process.state == RUNNING && state == READY) return 1;
@@ -158,12 +159,12 @@ uint64_t setState(uint64_t pid, states state) {
     return 0;
 }
 
-/* Blocks current process for using resource */
-uint64_t block(uint64_t resource) {
+/* Blocks current process using a sem */
+uint64_t block(SemNode * sem) {
     if (current == 0) return 1;
     /* If we blocked the current process */
     current->n.process.state = BLOCKED;
-    current->n.process.resource = resource;
+    current->n.process.sem = sem;
     force_timer_tick();
     return 0;
 }

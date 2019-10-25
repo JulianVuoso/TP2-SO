@@ -39,7 +39,7 @@ SemNode * newSem(char * name, uint64_t init) {
 }
 
 /* Opens an existing semaphore */
-SemNode * open(char * name) {
+SemNode * openSem(char * name) {
     SemNode * iterator = list;
     while (iterator != 0) {
         if (stringcmp(name, iterator->sem.name)) return iterator;
@@ -49,12 +49,12 @@ SemNode * open(char * name) {
 }
 
 /* Delete NodeSem and ready next in list */
-void post(SemNode * sem) {
+void postSem(SemNode * sem) {
 
 }
 
 /* Add NodeSem to list and block process */
-void wait(SemNode * sem) {
+void waitSem(SemNode * sem) {
     /* When count is >= 1 do not block or add to list */
     if (sem->sem.count >= 1) {
         sem->sem.count--;
@@ -78,14 +78,19 @@ void wait(SemNode * sem) {
 
 }
 
-/* Function deallocates system resources allocated 
+/* Deallocates system resources allocated 
 for the calling process for this semaphore */
-void close(SemNode * sem) {
+void closeSem(SemNode * sem) {
+
+}
+
+/* Deallocates system resources of the process */
+void deallocateSem(SemNode * sem, uint64_t pid) {
 
 }
 
 /* Prints all semaphores */
-void showAll() {
+void showAllSems() {
     /* If there is no semaphores */
     if (list == 0) {
         print("\tThere is no Semaphores created");

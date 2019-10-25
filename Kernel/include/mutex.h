@@ -43,6 +43,9 @@ void wait(SemNode * sem);
 for the calling process for this semaphore */
 void close(SemNode * sem);
 
+/* Deallocates system resources of the process */
+void deallocateSem(SemNode * sem, uint64_t pid);
+
 /* Prints all semaphores */
 void showAll();
 
