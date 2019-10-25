@@ -61,7 +61,7 @@ NodeFd * searchFd(int fd){
 
 void write(int fd, char * buffer, int count){
     
-    /* PARA PROBAR */
+    /*** PARA PROBAR ***/
     if(fd == 1){
         print_N(buffer,count);
         return;
@@ -69,14 +69,17 @@ void write(int fd, char * buffer, int count){
     if(fd == 2){
         printError_N(buffer,count);
     }
+    /*******************/
 
     NodeFd * node = searchFd(fd);
     if(node == 0)    // Returns if FD not found
         return;
     
     /* Copy buffer in FD */
+    waitSem(node->fd.sem);
     for(int i=0; i<count; i++)
         node->fd.buffer[i] = *(buffer++);
+    postSem(node->fd.sem);
 }
 
 void read(int fd, char * buffer, int count){
@@ -84,8 +87,10 @@ void read(int fd, char * buffer, int count){
     if(node == 0)    // Returns if FD not found      
         return;
 
-    /* Copy buffer from FD */    
+    /* Copy buffer from FD */
+    waitSem(node->fd.sem);    
     for(int i=0; i<count; i++)
         *(buffer++) = node->fd.buffer[i];
+    postSem(node->fd.sem);
 }
 
