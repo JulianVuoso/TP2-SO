@@ -18,22 +18,13 @@ uint64_t create(void * entryPoint, char * name, level context, int inAlias, int 
     return data.pid;
 }
 
-/*
-    typedef struct{
-        int fd;
-        int alias;
-        fdPointer * next;
-    }fdPointer;
-*/
-
 fdPointer * addFd(int fd){
     Process p = getCurrent()->n.process;
     fdPointer * fdp = (fdPointer *) malloc(sizeof(fdPointer));
     fdp->fd = fd;
     if(p.first == 0)
         p.first = fdp;
-    else
-    {
+    else {
         fdPointer * aux = first;
         first = fdp;
         fdp->next = aux;
