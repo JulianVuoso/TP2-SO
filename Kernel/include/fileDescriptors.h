@@ -12,7 +12,7 @@
 
 typedef struct {
     char * name;
-    int fd;
+    int fd; 
     char buffer[BUFFER_SIZE];
     int read_index;
     int write_index; 
@@ -25,7 +25,7 @@ typedef struct {
 } NodeFd;
 
 /* Create new FD struct */
-int newFd(int fd, char * name);
+int newFd(char * name);
 
 /*  */
 void write(int fd, char * buffer, int count);
