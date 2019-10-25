@@ -11,6 +11,8 @@ char * cpu_vendor(char *result);
 char read_port(char port);
 void write_port(char port, char reg);
 
+void atom_swap(uint64_t * dir, uint64_t value);
+
 uint64_t force_timer_tick();
 
 int stringlen(char * str);

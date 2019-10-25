@@ -16,8 +16,6 @@ typedef struct wait_node {
 typedef struct sem {
     char * name;
     uint64_t count;
-    char lock;
-
     WaitNode * blocked;
     WaitNode * last;
 } Semaphore;

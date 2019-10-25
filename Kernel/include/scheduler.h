@@ -54,8 +54,8 @@ void killCurrent();
 /* Checks if a process is loaded */
 int checkLoaded();
 
-/* Blocks current process for using resource */
-uint64_t block(uint64_t resource);
+/* Blocks current process for using sem */
+uint64_t block(SemNode * sem);
 
 /* Return current process */
 Node * getCurrent();
