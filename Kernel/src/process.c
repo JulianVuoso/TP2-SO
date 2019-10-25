@@ -1,10 +1,5 @@
 #include <process.h>
-#include <stack.h>
-#include <scheduler.h>
-#include <memoryManager.h>
 
-#include <console.h>
-#include <mutex.h>
 
 /* Add FD with Alias to list while creating process */
 static fdPointer * addFdAlias(int inAlias, int outAlias);

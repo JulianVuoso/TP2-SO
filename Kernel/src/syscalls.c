@@ -1,16 +1,6 @@
 // This is a personal academic project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <syscalls.h>
-#include <keyboard.h>
-#include <timelib.h>
-#include <console.h>
-#include <naiveConsole.h>
-#include <sound.h>
-#include <memoryManager.h>
-#include <process.h>
-#include <scheduler.h>
-#include <interrupts.h>
-#include <fileDescriptors.h>
 
 extern void hang(); // Ubicada en loader.asm
 
@@ -80,7 +70,7 @@ void printStatus_handler() {
 }
 
 uint64_t create_handler(void * entryPoint, char * name, level context) {
-    return create(entryPoint, name, context);
+    return create(entryPoint, name, context, 0, 0);
 }
 
 uint64_t kill_handler(uint64_t pid) {
