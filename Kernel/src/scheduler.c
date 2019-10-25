@@ -100,10 +100,11 @@ uint64_t kill(uint64_t pid) {
         if (iterator->next->process.pid == pid) {
             /* The only process */
             if (current == current->next) {
-                init = 4;
                 remove(current->process);
                 free(current);
                 current = 0;
+                init = 0;
+                halt();
             }
 
             Node * toDelete = iterator->next; 
