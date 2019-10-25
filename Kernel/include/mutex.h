@@ -8,36 +8,40 @@
 #include <stdint.h>
 #include <process.h>
 
-typedef struct node {
+typedef struct wait_node {
+    uint64_t pid;
+    struct wait_node * next; 
+} WaitNode;
+
+typedef struct sem {
     char * name;
-    int count;
+    uint64_t count;
     char lock;
-    NodeSem * owner; 
+    WaitNode * owner; 
 } Semaphore;
 
-typedef struct node {
-    int pid;
-    NodeSem * next; 
-} NodeSem;
+typedef struct sem_node {
+    Semaphore sem;
+    struct sem_node * next;
+} SemNode;
 
-/* statics */
-/* Create new Semaphore Node */
-/* Lock Sem */
-/* Change owner */
+/* Create new named Semaphore */
+SemNode * newSem(char * name, uint64_t init);
 
-/* Create new Semaphore */
-Semaphore * newSem(char * name);
-
-/* Create new Semaphore with  */
-Semaphore * newSemCount(char * name, int initCount);
+/* Opens an existing semaphore */
+SemNode * open(char * name);
 
 /* Delete NodeSem and ready next in list */
-void post(char * name);
+void post(SemNode * sem);
 
 /* Add NodeSem to list and block process */
-void wait(char * name);
+void wait(SemNode * sem);
 
-/* Remove Semaphore */
-void removeSem(char * name);
+/* Function deallocates system resources allocated 
+for the calling process for this semaphore */
+void close(SemNode * sem);
+
+/* Prints all semaphores */
+void showAll();
 
 #endif /* _MUTEX_H_ */
