@@ -81,7 +81,7 @@ void waitSem(SemNode * sem) {
 /* Deallocates system resources allocated 
 for the calling process for this semaphore */
 void closeSem(SemNode * sem) {
-
+    deallocateSem(sem, getPid());
 }
 
 /* Deallocates system resources of the process */
