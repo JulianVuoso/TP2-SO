@@ -6,14 +6,14 @@
 
 typedef union mem_node {
     struct {
-        // pointers to the next and previous memory block nodes
+        /* Pointers to the next and previous memory block nodes */
         union mem_node * next;
         union mem_node * prev;
 
-        // pointer to start of the block (node)
+        /* Pointer to start of the block (node) */
         uint8_t * address;
 
-        // quantity of consecutive free pages
+        /* Quantity of consecutive free blocks */
         uint64_t size;
     } n;
     long x;
@@ -24,28 +24,30 @@ typedef struct mem_header {
     node * freeList;
     node * usedList;
  
-    //  measured in pages
+    /* Measured in blocks */
     uint64_t occupied;
     uint64_t free;
 
-    // page size in bytes
+    /* Block size in bytes */
     uint64_t pageSize;
 } header;
 
+/* Static function to help merging */
 static void merge_next(node * block);
 
-// header of the memory manager
+/* Header of the memory manager */
 static header memory;
 
+/* Memory Manager builder */
 void create_manager(uint8_t * address, uint64_t pageSize, uint64_t maxPages) {    
-    // initialize list header
+    /* Initialize list header */
     memory.free = maxPages;
     memory.occupied = 0;
     memory.freeList = (node *) address;
     memory.usedList = 0;
     memory.pageSize = pageSize;
 
-    // create first block of maxPages pages
+    /* Create first block of maxPages pages */
     node first;
     first.n.next = 0;
     first.n.prev = 0;
@@ -55,21 +57,26 @@ void create_manager(uint8_t * address, uint64_t pageSize, uint64_t maxPages) {
     memcpy(address, &first, sizeof(node));
 }
 
+/* Reserves bytes space on memory */
 void * malloc(uint64_t bytes) {
-    // Obtener numero de paginas solicitadas, tomando en cuenta el espacio del nodo
+    /* Quantity of the required "pages" */
     uint64_t pageCount = (bytes + sizeof(node)) / memory.pageSize + 1;
-    if (pageCount > memory.free) return 0; // No tengo paginas disponibles
+    
+    /* No available space */
+    if (pageCount > memory.free) return 0;
 
-    // Recorro nodos de freeList hasta encontrar uno con capacidad suficiente
+    /* Search for node with enough space */
     node * found = memory.freeList;
     while (found != 0 && found->n.size < pageCount) {
         found = found->n.next;
     }
-    if (found == 0) return 0; // No tengo espacio contiguo suficiente
+    /* Not enough space */
+    if (found == 0) return 0;
 
-    // Chequeo si me sobran paginas
+    /* If we have more space than required */
     if (found->n.size > pageCount) {
-        // Creo nodo nuevo que apunte al comienzo del siguiente bloque, con las paginas restantes y lo conecto
+        /* Create new node pointing to start of the next block, 
+        ** and conect we connect it */
         node newNode;
         newNode.n.prev = found->n.prev;
         newNode.n.next = found->n.next;
@@ -82,39 +89,40 @@ void * malloc(uint64_t bytes) {
             found->n.prev->n.next = (node *) newNode.n.address;
     }
 
-    // Modifico las propiedades del nodo extraido y lo agrego a usedList
+    /* Update properties of the extrcted node and add to usedList */
     found->n.size = pageCount;
     found->n.prev = 0;
     found->n.next = memory.usedList;
     memory.usedList = found;
     
-    // Modifico las propiedades de la memoria
+    /* Update memory data */
     memory.occupied += pageCount;
     memory.free -= pageCount;
 
-    // Devuelvo la direccion del nodo extraido desfasada ALIGNEMENT(node)
+    /* Returns extracted node */
     return (void *) (found->n.address + sizeof(node));
 }
 
+/* Frees space on memory */
 void free(void * ptr) {
     /* SEARCH of the ptr on used list */
-    // creates a pointer to the real start of the block
+    /* Creates a pointer to the real start of the block */
     uint8_t * pointer = (uint8_t *)ptr - sizeof(node);
 
     node * iterator = memory.usedList;
     node * prev = iterator;
     
-    // search for the pointer
+    /* Search for the pointer */
     while (iterator != 0 && iterator->n.address != pointer) {
         prev = iterator;
         iterator = iterator->n.next;
     }
         
-    // if not found
+    /* If not found */
     if (iterator == 0) return;
     node * blockToFree = iterator;
 
-    // updates used list
+    /* Updates used list */
     if (memory.usedList == blockToFree) memory.usedList = blockToFree->n.next;
     else prev->n.next = blockToFree->n.next;
 
@@ -122,14 +130,14 @@ void free(void * ptr) {
     iterator = memory.freeList;
     prev = iterator;
 
-    // searches the correct position to insert
+    /* Searches the correct position to insert */
     while (iterator != 0 && iterator->n.address < blockToFree->n.address) {
         prev = iterator;
         iterator = iterator->n.next;
     }
     
-    // inserts between node prev and iterator
-    // if its the first place
+    /* Inserts between node prev and iterator */
+    /* First place */
     if (prev == iterator) {
         memory.freeList = blockToFree;
         blockToFree->n.prev = 0;
@@ -138,24 +146,26 @@ void free(void * ptr) {
         blockToFree->n.prev = prev;
         blockToFree->n.next = prev->n.next;
         prev->n.next = blockToFree;
-        if (iterator != 0) iterator->n.prev = blockToFree; // if not last
+        if (iterator != 0) iterator->n.prev = blockToFree;
     } 
 
-    // updates header values
+    /* Updates header values */
     memory.occupied -= blockToFree->n.size;
     memory.free += blockToFree->n.size;
 
-    // checks for a next contiguous free block and merges it
+    /* Checks for a next contiguous free block and merges it */
     merge_next(blockToFree);
     if (blockToFree->n.prev != 0) merge_next(blockToFree->n.prev);
 }
 
+/* Gets memory status */
 void status(uint64_t * total, uint64_t * occupied, uint64_t * free) {
     *total = (memory.free + memory.occupied) * memory.pageSize;
     *occupied = memory.occupied * memory.pageSize;
     *free = memory.free * memory.pageSize;
 }
 
+/* Prints memory status */
 void printStatus() {
     uint64_t total = (memory.free + memory.occupied) * memory.pageSize;
     uint64_t occupied = memory.occupied * memory.pageSize;
@@ -165,7 +175,8 @@ void printStatus() {
     print("\nTotal Size: %d\nOcuppied Size: %d\nFree Size: %d", total, occupied, free);
 }
 
-void merge_next(node * block) {
+/* Merges the block with the next one (if free) */
+static void merge_next(node * block) {
     node * nextBlock = block->n.next;
     if (nextBlock != 0 && block->n.address + block->n.size * memory.pageSize == nextBlock->n.address) {
         block->n.size += nextBlock->n.size;
@@ -173,11 +184,14 @@ void merge_next(node * block) {
     }
 }
 
+/* Returns the first address from the next block, 
+** assuming ptr is a valid return from malloc */
 void * getLastAddress (void * ptr) {
     node * aux = (node *) (ptr - sizeof(node));
     return aux->n.address + aux->n.size * memory.pageSize;
 }
 
+/* Prints memory state */
 void printMemState() {
     node * free = memory.freeList;
     print("\nLista de frees: \n");

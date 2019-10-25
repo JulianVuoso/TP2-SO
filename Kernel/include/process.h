@@ -38,21 +38,22 @@ typedef struct {
     fdPointer * first;
 } Process;
 
-/* Creates a new process */
+/* Creates a new process and adds it to scheduler */
 uint64_t create(void * entryPoint, char * name, level context, int inAlias, int outAlias);
 
+/* Creates a new process */
 Process createNoSched(void * entryPoint, char * name, level context, int inAlias, int outAlias);
 
 /* Deletes process */
 void remove(Process p);
-
-/* Print process stack */
-void printProcessStack(Process p);
 
 /* Frees all the resources used by the process */
 void freeResources(Process p);
 
 /* Add new file descriptor to list */
 fdPointer * addFd(int fd);
+
+/* Print process stack */
+void printProcessStack(Process p);
 
 #endif /* _PROCESS_H_ */

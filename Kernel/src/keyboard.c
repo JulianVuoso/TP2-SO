@@ -72,6 +72,7 @@ void keyboard_handler() {
     }
 }
 
+/* Returns the char in Upper */
 char toUpper(char car){
     if (car >= 'a' && car <= 'z')
         car -= ('a' - 'A');

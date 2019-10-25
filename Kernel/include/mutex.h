@@ -7,6 +7,10 @@
 
 #include <stdint.h>
 #include <process.h>
+#include <memoryManager.h>
+#include <scheduler.h>
+#include <lib.h>
+#include <strings.h>
 
 typedef struct wait_node {
     uint64_t pid;

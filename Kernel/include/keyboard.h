@@ -18,7 +18,7 @@
 /* Keyboard handler function */
 void keyboard_handler();
 
-/* Returns the car in Upper */
+/* Returns the char in Upper */
 char toUpper(char car);
 
 #endif

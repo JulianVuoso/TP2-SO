@@ -6,6 +6,8 @@
 #define _STACK_H_
 
 #include <stdint.h>
+#include <scheduler.h>
+#include <process.h>
 
 typedef struct StackFrame {
     uint64_t r15;
@@ -31,6 +33,7 @@ typedef struct StackFrame {
     uint64_t returnAddress;
 } StackFrame;
 
+/* Initializes stack */
 StackFrame initStack(void * entryPoint, void * stackBase);
 
 #endif /* _STACK_H_ */

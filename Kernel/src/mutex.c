@@ -1,7 +1,4 @@
 #include <mutex.h>
-#include <memoryManager.h>
-#include <scheduler.h>
-#include <lib.h>
 
 static SemNode * list = 0;
 
@@ -13,7 +10,7 @@ SemNode * newSem(char * name, uint64_t init) {
 
     /* Creates Semaphore */
     Semaphore sem;
-    sem.name = malloc(stringlen(name));
+    sem.name = (char *)malloc(strlen(name));
     stringcp(sem.name, name);
     sem.blocked = 0;
     sem.last = 0;
@@ -23,7 +20,7 @@ SemNode * newSem(char * name, uint64_t init) {
     else sem.count = 1;
     
     /* Creates node */
-    SemNode * node = malloc(sizeof(SemNode));
+    SemNode * node = (SemNode *)malloc(sizeof(SemNode));
     node->next = 0;
     node->sem = sem;
 
@@ -69,7 +66,7 @@ void waitSem(SemNode * sem) {
 
     /* If count is 0 */
     /* Create node to add */
-    WaitNode * node = malloc(sizeof(WaitNode));
+    WaitNode * node = (WaitNode *)malloc(sizeof(WaitNode));
     node->pid = getPid();
     
     /* Add node to the list */
