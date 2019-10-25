@@ -7,12 +7,19 @@
 
 #include <stdint.h>
 #include <lib.h>
+#include <mutex.h>
 
 #define STACK_SIZE	3000
 
 typedef enum {READY = 0, RUNNING, BLOCKED, UNDEFINED} states;
 
 typedef enum {FORE = 0, BACK} level;
+
+typedef struct node{
+    int fd;
+    int alias;
+    fdPointer * next;
+}fdPointer;
 
 typedef struct {
     char * name;
@@ -26,12 +33,6 @@ typedef struct {
     void * stack;
     fdPointer * first;
 } Process;
-
-typedef struct{
-    int fd;
-    int alias;
-    fdPointer * next;
-}fdPointer;
 
 /* Creates a new process */
 uint64_t create(void * entryPoint, char * name, level context, int inAlias, int outAlias);

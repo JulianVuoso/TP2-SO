@@ -80,7 +80,7 @@ void printStatus_handler() {
 }
 
 uint64_t create_handler(void * entryPoint, char * name, level context) {
-    return create(entryPoint, name, context);
+    return create(entryPoint, name, context, 0, 0);
 }
 
 uint64_t kill_handler(uint64_t pid) {
