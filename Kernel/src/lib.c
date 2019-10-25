@@ -67,3 +67,11 @@ int stringcmp(char * str1, char * str2) {
 	if (*str1 == *str2) return 1;
 	return 0;
 }
+
+uint64_t pow(int base, int exponent) {
+	int result = 1;
+	for (uint64_t i = 0; i < exponent; i++){
+		result = result * base;
+	}
+	return result;
+}

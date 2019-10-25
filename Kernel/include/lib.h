@@ -19,4 +19,6 @@ int stringlen(char * str);
 void stringcp(char * destination, char * origin);
 int stringcmp(char * str1, char * str2);
 
+uint64_t pow(int base, int exponent);
+
 #endif
