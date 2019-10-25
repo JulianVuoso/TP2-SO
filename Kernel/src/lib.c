@@ -43,3 +43,27 @@ void * memcpy(void * destination, const void * source, uint64_t length) {
 
 	return destination;
 }
+
+void stringcp(char * destination, char * origin) {
+	while (*origin) {
+		*destination = *origin;
+		destination++;
+		origin++;
+	}
+}
+
+int stringlen(char * str) {
+	int count = 0;
+	while (*str) count++;
+	return count;
+}
+
+int stringcmp(char * str1, char * str2) {
+	while (*str1 && *str2) {
+		if (*str1 != *str2) return 0;
+		str1++;
+		str2++;
+	}
+	if (*str1 == *str2) return 1;
+	return 0;
+}

@@ -13,4 +13,8 @@ void write_port(char port, char reg);
 
 uint64_t force_timer_tick();
 
+int stringlen(char * str);
+void stringcp(char * destination, char * origin);
+int stringcmp(char * str1, char * str2);
+
 #endif

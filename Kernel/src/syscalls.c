@@ -10,7 +10,7 @@
 #include <process.h>
 #include <scheduler.h>
 #include <interrupts.h>
-#include <write.h>
+#include <fileDescriptors.h>
 
 extern void hang(); // Ubicada en loader.asm
 
