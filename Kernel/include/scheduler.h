@@ -11,14 +11,11 @@
 #define MAX_PRIO 3
 #define SIZE 4000
 
-typedef union node {
-    struct {
-        int used;
-        int times;
-        Process process;
-        union node * next;
-    } n;
-    long x; // Here happens the align 
+typedef struct node_sched{
+    int used;
+    int times;
+    Process process;
+    struct node_sched * next;
 } Node;
 
 /* Creates the scheduler */
@@ -29,6 +26,9 @@ uint64_t scheduler(uint64_t sp);
 
 /* Adds a new process to the scheduler */
 uint8_t add(Process p);
+
+/* Kills current process */
+void killCurrent();
 
 /* Deletes a process given PID */
 uint64_t kill(uint64_t pid);
@@ -42,22 +42,19 @@ states getState(uint64_t pid);
 /* Sets the state of the process given its PID */
 uint64_t setState(uint64_t pid, states state);
 
-/* Prints all processes */
-void listAll();
+/* Blocks current process for using sem */
+uint64_t block(SemNode * sem);
 
 /* Returns current process pid */
 uint64_t getPid();
 
-/* Kills current process */
-void killCurrent();
-
 /* Checks if a process is loaded */
 int checkLoaded();
 
-/* Blocks current process for using sem */
-uint64_t block(SemNode * sem);
-
 /* Return current process */
 Node * getCurrent();
+
+/* Prints all processes */
+void listAll();
 
 #endif /* _SCHEDULER_H_ */
