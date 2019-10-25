@@ -5,6 +5,8 @@
 
 #include <console.h>
 #include <mutex.h>
+
+/* Add FD with Alias to list while creating process */
 static fdPointer * addFdAlias(int inAlias, int outAlias);
 
 static uint64_t c_pid = 0;
@@ -12,16 +14,21 @@ static fdPointer * first = 0;
 
 uint64_t create(void * entryPoint, char * name, level context, int inAlias, int outAlias) {
     Process data = createNoSched(entryPoint, name, context, inAlias, outAlias);
+
     /* Add process to scheduler */
     add(data);
-
+    
     return data.pid;
 }
 
 fdPointer * addFd(int fd){
+
+    /* Create aux Process for being built with FD list and then charged again */
     Process p = getCurrent()->n.process;
-    fdPointer * fdp = (fdPointer *) malloc(sizeof(fdPointer));
+    fdPointer * fdp = (fdPointer *) malloc(sizeof(fdPointer));  
     fdp->fd = fd;
+
+    /* Start list or add Node to it */
     if(p.first == 0)
         p.first = fdp;
     else {
@@ -36,12 +43,17 @@ fdPointer * addFd(int fd){
 fdPointer * addFdAlias(int inAlias, int outAlias){
     fdPointer * in = (fdPointer *) malloc(sizeof(fdPointer));
     fdPointer * out = (fdPointer *) malloc(sizeof(fdPointer));
+
+    /* Generate Node of STDIN FD with given alias */
     in->fd = 0;
     in->alias = inAlias;
     in->next = out;
+
+    /* Generate Node of STDOUT FD with given alias after in Node in list */
     out->fd = 1;
     out->alias = outAlias;
-    return in;
+    
+    return in;      // Return Node direction for being inserted in Process List
 }
 
 Process createNoSched(void * entryPoint, char * name, level context, int inAlias, int outAlias) {
