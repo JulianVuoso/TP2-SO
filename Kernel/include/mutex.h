@@ -17,7 +17,9 @@ typedef struct sem {
     char * name;
     uint64_t count;
     char lock;
-    WaitNode * owner; 
+
+    WaitNode * blocked;
+    WaitNode * last;
 } Semaphore;
 
 typedef struct sem_node {
