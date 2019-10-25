@@ -53,8 +53,10 @@ void postSem(SemNode * sem) {
     }
 
     /* If count 0 and we have blocked processes */
-
-
+    WaitNode * p = sem->sem.blocked;
+    sem->sem.blocked = sem->sem.blocked->next;
+    setState(p->pid, READY);
+    free(p);
 }
 
 /* Add NodeSem to list and block process */
@@ -70,9 +72,6 @@ void waitSem(SemNode * sem) {
     WaitNode * node = malloc(sizeof(WaitNode));
     node->pid = getPid();
     
-    /* Lock the mutex */
-
-
     /* Add node to the list */
     if (sem->sem.blocked == 0) sem->sem.blocked = node;
     else sem->sem.last->next = node;
@@ -108,7 +107,7 @@ void deallocateSem(SemNode * sem, uint64_t pid) {
     /* Found */
     if (prev == 0) sem->sem.blocked = curr->next;
     else prev->next = curr->next;
-    if (curr->next == 0) last = prev;
+    if (curr->next == 0) sem->sem.last = prev;
     free(curr);
 }
 
