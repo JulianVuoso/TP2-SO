@@ -95,3 +95,39 @@ NodeFd * searchFd(int fd){
     } 
     return 0;
 }
+
+void write(int fd, char * buffer, int count){
+    
+    /*** PARA PROBAR ***/
+    if(fd == 1){
+        print_N(buffer,count);
+        return;
+    }
+    if(fd == 2){
+        printError_N(buffer,count);
+    }
+    /*******************/
+
+    NodeFd * node = searchFd(fd);
+    if(node == 0)    // Returns if FD not found
+        return;
+    
+    /* Copy buffer in FD */
+    waitSem(node->fd.sem);
+    for(int i=0; i<count; i++)
+        node->fd.buffer[i] = *(buffer++);
+    postSem(node->fd.sem);
+}
+
+void read(int fd, char * buffer, int count){
+    NodeFd * node = searchFd(fd);
+    if(node == 0)    // Returns if FD not found      
+        return;
+
+    /* Copy buffer from FD */
+    waitSem(node->fd.sem);    
+    for(int i=0; i<count; i++)
+        *(buffer++) = node->fd.buffer[i];
+    postSem(node->fd.sem);
+}
+
