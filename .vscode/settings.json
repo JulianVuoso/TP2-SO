@@ -28,7 +28,8 @@
         "scheduler.h": "c",
         "stdarg.h": "c",
         "memorymanager.h": "c",
-        "filedescriptors.h": "c"
+        "filedescriptors.h": "c",
+        "__node_handle": "c"
     },
     "files.exclude": {
         "**/*.o": true,

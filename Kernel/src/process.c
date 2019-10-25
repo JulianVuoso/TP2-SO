@@ -3,9 +3,8 @@
 #include <scheduler.h>
 #include <memoryManager.h>
 
-#include <resources.h>
 #include <console.h>
-
+#include <mutex.h>
 static fdPointer * addFdAlias(int inAlias, int outAlias);
 
 static uint64_t c_pid = 0;
@@ -76,7 +75,7 @@ Process createNoSched(void * entryPoint, char * name, level context, int inAlias
     data.context = context;
     data.state = READY;
     data.stack = processStack;
-    data.resource = 0;
+    data.sem = 0;
 
     data.first = addFdAlias(inAlias, outAlias);
 
@@ -91,13 +90,8 @@ void remove(Process p) {
 }
 
 void freeResources(Process p) {
-    if (p.state == BLOCKED) return;
-    switch(p.resource) {
-        case NONE: return;
-        case TIME: removeNodeT(p.pid); break;
-        case READ: removeNodeR(p.pid); break;
-        case WRITE: removeNodeW(p.pid); break;
-    }
+    if (p.state != BLOCKED) return;
+    deallocateSem(p.sem, p.pid);    
 }
 
 void printProcessStack(Process p) {
