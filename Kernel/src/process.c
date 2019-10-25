@@ -24,7 +24,7 @@ uint64_t create(void * entryPoint, char * name, level context, int inAlias, int 
 fdPointer * addFd(int fd){
 
     /* Create aux Process for being built with FD list and then charged again */
-    Process p = getCurrent()->n.process;
+    Process p = getCurrent()->process;
     fdPointer * fdp = (fdPointer *) malloc(sizeof(fdPointer));  
     fdp->fd = fd;
 
@@ -36,7 +36,7 @@ fdPointer * addFd(int fd){
         first = fdp;
         fdp->next = aux;
     }
-    getCurrent()->n.process = p;
+    getCurrent()->process = p;
     return fdp;
 }
 
