@@ -18,11 +18,7 @@ SemNode * newSem(char * name, uint64_t init) {
     sem.blocked = 0;
     sem.last = 0;
 
-    /* If init is 0 then is locked */
-    if (init == 0) sem.lock = 1;
-    else sem.lock = 0;
-
-    /* Checks if init has a valid value, default = 1*/
+    /* Checks if init has a valid value, default = 1 */
     if (init >= 0) sem.count = init;
     else sem.count = 1;
     
@@ -50,6 +46,14 @@ SemNode * openSem(char * name) {
 
 /* Delete NodeSem and ready next in list */
 void postSem(SemNode * sem) {
+    /* When count is > 0 or no process in list */
+    if (sem->sem.count > 0 || sem->sem.blocked == 0) {
+        atom_swap(&(sem->sem.count), sem->sem.count + 1);
+        return;
+    }
+
+    /* If count 0 and we have blocked processes */
+
 
 }
 
@@ -57,25 +61,25 @@ void postSem(SemNode * sem) {
 void waitSem(SemNode * sem) {
     /* When count is >= 1 do not block or add to list */
     if (sem->sem.count >= 1) {
-        sem->sem.count--;
+        atom_swap(&(sem->sem.count), sem->sem.count - 1);
         return;
     }
 
     /* If count is 0 */
-
     /* Create node to add */
     WaitNode * node = malloc(sizeof(WaitNode));
     node->pid = getPid();
     
-    // XCHANGE BLOCK -> LOCK = 1
+    /* Lock the mutex */
+
+
     /* Add node to the list */
     if (sem->sem.blocked == 0) sem->sem.blocked = node;
     else sem->sem.last->next = node;
     sem->sem.last = node;
-    
-    
 
-
+    /* Block the current process with sem */
+    block(sem);
 }
 
 /* Deallocates system resources allocated 
@@ -86,8 +90,29 @@ void closeSem(SemNode * sem) {
 
 /* Deallocates system resources of the process */
 void deallocateSem(SemNode * sem, uint64_t pid) {
+    WaitNode * curr = sem->sem.blocked;
+    WaitNode * prev = 0;
 
+    /* Empty list */
+    if (curr == 0) return;
+
+    /* Search */
+    while (curr != 0 && curr->pid != pid) {
+        prev = curr;
+        curr = curr->next;
+    }
+
+    /* If not found */
+    if (curr == 0) return;
+
+    /* Found */
+    if (prev == 0) sem->sem.blocked = curr->next;
+    else prev->next = curr->next;
+    if (curr->next == 0) last = prev;
+    free(curr);
 }
+
+
 
 /* Prints all semaphores */
 void showAllSems() {
@@ -101,7 +126,7 @@ void showAllSems() {
     print("\nName\t\tState\t\tCount\n");
     while (iterator != 0) {
         print(iterator->sem.name); print("\t"); 
-        print((iterator->sem.lock) ? "Locked" : "Unlocked"); print("\t");
+        print((iterator->sem.count == 0) ? "Locked" : "Unlocked"); print("\t");
         printHex(iterator->sem.count); print("\n");
         iterator = iterator->next;
     }
