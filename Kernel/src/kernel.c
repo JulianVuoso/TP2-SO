@@ -79,7 +79,7 @@ void * initializeKernelBinary()
 }
 
 int main() {
-	create(shellModuleAddress, "SHELL", FORE);
+	create(shellModuleAddress, "SHELL", FORE, 0, 0);
 	while (!checkLoaded());
 	// create(processAModuleAddress, "SHELL", FORE);
 	// while (!checkLoaded());
