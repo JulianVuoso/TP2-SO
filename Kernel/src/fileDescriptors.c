@@ -47,8 +47,10 @@ void write(int fd, const char * buffer, int count){
         return;
     
     /* Copy buffer in FD */
+    waitSem(node->fd.sem);
     for(int i=0; i<count; i++)
         node->fd.buffer[i] = *(buffer++);
+    postSem(node->fd.sem);
 }
 
 /* Read from buffer given fd number */
@@ -57,9 +59,11 @@ void read(int fd, char * buffer, int count){
     if(node == 0)    // Returns if FD not found      
         return;
 
-    /* Copy buffer from FD */    
+    /* Copy buffer from FD */
+    waitSem(node->fd.sem);     
     for(int i=0; i<count; i++)
         *(buffer++) = node->fd.buffer[i];
+    postSem(node->fd.sem);
 }
 
 
@@ -77,6 +81,7 @@ void addFdList(char* name){
     NodeFd * nodefd = (NodeFd *) malloc(sizeof(NodeFd));
     nodefd->fd.name = name; 
     nodefd->fd.fd = last->fd.fd + 1;
+    nodefd->fd.sem = newSem(name, 1);
     last->next = nodefd;
     last = nodefd;
 }
