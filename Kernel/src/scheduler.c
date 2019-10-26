@@ -1,13 +1,3 @@
-#include <stdint.h>
-#include <lib.h>
-#include <timelib.h>
-#include <memoryManager.h>
-#include <console.h>
-#include <interrupts.h>
-#include <moduleAddresses.h>
-#include <mutex.h>
-#include <process.h>
-
 #include <scheduler.h>
 
 /* Static search of a node */

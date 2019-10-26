@@ -6,6 +6,8 @@
 #define _MEMMANAGER_H_
 
 #include <stdint.h>
+#include <lib.h>
+#include <console.h>
 
 /* Memory Manager builder */
 void create_manager(uint8_t * address, uint64_t pageSize, uint64_t maxPages);

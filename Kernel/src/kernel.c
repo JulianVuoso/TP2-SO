@@ -9,7 +9,7 @@
 #include <defs.h>
 #include <videoDriver.h>
 #include <console.h>
-//#include <timelib.h>
+#include <timelib.h>
 #include <memoryManager.h>
 #include <tests.h>
 #include <scheduler.h>

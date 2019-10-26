@@ -1,8 +1,5 @@
 #include <tests.h>
-#include <syscalls.h>
-#include <console.h>
 
-#include <memoryManager.h>
 void testMemoryManager() {
 	int i = 0;
 	void * vec[10];
