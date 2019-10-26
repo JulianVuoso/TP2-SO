@@ -3,7 +3,7 @@
 ****************************************************/
 
 #ifndef _TIMELIB_H_
-#define _TIMElib_H_
+#define _TIMELIB_H_
 
 #include <stdint.h>
 #include <lib.h>

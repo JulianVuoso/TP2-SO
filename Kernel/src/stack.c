@@ -1,3 +1,7 @@
+#include <stdint.h>
+#include <scheduler.h>
+#include <process.h>
+
 #include <stack.h>
 
 /* Initializes stack */

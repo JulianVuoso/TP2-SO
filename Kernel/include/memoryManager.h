@@ -2,8 +2,8 @@
     MemoryManager.h
 ****************************************************/
 
-#ifndef _memmanager_
-#define _memmanager_
+#ifndef _MEMMANAGER_H_
+#define _MEMMANAGER_H_
 
 #include <stdint.h>
 

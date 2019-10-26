@@ -29,7 +29,9 @@
         "stdarg.h": "c",
         "memorymanager.h": "c",
         "filedescriptors.h": "c",
-        "__node_handle": "c"
+        "__node_handle": "c",
+        "stack.h": "c",
+        "mutex.h": "c"
     },
     "files.exclude": {
         "**/*.o": true,

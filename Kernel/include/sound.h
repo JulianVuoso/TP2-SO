@@ -3,8 +3,8 @@
                     Sound.h
 ****************************************************/
 
-#ifndef IOHANDLER_H_
-#define IOHANDLER_H_
+#ifndef _IOHANDLER_H_
+#define _IOHANDLER_H_
 
 #include <lib.h>
 #include <stdint.h>

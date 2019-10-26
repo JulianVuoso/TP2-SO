@@ -5,8 +5,8 @@
 #ifndef _SCHEDULER_H_
 #define _SCHEDULER_H_
 
+
 #include <stdint.h>
-#include <process.h>
 #include <lib.h>
 #include <timelib.h>
 #include <memoryManager.h>
@@ -14,6 +14,7 @@
 #include <interrupts.h>
 #include <moduleAddresses.h>
 #include <mutex.h>
+#include <process.h>
 
 #define MAX_PRIO 3
 #define SIZE 4000

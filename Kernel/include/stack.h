@@ -9,7 +9,7 @@
 #include <scheduler.h>
 #include <process.h>
 
-typedef struct StackFrame {
+typedef struct stack_frame {
     uint64_t r15;
 	uint64_t r14;
 	uint64_t r13;

@@ -1,3 +1,10 @@
+#include <mutex.h>
+#include <lib.h>
+#include <scheduler.h>
+#include <stack.h>
+#include <memoryManager.h>
+#include <console.h>
+
 #include <process.h>
 
 /* Add FD with Alias to list while creating process */

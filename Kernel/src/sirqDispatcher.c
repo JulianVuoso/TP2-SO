@@ -103,7 +103,7 @@ uint64_t syscall_11 (uint64_t rdi, uint64_t rsi, uint64_t rdx) {
 
 /* -----------------------------------------------------------------*/
 uint64_t syscall_12 (uint64_t rdi, uint64_t rsi, uint64_t rdx) {
-	return create_handler((void *)rdi, (char *)rsi, rdx);
+	return create_handler((void *)rdi, (char *)rsi, (level)rdx);
 }
 
 uint64_t syscall_13 (uint64_t rdi, uint64_t rsi, uint64_t rdx) {

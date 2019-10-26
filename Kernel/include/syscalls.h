@@ -1,9 +1,9 @@
-#ifndef SYSCALLS_H_
-#define SYSCALLS_H_
+#ifndef _SYSCALLS_H_
+#define _SYSCALLS_H_
 
+#include <process.h>
 #include <stdint.h>
 #include <lib.h>
-#include <process.h>
 #include <keyboard.h>
 #include <timelib.h>
 #include <console.h>
@@ -11,6 +11,7 @@
 #include <sound.h>
 #include <memoryManager.h>
 #include <scheduler.h>
+
 #include <interrupts.h>
 #include <fileDescriptors.h>
 

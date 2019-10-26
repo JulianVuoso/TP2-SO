@@ -91,8 +91,7 @@ uint64_t setPriority_handler(uint64_t pid, uint8_t prio) {
 
 uint64_t changeState_handler(uint64_t pid) {
     states state = getState(pid);
-	switch (state)
-	{
+	switch (state) {
 		case READY:
 			return setState(pid, BLOCKED);
 		case BLOCKED:

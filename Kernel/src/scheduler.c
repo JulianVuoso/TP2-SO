@@ -1,3 +1,13 @@
+#include <stdint.h>
+#include <lib.h>
+#include <timelib.h>
+#include <memoryManager.h>
+#include <console.h>
+#include <interrupts.h>
+#include <moduleAddresses.h>
+#include <mutex.h>
+#include <process.h>
+
 #include <scheduler.h>
 
 /* Static search of a node */
@@ -124,7 +134,7 @@ uint64_t kill(uint64_t pid) {
 
 /* Sets priority of the process given its PID */
 uint64_t setPriority(uint64_t pid, uint8_t n) {
-    if (n > MAX_PRIO || n < 0 ) return 2;
+    if (n > MAX_PRIO) return 2;
     Node * node = search(pid);
     if (node == 0) return 1;
     node->process.priority = n;

@@ -169,10 +169,10 @@ void status(uint64_t * total, uint64_t * occupied, uint64_t * free) {
 void printStatus() {
     uint64_t total = (memory.free + memory.occupied) * memory.pageSize;
     uint64_t occupied = memory.occupied * memory.pageSize;
-    uint64_t free = memory.free * memory.pageSize;
+    uint64_t freed = memory.free * memory.pageSize;
 
     print("\n----- Estado de la memoria -----");
-    print("\nTotal Size: %d\nOcuppied Size: %d\nFree Size: %d", total, occupied, free);
+    print("\nTotal Size: %d\nOcuppied Size: %d\nFree Size: %d", total, occupied, freed);
 }
 
 /* Merges the block with the next one (if free) */
@@ -193,16 +193,16 @@ void * getLastAddress (void * ptr) {
 
 /* Prints memory state */
 void printMemState() {
-    node * free = memory.freeList;
+    node * freed = memory.freeList;
     print("\nLista de frees: \n");
     while (free != 0) {
-        print("- Size: %d", free->n.size);
+        print("- Size: %d", freed->n.size);
         print("- Address: 0x");
-        printHex((uint64_t)free->n.address);
+        printHex((uint64_t)freed->n.address);
         print("\t to Last: 0x");
-        printHex((uint64_t)getLastAddress(free->n.address + sizeof(node)));
+        printHex((uint64_t)getLastAddress(freed->n.address + sizeof(node)));
         print("\n");
-        free = free->n.next;
+        freed = freed->n.next;
     }
     print("\n---------------\n: ");
 

@@ -7,7 +7,6 @@ static void addNodeT(uint64_t pid, uint64_t time);
 static void updateList();
 
 /* static variables */
-static NodeTime * addressT = 0;
 static NodeTime * firstT = 0;
 static unsigned long ticks = 0;
 
@@ -37,8 +36,6 @@ void sleep(uint64_t millis) {
 
 /* Updates the values off all the waiting processes */
 static void updateList() {
-    int var = 0;
-    if (addressT == 0) return;
     NodeTime * iterator = firstT;
     NodeTime * prev = firstT;
 
@@ -75,7 +72,7 @@ static void removeNextT(NodeTime * node) {
 
 /* Removes a node given its pid */
 void removeNodeT(uint64_t pid) {
-    if (addressT == 0 || firstT == 0) return;
+    if (firstT == 0) return;
 
     NodeTime * aux = firstT;
 

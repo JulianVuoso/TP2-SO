@@ -4,14 +4,13 @@
 
 #ifndef _PROCESS_H_
 #define _PROCESS_H_
-
-#include <stdint.h>
+#include <mutex.h>
 #include <lib.h>
-#include <stack.h>
 #include <scheduler.h>
+#include <stack.h>
 #include <memoryManager.h>
 #include <console.h>
-#include <mutex.h>
+
 
 #define STACK_SIZE	3000
 
