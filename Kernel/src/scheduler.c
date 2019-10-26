@@ -34,10 +34,8 @@ uint64_t scheduler(uint64_t sp) {
         default: haltProcess->n.process.sp = sp; break;
     }
 
-
-        
     current->n.times++;
-    if(current->n.times == pow(2, MAX_PRIO - current->n.process.priority) || current->n.process.state == BLOCKED){
+    if(init == 3 || current->n.times >= pow(2, MAX_PRIO - current->n.process.priority) || current->n.process.state == BLOCKED){
         current->n.times = 0;
         if (current->n.process.state != BLOCKED)
             current->n.process.state = READY;
@@ -84,7 +82,11 @@ uint8_t add(Process p) {
 }
 
 void killCurrent() {
+    int ppid = getPPid();
+    if (ppid >= 1 && current->n.process.context == FORE)
+        setState(ppid, READY);
     kill(getPid());
+    force_timer_tick();
 }
 
 uint64_t kill(uint64_t pid) {
@@ -112,7 +114,7 @@ uint64_t kill(uint64_t pid) {
     do {
         if (pid == node->n.next->n.process.pid) {
             Node * aux = node->n.next; 
-            uint64_t pid = aux->n.process.pid;
+            // uint64_t pid = aux->n.process.pid;
             node->n.next = aux->n.next;
             if (current == aux) {
                 current = aux->n.next;
@@ -169,7 +171,15 @@ uint64_t block(uint64_t resource) {
 }
 
 uint64_t getPid() {
+    if (current == 0)
+        return 0;
     return current->n.process.pid;
+}
+
+uint64_t getPPid() {
+    if (current == 0)
+        return 0;
+    return current->n.process.ppid;
 }
 
 Node * search(uint64_t pid) {

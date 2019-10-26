@@ -26,10 +26,6 @@
 
 #define HALT_ID     18
 
-#define STDIN       0
-#define STDOUT      1
-#define STDERR      2
-
 #define MAX_BUFFER 100
 
 void putchar(uint8_t character) {
@@ -82,17 +78,64 @@ void printf(char * str, ...){
     syscall(WRITE_ID, STDOUT, (uint64_t) newStr, len, 0, 0, 0);
 }
 
+void putsFd(const char * string, uint64_t fd) {
+    syscall(WRITE_ID, fd, (uint64_t) string, strlen(string), 0, 0, 0);
+}
+
+void putcharFd(uint8_t character, uint64_t fd) {
+    syscall(WRITE_ID, fd, (uint64_t) &character, 1, 0, 0, 0);
+}
+
+void printfFd(uint64_t fd, char * str, ...) {
+    va_list list;
+    va_start(list, str);
+    int i = 0;
+
+    char newStr[MAX_BUFFER] = {0};
+    int len = 0;
+
+    while(str[i] != 0){
+    	if(str[i] == '%' && (i == 0 || str[i-1] != '\\')){
+            char buffer[MAX_BUFFER] = {0};
+            switch (str[i+1]) {
+                case 'd':
+                    itoa((int) va_arg(list,int), buffer, 10);
+                    len += concat((newStr + len), buffer);
+                    i += 2;
+                    break;
+                case 's':
+                    len += concat((newStr + len), va_arg(list,char*));
+                    i += 2;
+                    break;
+                default:
+                    i += 2;
+                    break;
+            }
+        }
+        else {
+            newStr[len] = str[i];
+            len++;
+            i++;
+        }
+    }
+    va_end(list);
+    newStr[len] = 0;
+    len++;
+    syscall(WRITE_ID, fd, (uint64_t) newStr, len, 0, 0, 0);
+}
+
 uint8_t getchar() {
     uint8_t character;
     syscall(READ_ID, STDIN, (uint64_t) &character, 1, 0, 0, 0);
     return character;
 }
 
-// Obtiene un string de STDIN hasta ENTER o size
-char * gets(char * string, uint64_t size) {
+/* Reads size bytes (or until Enter) from STDIN and saves them in string. PRINTS CHARACTERS WHILE READING */
+/* Return # characters read if pressed Enter. Returns -1 if EOF recieved */
+int gets(char * string, uint64_t size) {
     uint64_t index = 0;
     uint8_t car;
-    while (index < size - 1 && (car = getchar()) != '\n') {
+    while (index < size - 1 && (car = getcharFd(STDIN)) != '\n' && car >= 0) {
         if (car == '\b') {
             if (index > 0) {
                 index--;
@@ -103,8 +146,33 @@ char * gets(char * string, uint64_t size) {
             putchar(car);
         }
     }
-    string[index] = 0;
-    return string;
+    string[index++] = 0;
+    if (car >= 0)
+        return index;
+    return -1;
+}
+
+uint8_t getcharFd(uint64_t fd) {
+    uint8_t character;
+    syscall(READ_ID, fd, (uint64_t) &character, 1, 0, 0, 0);
+    return character;
+}
+
+/* Reads size bytes (or until Enter) from fileDescriptor and saves them in string. WONT PRINT WHILE READING */
+int getsFd(char * string, uint64_t size, uint64_t fd) {
+    uint64_t index = 0;
+    uint8_t car;
+    while (index < size - 1 && (car = getcharFd(fd)) != '\n') {
+        if (car == '\b') {
+            if (index > 0) {
+                index--;
+            }
+        } else {
+            string[index++] = car;
+        }
+    }
+    string[index++] = 0;
+    return index;
 }
 
 void clearScreen() {
@@ -195,9 +263,17 @@ void memStatus() {
     syscall(STATUS_ID, 0, 0, 0, 0, 0, 0);
 }
 
+// char * name, int argc, char * argv[], int ground, int inFd, int outFd
+
 /* Crea un nuevo proceso y lo agrega al scheduler y retorna PID */
 uint64_t fork(void * entryPoint, char * name) {
     return syscall(NEW_PROC_ID, (uint64_t) entryPoint, (uint64_t) name, 0, 0, 0, 0);
+}
+
+uint64_t newProcess(const char * name, uint64_t argc, char * argv[], uint64_t ground, uint64_t inFd, uint64_t outFd) {
+    if (ground == FOREGROUND || ground == BACKGROUND)
+        return syscall(NEW_PROC_ID, (uint64_t) name, argc, (uint64_t) argv, ground, inFd, outFd);
+    return 0;
 }
 
 /* Kills a process given its pid */
@@ -223,4 +299,22 @@ uint64_t setPriority(uint64_t pid, uint64_t n) {
 /* Changes process state between READY and BLOCKED  */
 uint64_t changeState(uint64_t pid) {
     return syscall(SET_STATE_ID, pid, 0, 0, 0, 0, 0);
+}
+
+uint64_t newPipe(char * name) {
+    // return syscall(PIPE_ID, name, 0, 0, 0, 0, 0);
+    return 0;
+}
+
+void pipe_status() {
+    // syscall(PIPE_STATUS_ID, name, 0, 0, 0, 0, 0);
+}
+
+// newSem
+// closeSem
+// wait
+// post
+
+void sem_status() {
+    // syscall(SEM_STATUS_ID, name, 0, 0, 0, 0, 0);
 }

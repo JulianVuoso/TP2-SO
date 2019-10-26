@@ -11,8 +11,10 @@
 #include <scheduler.h>
 #include <interrupts.h>
 #include <write.h>
+#include <moduleAddresses.h>
 
 extern void hang(); // Ubicada en loader.asm
+static void * getModuleAddress(char * name);
 
 void read_handler(uint64_t fd, char * buff, uint64_t count) {
     read(fd, buff, count);
@@ -79,8 +81,39 @@ void printStatus_handler() {
     printStatus();
 }
 
-uint64_t create_handler(void * entryPoint, char * name, level context) {
+//syscall(NEW_PROC_ID, (uint64_t) name, argc, (uint64_t) argv, ground, inFd, outFd)
+// uint64_t create_handler(void * entryPoint, char * name, level context) {
+uint64_t create_handler(char * name, uint64_t argc, char ** argv, level context, uint64_t inFd, uint64_t outFd) {
+    void * entryPoint = getModuleAddress(name);
+    if (entryPoint == 0) // NOT FOUND
+        return 0;
     return create(entryPoint, name, context);
+}
+
+static int strcmp (const char *t, const char *s) {
+	while (*t==*s && *t!=0){
+		t++;
+		s++;
+	}
+	return *t-*s;
+}
+
+static void * getModuleAddress(char * name) {
+    if (strcmp(name, "SHELL") == 0)
+        return shellModuleAddress;
+    if (strcmp(name, "SLEEP") == 0)
+        return sleepModuleAddress;
+    if (strcmp(name, "LOOP") == 0)
+        return loopModuleAddress;
+    if (strcmp(name, "CAT") == 0)
+        return catModuleAddress;
+    if (strcmp(name, "WC") == 0)
+        return wcModuleAddress;
+    if (strcmp(name, "FILTER") == 0)
+        return filterModuleAddress;
+    if (strcmp(name, "PHYLO") == 0)
+        return phyloModuleAddress;
+    return 0;
 }
 
 uint64_t kill_handler(uint64_t pid) {

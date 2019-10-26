@@ -58,7 +58,13 @@ void * initializeKernelBinary()
 		processAModuleAddress,
 		processBModuleAddress,
 		shellModuleAddress,
-		idleModuleAddress
+		idleModuleAddress,
+		sleepModuleAddress,
+		loopModuleAddress,
+		catModuleAddress,
+		wcModuleAddress,
+		filterModuleAddress,
+		phyloModuleAddress
 	};
 
 	void * endOfModules = loadModules(&endOfKernelBinary, moduleAddresses);

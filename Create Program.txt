@@ -5,10 +5,10 @@
 	d. Archivo _loader.c	--> Copiarlo como esta en algun otro
 	e. Archivo Makefile	--> Copiarlo como esta en algun otro y cambiar todo lo que diga processName... por el nombre actual
 	f. Archivo process.ld	--> Copiarlo como esta en algun otro, cambiarle el nombre a processName.ld y cambiar la direccion .text 0x... por la que pondre en la constante
-2. Ir a kernel.c. En la parte de constantes, agregar la linea con la direccion correspondiente
+2. Ir a moduleAddresses.h y agregar la linea con la direccion correspondiente
 	static void * const processModuleAddress = (void*) 0x1000000;
-   En la funcion initializeKernelBinary, agregar en el vector moduleAddresses el nombre de la constante creada.
-3. Ir al Makefile dentro de la carpeta Userland. 
+3. Ir a kernel.c. En la funcion initializeKernelBinary, agregar en el vector moduleAddresses el nombre de la constante creada.
+4. Ir al Makefile dentro de la carpeta Userland. 
 	Agregar un rotulo
 		process:
 			cd Process; make
@@ -16,5 +16,14 @@
 	Agregar en clean:
 		cd Process; make clean
 	Agregar process antes de all en PHONY
-4. Ir al Makefile dentro de la carpeta image. En la variable USERLAND agregar ../Userland/archivo.bin siendo archivo el nombre del binario generado por el programa.
-5. Cuando se cree un proceso de este programa, enviarle como entryPoint la direccion guardada como constante.
+5. Ir al Makefile dentro de la carpeta image. En la variable USERLAND agregar ../Userland/archivo.bin siendo archivo el nombre del binario generado por el programa.
+6. Cuando se cree un proceso de este programa, enviarle como entryPoint la direccion guardada como constante.
+----------------------------------
+AGREGAR PROCESO A SHELL
+1. Aumentar command_count en 1. 
+2. Agregar un string con el comando en command_strings AL FINAL
+3. Agregar una funcion con el comando en command_functions AL FINAL
+4. Agregar la funcion loop_cmd con lo que corresponda (ver sleep para saber como llamar a un proceso)
+5. Agregar una pequeña explicacion en el comando HELP
+6. En la funcion newProcess, poner el nombre del programa en MAYUS
+7. En syscalls.c, agregar un if(strcmp...) como los demas con el nombre del programa en MAYUS y la direccion de modulo correspondiente.

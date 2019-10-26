@@ -12,6 +12,8 @@ uint64_t create(void * entryPoint, char * name, level context) {
     Process data = createNoSched(entryPoint, name, context);
     /* Add process to scheduler */
     add(data);
+    if (context == FORE && data.pid > 1)
+        block(SCREEN);
     return data.pid;
 }
 
@@ -32,6 +34,7 @@ Process createNoSched(void * entryPoint, char * name, level context) {
     Process data;
     data.name = name;
     data.pid = c_pid++;
+    data.ppid = getPid();
     data.sp = (uint64_t) lastAddress - sizeof(StackFrame);
     data.bp = (uint64_t) stackBase;
     data.priority = 3;
@@ -57,6 +60,7 @@ void freeResources(Process p) {
         case TIME: removeNodeT(p.pid); break;
         case READ: removeNodeR(p.pid); break;
         case WRITE: removeNodeW(p.pid); break;
+        default: return;
     }
 }
 

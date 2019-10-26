@@ -12,13 +12,14 @@
 
 typedef enum {READY = 0, RUNNING, BLOCKED, UNDEFINED} states;
 
-typedef enum {NONE = 0, TIME, READ, WRITE} resources;
+typedef enum {NONE = 0, TIME, READ, WRITE, SCREEN} resources;
 
 typedef enum {FORE = 0, BACK} level;
 
 typedef struct {
     char * name;
     uint64_t pid;
+    uint64_t ppid;
     uint64_t sp;
     uint64_t bp;
     uint8_t priority;

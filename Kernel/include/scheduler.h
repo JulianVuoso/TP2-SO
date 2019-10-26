@@ -48,6 +48,9 @@ void listAll();
 /* Returns current process pid */
 uint64_t getPid();
 
+/* Returns current process parent pid */
+uint64_t getPPid();
+
 /* Kills current process */
 void killCurrent();
 
