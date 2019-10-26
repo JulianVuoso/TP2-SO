@@ -20,7 +20,8 @@ uint64_t create(void * entryPoint, char * name, level context, int inAlias, int 
     /* Add process to scheduler */
     add(data);
     if (context == FORE && data.pid > 1)
-        block(SCREEN);
+        block(0);
+        // block(SCREEN);
     return data.pid;
 }
 

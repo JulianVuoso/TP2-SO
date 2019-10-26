@@ -2,6 +2,7 @@
 #include <console.h>
 #include <mutex.h>
 #include <process.h>
+#include <memoryManager.h>
 
 #include <fileDescriptors.h>
 
