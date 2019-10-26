@@ -40,6 +40,7 @@ void write(int fd, const char * buffer, int count){
     }
     if(fd == 2){
         printError_N(buffer,count);
+        return;
     }
 
     NodeFd * node = searchFd(fd);

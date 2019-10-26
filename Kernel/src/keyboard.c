@@ -5,16 +5,19 @@
 
 #include <keyboard.h>
 
+#define EOF     -1
+#define SIGINT  -2
+
 char buffer[BUFFER_SIZE];
 unsigned int save_index = 0;
 unsigned int read_index = 0;
 
 static unsigned char map[90]={'`','\e','1','2','3','4','5','6','7','8','9','0','-','=','\b','\t','q','w','e','r','t','y','u','i','o','p','[',']','\n',
-        0/*CTRL*/,'a','s','d','f','g','h','j','k','l',';','\'', 0, 'S','\\','z','x','c','v','b','n','m',',','.','/','S',0,0/*ALT*/,' ',
+        'C','a','s','d','f','g','h','j','k','l',';','\'', 0, 'S','\\','z','x','c','v','b','n','m',',','.','/','S',0,0/*ALT*/,' ',
         'M',0,0,0,0,0,0,0,0,0,0,0,0,0,UP_KEY,0,0,LEFT_KEY,0,RIGHT_KEY,0,0,DOWN_KEY };
 
 static unsigned char shift_map[90]={'~','\e','!','@','#','$','%','^','&','*','(',')','_','+','\b','\t','q','w','e','r','t','y','u','i','o','p','{','}','\n',
-        0/*CTRL*/,'a','s','d','f','g','h','j','k','l',':','\"', 0, 'S','|','z','x','c','v','b','n','m','<','>','?','S',0,0/*ALT*/,' ',
+        'C','a','s','d','f','g','h','j','k','l',':','\"', 0, 'S','|','z','x','c','v','b','n','m','<','>','?','S',0,0/*ALT*/,' ',
         'M',0,0,0,0,0,0,0,0,0,0,0,0,0,UP_KEY,0,0,LEFT_KEY,0,RIGHT_KEY,0,0,DOWN_KEY };
 
 // ESC = \e
@@ -30,7 +33,7 @@ static unsigned char shift_map[90]={'~','\e','!','@','#','$','%','^','&','*','('
 
 // Solo chequeo si presione SHIFT o MAY, los demas pasan como vienen
 void keyboard_handler() {
-    static int caps = 1, shift = 1, release_caps = 1;
+    static int caps = 1, shift = 1, release_caps = 1, ctrl = -1;
     unsigned char key = read_port(0x60);
 
     if ((key >= 90 && key < 0x80) || key >= 0x80 + 90)
@@ -52,14 +55,29 @@ void keyboard_handler() {
                     release_caps = 0;
                 }
                 break;
+            case 'C':
+                ctrl = 1;
+                break;
             default:
-                if (shift * caps == -1){ // Uno de los dos activos, paso a mayus
-                    buffer[save_index % BUFFER_SIZE] = toUpper(car);
-                } else{
-                    buffer[save_index % BUFFER_SIZE] = car;
+                if (ctrl == 1) {
+                    if (car == 'c'){
+                        buffer[save_index % BUFFER_SIZE] = SIGINT;
+                        save_index++;
+                        write(0, buffer, 1);
+                    } else if (car == 'd') {
+                        buffer[save_index % BUFFER_SIZE] = EOF;
+                        save_index++;
+                        write(0, buffer, 1);
+                    }
+                } else {
+                    if (shift * caps == -1){ // Uno de los dos activos, paso a mayus
+                        buffer[save_index % BUFFER_SIZE] = toUpper(car);
+                    } else{
+                        buffer[save_index % BUFFER_SIZE] = car;
+                    }
+                    save_index++;
+                    write(0, buffer, 1);
                 }
-                save_index++;
-                write(0, buffer, 1);
                 break;
         }
     } else { // Suelto tecla
@@ -70,6 +88,9 @@ void keyboard_handler() {
                 break;
             case 'M':
                 release_caps = 1;
+                break;
+            case 'C':
+                ctrl = -1;
                 break;
         }
     }
