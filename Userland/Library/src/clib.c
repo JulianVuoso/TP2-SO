@@ -258,18 +258,23 @@ void free(void * ptr) {
     syscall(FREE_ID, (uint64_t) ptr, 0, 0, 0, 0, 0);
 }
 
-/* Imprime el tamaño de la memoria, el tamaño ocupado de memoria y el tamaño libre de memoria */
-void memStatus(uint64_t outFd) {
+/* Imprime el tamaño de la memoria, el tamaño ocupado de memoria y el tamaño libre de memoria (STDOUT) */
+void memStatus() {
+    syscall(STATUS_ID, STDOUT, 0, 0, 0, 0, 0);
+}
+
+/* Imprime el tamaño de la memoria, el tamaño ocupado de memoria y el tamaño libre de memoria (outFd) */
+void memStatusFd(uint64_t outFd) {
     syscall(STATUS_ID, outFd, 0, 0, 0, 0, 0);
 }
 
-// char * name, int argc, char * argv[], int ground, int inFd, int outFd
-
-/* Crea un nuevo proceso y lo agrega al scheduler y retorna PID */
+/* Crea un nuevo proceso a partir de un entryPoint */
+// DEPRECADA
 uint64_t fork(void * entryPoint, char * name) {
     return syscall(NEW_PROC_ID, (uint64_t) entryPoint, (uint64_t) name, 0, 0, 0, 0);
 }
 
+/* Crea un nuevo proceso a partir de su nombre */
 uint64_t newProcess(const char * name, uint64_t argc, char * argv[], uint64_t ground, uint64_t inFd, uint64_t outFd) {
     if (ground == FOREGROUND || ground == BACKGROUND)
         return syscall(NEW_PROC_ID, (uint64_t) name, argc, (uint64_t) argv, ground, inFd, outFd);
@@ -286,8 +291,13 @@ uint64_t getPid() {
     return syscall(PID_ID, 0, 0, 0, 0, 0, 0);
 }
 
-/* List all running processes */
-void ps(uint64_t outFd) {
+/* List all running processes (STDOUT) */
+void ps() {
+    syscall(PS_ID, STDOUT, 0, 0, 0, 0, 0);
+}
+
+/* List all running processes (outFd) */
+void psFd(uint64_t outFd) {
     syscall(PS_ID, outFd, 0, 0, 0, 0, 0);
 }
 
@@ -306,7 +316,11 @@ uint64_t newPipe(char * name) {
     return 0;
 }
 
-void pipe_status(uint64_t outFd) {
+void pipeStatus() {
+    // syscall(PIPE_STATUS_ID, STDOUT, 0, 0, 0, 0, 0);
+}
+
+void pipeStatusFd(uint64_t outFd) {
     // syscall(PIPE_STATUS_ID, outFd, 0, 0, 0, 0, 0);
 }
 
@@ -315,6 +329,10 @@ void pipe_status(uint64_t outFd) {
 // wait
 // post
 
-void sem_status(uint64_t outFd) {
+void semStatus() {
+    // syscall(SEM_STATUS_ID, STDOUT, 0, 0, 0, 0, 0);
+}
+
+void semStatusFd(uint64_t outFd) {
     // syscall(SEM_STATUS_ID, outFd, 0, 0, 0, 0, 0);
 }
