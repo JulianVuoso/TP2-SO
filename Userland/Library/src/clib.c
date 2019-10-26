@@ -259,8 +259,8 @@ void free(void * ptr) {
 }
 
 /* Imprime el tamaño de la memoria, el tamaño ocupado de memoria y el tamaño libre de memoria */
-void memStatus() {
-    syscall(STATUS_ID, 0, 0, 0, 0, 0, 0);
+void memStatus(uint64_t outFd) {
+    syscall(STATUS_ID, outFd, 0, 0, 0, 0, 0);
 }
 
 // char * name, int argc, char * argv[], int ground, int inFd, int outFd
@@ -287,8 +287,8 @@ uint64_t getPid() {
 }
 
 /* List all running processes */
-void ps() {
-    syscall(PS_ID, 0, 0, 0, 0, 0, 0);
+void ps(uint64_t outFd) {
+    syscall(PS_ID, outFd, 0, 0, 0, 0, 0);
 }
 
 /* Set process priority to n */
@@ -306,8 +306,8 @@ uint64_t newPipe(char * name) {
     return 0;
 }
 
-void pipe_status() {
-    // syscall(PIPE_STATUS_ID, name, 0, 0, 0, 0, 0);
+void pipe_status(uint64_t outFd) {
+    // syscall(PIPE_STATUS_ID, outFd, 0, 0, 0, 0, 0);
 }
 
 // newSem
@@ -315,6 +315,6 @@ void pipe_status() {
 // wait
 // post
 
-void sem_status() {
-    // syscall(SEM_STATUS_ID, name, 0, 0, 0, 0, 0);
+void sem_status(uint64_t outFd) {
+    // syscall(SEM_STATUS_ID, outFd, 0, 0, 0, 0, 0);
 }

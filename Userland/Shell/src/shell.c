@@ -4,11 +4,13 @@
 #include <shell.h>
 #include <utils.h>
 
+/* Valid command inputs */
 static char * command_strings[] = {"help", "date", 
                                         "time", "sleep", "clear", "beep", "door", "div_zero", 
                                         "inv_op", "exit", "mem", "ps", "kill", "block", "nice", 
                                         "loop", "cat", "wc", "filter", "sem", "pipe", "phylo"};
 static int command_count = 22;
+/* Command functions associated with command inputs */
 void (* command_functions[]) (int argc, char * argv[], int ground, int inFd, int outFd) = {help_cmd, date_cmd, 
                                             time_cmd, sleep_cmd, clear_cmd, beep_cmd, door_cmd, div_zero_cmd, 
                                             inv_op_cmd, exit_cmd, mem_cmd, ps_cmd, kill_cmd, block_cmd, nice_cmd,
@@ -19,6 +21,7 @@ int pipeNumber = 0;
 
 // MAX_LENGTH esta en clib.h
 
+/* Prints new line */
 static void newLine(){
     putchar('\n');
 }
@@ -28,6 +31,7 @@ int main () {
     return 0;
 }
 
+/* Main shell Core */
 void initShell() {
     initScreen();
     int command = NO_CMD;
@@ -35,22 +39,26 @@ void initShell() {
 
     while (command != EXIT_CMD) {
         puts(PROMPT_STRING);
+        /* Get an input line */
         gets(input, MAX_LENGTH);
+        /* Process the input recieved */
         if ((command = getCommand(input)) == NO_CMD)
             puts("\nInvalid command");
 
-        // executeCommand(command, param1, param2);
         if (command != CLEAR_CMD) newLine();
     }
 	
+    /* Exit console */
 	exit();
 }
 
+/* Initialize screen */
 void initScreen() {
     clearScreen();
     puts("Bienvenido al programa. El comando help lo ayudara\n");
 }
 
+/* Process the input recieved and execute the corresponding commands */
 int getCommand(char * input){
     int cursor = 0;
     char vec[MAX_LENGTH] = {0};
@@ -62,8 +70,10 @@ int getCommand(char * input){
     int command = NO_CMD;
     int nextStdin = STDIN;
     int nextCmd = 0;
+    /* Command Loop */
     do {
         nextCmd = 0;
+        /* Get the index of the written command if valid. Return if not valid */
         command = getCommandIndex(input, &cursor);
         if (command == NO_CMD)
             return command;
@@ -72,52 +82,49 @@ int getCommand(char * input){
         char * argv[] = {arg1, arg2, 0};
         int argc = 0;
         int haveArgs = 0;
+        /* Argument Loop */
         do {
+            /* Get the next argument (Spaces split arguments) */
             haveArgs = strcpyUntilSpace(vec, input + cursor);
             cursor += haveArgs + 1;
+            /* There are still arguments to process */
             if (haveArgs != 0) {
                 switch (vec[0]) {
                     case '&':
-                        // Creo el proceso en background y salgo
+                        /* Create a background process that executes the command (if not a built-in) */
                         command_functions[command](argc, argv, BACKGROUND, nextStdin, STDOUT);
                         haveArgs = 0;
                         break;
                     case '|':
-                        // Creo un pipe. Creo un proceso con stdout = pipe y actualizo nextStdin.
-                        // Llamo nuevamente a esta funcion con el nextStdin
+                        /* Create a special named pipe and run the first command, fixing its STDOUT to the pipe. */
+                        /* A new command is expected after the pipe */
                         nextCmd = 1;
                         char pipeName[20] = "/pipeCmd_";
                         char auxBuf[5];
                         itoa(pipeNumber++, auxBuf, 10);
                         int aux = newPipe(strcat(pipeName, auxBuf));
                         command_functions[command](argc, argv, FOREGROUND, nextStdin, aux);
+                        /* Change STDIN for next command to read from pipe. */
                         nextStdin = aux;
                         haveArgs = 0;
                         break;
                     default:
-                        // Guardo el parametro en argv y sumo en argc.
+                        /* Save the argument if room's available */
                         if (argc < 2)
                             strcpy(argv[argc++], vec);
                         break;
                 }
-            } else { // Ejecuto comando/proceso con nextStdin
+            } else {
+                /* Create a foreground process that executes the command (if not a built-in) */
                 command_functions[command](argc, argv, FOREGROUND, nextStdin, STDOUT);
             }
         } while (haveArgs != 0);
     } while (nextCmd != 0);
 
     return command;
-        
-        // exec_cmd(int argc, char * argv[], ground, stdin, stdout)
-
-    // Agregar que los comandos reciban el fd de salida (stdin no hace falta)
-
 }
 
-// Create Process (entrypoint, name, ground, inalias, outalias, argc, argv)
-
-// toDo: TODO LO QUE SE EJECUTA EN BACKGROUND NO PUEDE LEER DE STDIN
-
+/* Compare input until space to check which command was entered */
 static int getCommandIndex(char * input, int * cursor) {
     int initCursor = *cursor;
     int i = 0;
@@ -131,20 +138,8 @@ static int getCommandIndex(char * input, int * cursor) {
     return NO_CMD;
 }
 
-// void executeCommand(int command, int param1, int param2) {
-//     if (command != NO_CMD) {
-//         command_functions[command](param1, param2);
-//     }
-//     else
-//         puts("\nInvalid command");
-// }
-
+/* Help Built-in Command - Shows available commands */
 void help_cmd(int argc, char * argv[], int ground, int inFd, int outFd) {
-    int i;
-    for (i = 0; i < argc; i++) {
-        printf("\n\tARG: %s\n", argv[i]);
-    }
-
     putsFd("\nLos comandos validos son los siguientes: ", outFd);
     putsFd("\nhelp ~ Muestra los comandos validos", outFd);
     putsFd("\ndate ~ Muestra la fecha actual", outFd);
@@ -172,16 +167,19 @@ void help_cmd(int argc, char * argv[], int ground, int inFd, int outFd) {
     putsFd("\nexit ~ Termina la ejecucion", outFd);
 }
 
+/* Date Built-in Command - Shows date */
 void date_cmd(int argc, char * argv[], int ground, int inFd, int outFd) {
     char date[11];
     printfFd(outFd, "\nHoy es %s", getDate(date));
 }
 
+/* Time Built-in Command - Shows time */
 void time_cmd(int argc, char * argv[], int ground, int inFd, int outFd) {
     char time[9];
     printfFd(outFd, "\nSon las %s", getTime(time));
 }
 
+/* Sleep Command - Creates a process that stays blocked n seconds */
 void sleep_cmd(int argc, char * argv[], int ground, int inFd, int outFd) {
     int seconds;
     if (argc < 1 || (seconds = atoi(argv[0])) < 0) {
@@ -195,14 +193,17 @@ void sleep_cmd(int argc, char * argv[], int ground, int inFd, int outFd) {
     }
 }
 
+/* Clear Built-in Command - Clears terminal */
 void clear_cmd(int argc, char * argv[], int ground, int inFd, int outFd) {
     clearScreen();
 }
 
+/* Beep Built-in Command - Plays a beep */
 void beep_cmd(int argc, char * argv[], int ground, int inFd, int outFd) {
     beep(BEEP_FREQ, 300);
 }
 
+/* Door Built-in Command - Plays a sequence of beeps */
 void door_cmd(int argc, char * argv[], int ground, int inFd, int outFd) {
     beep(DOOR_FREQ, 300);
     sleep(300);
@@ -219,32 +220,38 @@ void door_cmd(int argc, char * argv[], int ground, int inFd, int outFd) {
     beep(DOOR_FREQ, 150);
 }
 
+/* Div_Zero Built-in Command - Executes a division by zero to trigger an exception */
 void div_zero_cmd(int argc, char * argv[], int ground, int inFd, int outFd) {
     int a = 10, b = 0;
     a = a / b;
     printf("%d", a);
 }
 
+/* Inv_Op Built-in Command - Executes an invalid operation to trigger an exception */
 void inv_op_cmd(int argc, char * argv[], int ground, int inFd, int outFd) {
     uint64_t invalid = 0xFFFFFFFFFFFF;
 	uint64_t * ptr = &invalid;
 	((void(*)())ptr)();
 }
 
+/* Exit Built-in Command - Prints a goodbye message. The main core will exit */
 void exit_cmd(int argc, char * argv[], int ground, int inFd, int outFd) {
-    putsFd("\nHasta Luego", outFd);
+    puts("\nHasta Luego");
 }
 
 /* --------------------------------------- */
 
+/* Mem Built-in Command - Prints current memory status */
 void mem_cmd(int argc, char * argv[], int ground, int inFd, int outFd) {
-    memStatus();
+    memStatus(outFd);
 }
 
+/* Ps Built-in Command - Prints current process list & status */
 void ps_cmd(int argc, char * argv[], int ground, int inFd, int outFd) {
-    ps();
+    ps(outFd);
 }
 
+/* Kill Built-in Command - Kills the process with PID entered via arguments */
 void kill_cmd(int argc, char * argv[], int ground, int inFd, int outFd) {
     int pid;
     if (argc < 1 || (pid = atoi(argv[0])) < 0) {
@@ -254,21 +261,25 @@ void kill_cmd(int argc, char * argv[], int ground, int inFd, int outFd) {
             puts("\nDelete unsuccesfull. Shell and Idle can't be killed.");
             return;
         }
-        int ret = kill(pid); // Devuelve el PID del proceso o 0 si no se borro
+        /* Returns the killed process's PID if successfull or 0 if not */
+        int ret = kill(pid);
         printf("\nDelete %s", (ret == 0) ? "unsuccesfull":"successfull");
     }
 }
 
+/* Block Built-in Command - Changes state between blocked and ready of the process with PID entered via arguments */
 void block_cmd(int argc, char * argv[], int ground, int inFd, int outFd) {
     int pid;
     if (argc < 1 || (pid = atoi(argv[0])) < 0) {
         puts("\nIngreso invalido. Debe ingresar el ID del proceso que desea cambiar de estado como primer argumento.");
     } else {
-        int ret = changeState(pid); // Devuelve 0 si sale bien, 1 sino
+        /* Returns 0 if successfull or 1 if not */
+        int ret = changeState(pid);
         printf("\nChange %s", (ret != 0) ? "unsuccesfull":"successfull");
     }
 }
 
+/* Nice Built-in Command - Changes priority of the process with PID entered via arguments */
 void nice_cmd(int argc, char * argv[], int ground, int inFd, int outFd) {
     int pid, priority;
     if (argc < 2 || (pid = atoi(argv[0])) < 0 || (priority = atoi(argv[1])) < 0) {
@@ -278,6 +289,7 @@ void nice_cmd(int argc, char * argv[], int ground, int inFd, int outFd) {
             puts("\nDelete unsuccesfull. Shell and Idle can't be modified.");
             return;
         }
+        /* Returns 0 if successfull, 1 if invalid PID or 2 if invalid priority number */
         int ret = setPriority(pid, priority); // Devuelve 0 si sale bien, 1 si no encuentra pid, 2 si error en prioridad
         switch (ret)
         {
@@ -294,12 +306,14 @@ void nice_cmd(int argc, char * argv[], int ground, int inFd, int outFd) {
     }
 }
 
+/* Loop Command - Creates a process that prints a message and sleeps in an infinite loop */
 void loop_cmd(int argc, char * argv[], int ground, int inFd, int outFd) {     
     int pid = newProcess("LOOP", argc, argv, ground, inFd, outFd);
     if (ground == BACKGROUND)
         printf("\nCreate %s. PID = %d", (pid == 0) ? "unsuccesfull":"successfull", pid);
 }
 
+/* Cat Command - Creates a process that prints stdin as recieved */
 void cat_cmd(int argc, char * argv[], int ground, int inFd, int outFd) {
     if (ground == BACKGROUND) {
         puts("\nNo puedes correr este comando en background! Requiere ingreso por STDIN.");
@@ -308,6 +322,7 @@ void cat_cmd(int argc, char * argv[], int ground, int inFd, int outFd) {
     }
 }
 
+/* WC Command - Creates a process that counts lines from STDIN */
 void wc_cmd(int argc, char * argv[], int ground, int inFd, int outFd) {
     if (ground == BACKGROUND) {
         puts("\nNo puedes correr este comando en background! Requiere ingreso por STDIN.");
@@ -316,6 +331,7 @@ void wc_cmd(int argc, char * argv[], int ground, int inFd, int outFd) {
     }
 }
 
+/* Filter Command - Creates a process that prints stdin filtering vowels */
 void filter_cmd(int argc, char * argv[], int ground, int inFd, int outFd) {
     if (ground == BACKGROUND) {
         puts("\nNo puedes correr este comando en background! Requiere ingreso por STDIN.");
@@ -324,14 +340,17 @@ void filter_cmd(int argc, char * argv[], int ground, int inFd, int outFd) {
     }
 }
 
+/* Sem Built-in Command - Prints current semaphore list & status */
 void sem_cmd(int argc, char * argv[], int ground, int inFd, int outFd) {
-    sem_status();
+    sem_status(outFd);
 }
 
+/* Pipe Built-in Command - Prints current pipes list & status */
 void pipe_cmd(int argc, char * argv[], int ground, int inFd, int outFd) {
-    pipe_status();
+    pipe_status(outFd);
 }
 
+/* Phylo Command - Creates a process that implements the phylosophers problem */
 void phylo_cmd(int argc, char * argv[], int ground, int inFd, int outFd) {
     if (ground == BACKGROUND) {
         puts("\nNo puedes correr este comando en background! Requiere ingreso por STDIN.");

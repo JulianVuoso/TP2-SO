@@ -48,20 +48,20 @@ void drawPixel(int x, int y, uint8_t r, uint8_t g, uint8_t b);
 /* Memory functions */
 void * malloc(uint32_t size);
 void free(void * ptr);
-void memStatus();
+void memStatus(uint64_t outFd);
 
 /* Processes functions */
 uint64_t fork(void * entryPoint, char * name);
 uint64_t newProcess(const char * name, uint64_t argc, char * argv[], uint64_t ground, uint64_t inFd, uint64_t outFd);
 uint64_t kill(uint64_t pid);
 uint64_t getPid();
-void ps();
+void ps(uint64_t outFd);
 uint64_t setPriority(uint64_t pid, uint64_t n);
 uint64_t changeState(uint64_t pid);
 
 uint64_t newPipe(char * name);
-void pipe_status();
-void sem_status();
+void pipe_status(uint64_t outFd);
+void sem_status(uint64_t outFd);
 
 extern uint64_t syscall(uint64_t rax, uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t rcx, uint64_t r8, uint64_t r9);
 
