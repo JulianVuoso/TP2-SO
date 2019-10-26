@@ -30,48 +30,97 @@ int newFd(char * name){
     return resultFd;
 }
 
+void initFds(){
+    /* Initialize List with fds: 0 1 2 */
+    initList("stdin");
+    addFdList("stdout");
+    addFdList("stderr");
+}
+
 /* Write on buffer given fd number */
 void write(int fd, const char * buffer, int count){
     
-    /* PARA PROBAR */
-    if(fd == 1){
-        print_N(buffer,count);
-        return;
-    }
-    if(fd == 2){
-        printError_N(buffer,count);
-        return;
-    }
+    if(count == 0) return 0;
 
-    NodeFd * node = searchFd(fd);
-    if(node == 0)    // Returns if FD not found
-        return;
-    
-    /* Copy buffer in FD */
-    waitSem(node->fd.sem);
-    for(int i=0; i<count; i++)
-        node->fd.buffer[i] = *(buffer++);
-    postSem(node->fd.sem);
+    if(fd < 3){
+        switch (fd)
+        {
+            case 1: print_N(buffer,count); 
+                    postSem(searchFd(1)); break;
+            case 2: printError_N(buffer, count);            
+                    postSem(searchFd(2)); break;
+            default: break;
+        }
+    }
+    else{
+        NodeFd * node = searchFd(fd);
+        if(node == 0)                   // Returns if FD not found
+            return;
+        
+        /* Copy buffer in FD */
+        int eof = 0, i;
+        node->fd.count++;
+        waitSem(node->fd.sem);          // Waiting for main semaphore in this fd 
+        for(i = node->fd.write_index ; i < count && eof == 0 ; i++){
+            node->fd.buffer[i] = *(buffer++);
+            if(*buffer == -1)
+                eof = 1;                // Must leave the writing 
+        }
+        node->fd.write_index = i;
+        node->fd.count--;
+        if (node->fd.count != 0 || eof == 1){
+            postSem(node->fd.semCant);  // Posting secondary semaphore for sync
+            eof = 0;
+        }
+        postSem(node->fd.sem);
+    }
 }
 
 /* Read from buffer given fd number */
 void read(int fd, char * buffer, int count){
+    if(count == 0) return;
     NodeFd * node = searchFd(fd);
-    if(node == 0)    // Returns if FD not found      
+    if(node == 0)                       // Returns if FD not found      
         return;
 
-    /* Copy buffer from FD */
-    waitSem(node->fd.sem);     
-    for(int i=0; i<count; i++)
-        *(buffer++) = node->fd.buffer[i];
-    postSem(node->fd.sem);
-}
+    static int eof = 0;                 // End Of File reception flag 
+    waitSem(node->fd.sem);              // Waiting for main semaphore in this fd
 
+    /* If characters not enough, increase variable and wait for them */
+    if( (node->fd.write_index - node->fd.read_index) < count ){
+        node->fd.count++;     
+        waitSem(node->fd.semCant);
+    }
+    
+    /* Copy buffer from FD if number of characters is enough */
+    int i=node->fd.read_index;
+    for(i; i<count && eof==0; i++){
+        *(buffer++) = node->fd.buffer[i++ % BUFFER_SIZE];
+        if(*buffer == -1)
+            eof = 1;
+    }
+    node->fd.read_index = i;            // Update index in fd
+
+    if(node->fd.count!=0 || eof!=0){           
+        postSem(node->fd.semCant);      // Posting secondary semaphore for sync
+        eof = 0;
+    }
+
+    /* Occasionally reset indexes */
+    if(node->fd.read_index == node->fd.write_index){
+        node->fd.read_index = 0;
+        node->fd.write_index = 0;
+    }
+
+    postSem(node->fd.sem);              // Posting main semaphore in this fd
+
+}
 
 /* Initializes list of fds */
 void initList(char* name){
     NodeFd * node = (NodeFd *) malloc(sizeof(NodeFd));
     node->fd.name = name; 
+
     node->fd.fd = 0;
     first = node;
     last = node;
@@ -83,6 +132,7 @@ void addFdList(char* name){
     nodefd->fd.name = name; 
     nodefd->fd.fd = last->fd.fd + 1;
     nodefd->fd.sem = newSem(name, 1);
+    nodefd->fd.semCant = newSem(name + '2', 1);
     last->next = nodefd;
     last = nodefd;
 }

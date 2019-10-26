@@ -32,7 +32,8 @@
         "filedescriptors.h": "c",
         "__node_handle": "c",
         "stack.h": "c",
-        "mutex.h": "c"
+        "mutex.h": "c",
+        "typeinfo": "c"
     },
     "files.exclude": {
         "**/*.o": true,

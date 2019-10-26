@@ -12,10 +12,12 @@
 typedef struct {
     char * name;
     int fd; 
+    int count;
     char buffer[BUFFER_SIZE];
     int read_index;
     int write_index; 
     Semaphore * sem;
+    Semaphore * semCant;
 } FileDescriptor;
 
 typedef struct node_fd {
@@ -25,6 +27,9 @@ typedef struct node_fd {
 
 /* Create new FD struct */
 int newFd(char * name);
+
+/* Add STDIN, OUT and ERROR fd nodes to fd list */
+void initFds();
 
 /* Write on buffer given fd number */
 void write(int fd, const char * buffer, int count);
