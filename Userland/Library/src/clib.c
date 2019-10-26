@@ -249,32 +249,33 @@ void drawPixel(int x, int y, uint8_t r, uint8_t g, uint8_t b) {
 
 /* Aloca un bloque de al menos size memoria y devuelve un void * apuntando a la direccion del bloque.
    En caso de no haber memoria disponible, devuelve NULL */
+/* Alloc a memory block of at leas size bytes and return a void * ptr to the block or 0 if error */
 void * malloc(uint32_t size) {
     return (void *) syscall(MALLOC_ID, size, 0, 0, 0, 0, 0);
 }
 
-/* Libera el bloque de memoria apuntado por ptr */
+/* Free the memory block pointed by ptr */
 void free(void * ptr) {
     syscall(FREE_ID, (uint64_t) ptr, 0, 0, 0, 0, 0);
 }
 
-/* Imprime el tamaño de la memoria, el tamaño ocupado de memoria y el tamaño libre de memoria (STDOUT) */
+/* Print memory size, occupied memory and free memory (STDOUT) */
 void memStatus() {
     syscall(STATUS_ID, STDOUT, 0, 0, 0, 0, 0);
 }
 
-/* Imprime el tamaño de la memoria, el tamaño ocupado de memoria y el tamaño libre de memoria (outFd) */
+/* Print memory size, occupied memory and free memory (outFd) */
 void memStatusFd(uint64_t outFd) {
     syscall(STATUS_ID, outFd, 0, 0, 0, 0, 0);
 }
 
-/* Crea un nuevo proceso a partir de un entryPoint */
+/* Create a new process based on an entryPoint */
 // DEPRECADA
 uint64_t fork(void * entryPoint, char * name) {
     return syscall(NEW_PROC_ID, (uint64_t) entryPoint, (uint64_t) name, 0, 0, 0, 0);
 }
 
-/* Crea un nuevo proceso a partir de su nombre */
+/* Create a new process based on its name */
 uint64_t newProcess(const char * name, uint64_t argc, char * argv[], uint64_t ground, uint64_t inFd, uint64_t outFd) {
     if (ground == FOREGROUND || ground == BACKGROUND)
         return syscall(NEW_PROC_ID, (uint64_t) name, argc, (uint64_t) argv, ground, inFd, outFd);
@@ -311,15 +312,18 @@ uint64_t changeState(uint64_t pid) {
     return syscall(SET_STATE_ID, pid, 0, 0, 0, 0, 0);
 }
 
+/* Create a new named pipe */
 uint64_t newPipe(char * name) {
     // return syscall(PIPE_ID, name, 0, 0, 0, 0, 0);
     return 0;
 }
 
+/* List all pipes (STDOUT) */
 void pipeStatus() {
     // syscall(PIPE_STATUS_ID, STDOUT, 0, 0, 0, 0, 0);
 }
 
+/* List all pipes (outFd) */
 void pipeStatusFd(uint64_t outFd) {
     // syscall(PIPE_STATUS_ID, outFd, 0, 0, 0, 0, 0);
 }
@@ -329,10 +333,12 @@ void pipeStatusFd(uint64_t outFd) {
 // wait
 // post
 
+/* List all semaphores (STDOUT) */
 void semStatus() {
     // syscall(SEM_STATUS_ID, STDOUT, 0, 0, 0, 0, 0);
 }
 
+/* List all semaphores (outFd) */
 void semStatusFd(uint64_t outFd) {
     // syscall(SEM_STATUS_ID, outFd, 0, 0, 0, 0, 0);
 }
