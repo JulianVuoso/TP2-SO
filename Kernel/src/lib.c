@@ -1,6 +1,6 @@
 // This is a personal academic project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
-#include <stdint.h>
+#include <lib.h>
 
 void * memset(void * destination, int32_t c, uint64_t length) {
 	uint8_t chr = (uint8_t)c;
@@ -42,4 +42,13 @@ void * memcpy(void * destination, const void * source, uint64_t length) {
 	}
 
 	return destination;
+}
+
+/* Gets pow */
+uint64_t pow(int base, int exponent) {
+	int result = 1;
+	for (uint64_t i = 0; i < exponent; i++){
+		result = result * base;
+	}
+	return result;
 }

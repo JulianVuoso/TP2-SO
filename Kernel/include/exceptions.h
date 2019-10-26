@@ -1,7 +1,5 @@
-#ifndef EXCEPTIONS_H_
-#define EXCEPTIONS_H_
-
-#include <stdint.h>
+#ifndef _EXCEPTIONS_H_
+#define _EXCEPTIONS_H_
 
 void exceptionDispatcher(int exc);
 void getRegisters();

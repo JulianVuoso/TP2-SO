@@ -1,135 +1,108 @@
 // This is a personal academic project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <stdint.h>
+#include <lib.h>
 #include <interrupts.h>
 #include <memoryManager.h>
 #include <scheduler.h>
+#include <process.h>
 
 #include <timelib.h>
 
 /* Some static functions for list management */
 static void addNodeT(uint64_t pid, uint64_t time);
-static void removeNextT(NodeTime * node);
-static void removeFirstT();
-static void updateListT();
+static void updateList();
 
 /* static variables */
-static NodeTime * addressT = 0;
 static NodeTime * firstT = 0;
 static unsigned long ticks = 0;
 
+/* Handles timer */
 void timer_handler() {
 	ticks++;
-    updateListT();
+    updateList();
 }
 
+/* Count of elapsed ticks */
 int ticks_elapsed() {
 	return ticks;
 }
 
+/* Seconds elapsed */
 int seconds_elapsed() {
 	return ticks / 18;
 }
 
+/* Syscall calls here */
 void sleep(uint64_t millis) {
     if (millis < 55) return;
     uint64_t pid = getPid();
     addNodeT(pid, millis);
-    block(TIME);
+    block(0);
 }
 
 /* Updates the values off all the waiting processes */
-static void updateListT() {
-    int var = 0;
-    if (addressT == 0) return;
+static void updateList() {
+    NodeTime * iterator = firstT;
     NodeTime * prev = firstT;
-    do {
-        var = 0;
-        for (NodeTime * aux = prev; aux != 0; aux = aux->n.next) {
-            if (--(aux->n.time) == 0) {
-                uint64_t pid = aux->n.pid;
-                if (prev == aux) {
-                    removeFirstT();
-                    prev = firstT;
-                } 
-                else{
-                    removeNextT(prev);
-                    prev = prev->n.next;  
-                } 
-                setState(pid, READY);
-                var = 1;
-                break;
-            }
-            prev = aux;
-        }
-    } while (var);
-}
 
-/* Memory manager for the nodes */
-static NodeTime * newNodeT();
-static void freeNodeT(NodeTime * node);
-static void cleanMemT();
+    /* We iterate on list */
+    while (iterator != 0) {
 
-/* Removes a node given its pid */
-void removeNodeT(uint64_t pid) {
-    if (addressT == 0 || firstT == 0) return;
+        /* We free the process */
+        if (--(iterator->time) == 0) {
+            NodeTime * next = iterator->next;
+            setState(iterator->pid, READY);
+            free(iterator);
 
-    /* If its the first one */
-    if (firstT->n.pid == pid) removeFirstT();
+            /* First node */
+            if (prev->next == next) {
+                firstT = next;
+                prev = next;
+            } else prev->next = next;
+            iterator = next;
 
-    NodeTime * aux;
-    for (aux = firstT; aux->n.next != 0 && aux->n.next->n.pid != pid; aux = aux->n.next);
-    if (aux->n.next == 0) return; // Not found
-    removeNextT(aux);
-}
-
-/* Removes first node */
-static void removeFirstT() {
-    NodeTime * aux = firstT;
-    firstT = firstT->n.next;
-    freeNodeT(aux);
+        } else {
+            /* Normal iteration */
+            prev = iterator;
+            iterator = iterator->next;
+        }        
+    }
 }
 
 /* Removes the next node of the given one */
 static void removeNextT(NodeTime * node) {
-    NodeTime * freeAux = node->n.next;
-    node->n.next = node->n.next->n.next;
-    freeNodeT(freeAux);
+    NodeTime * freeAux = node->next;
+    node->next = node->next->next;
+    free(freeAux);
+}
+
+/* Removes a node given its pid */
+void removeNodeT(uint64_t pid) {
+    if (firstT == 0) return;
+
+    NodeTime * aux = firstT;
+
+    /* If its the first one */
+    if (firstT->pid == pid) {
+        firstT = firstT->next;
+        free(aux);
+        return;
+    }
+
+    for (aux = firstT; aux->next != 0 && aux->next->pid != pid; aux = aux->next);
+    if (aux->next == 0) return; // Not found
+    removeNextT(aux);
 }
 
 /* Adds a Node to the begining of the list */
 static void addNodeT(uint64_t pid, uint64_t time) {
-    if (addressT == 0) {
-        addressT = (NodeTime *)malloc(SIZE);
-        cleanMemT();  
-    }
-    NodeTime * node = newNodeT();
-    node->n.pid = pid;
-    node->n.time = time / TICK_LENGTH;
-    node->n.next = 0;
+   
+    NodeTime * node = (NodeTime *)malloc(sizeof(NodeTime));
+    node->pid = pid;
+    node->time = time / TICK_LENGTH;
+    node->next = 0;
 
-    if (firstT != 0) node->n.next = firstT;    
+    if (firstT != 0) node->next = firstT;    
     firstT = node;
-}
-
-/* Returns direction of a new Node */
-static NodeTime * newNodeT() {
-    for (uint64_t i = 0; i < SIZE / sizeof(NodeTime); i++) {
-        if ((addressT+i)->n.used == 0) {
-            (addressT+i)->n.used = 1;
-            return addressT+i;
-        }
-    }
-    return 0;    
-}
-
-/* Frees the Node given */
-static void freeNodeT(NodeTime * node) {
-    node->n.used = 0;
-}
-
-/* Sets all available places to free */
-static void cleanMemT() {
-    for (uint64_t i = 0; i < SIZE / sizeof(NodeTime); i++)
-        (addressT+i)->n.used = 0;    
 }

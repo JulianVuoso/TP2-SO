@@ -9,11 +9,12 @@
 #include <defs.h>
 #include <videoDriver.h>
 #include <console.h>
-//#include <timelib.h>
+#include <timelib.h>
 #include <memoryManager.h>
 #include <tests.h>
 #include <scheduler.h>
 #include <moduleAddresses.h>
+#include <process.h>
 
 extern uint8_t text;
 extern uint8_t rodata;
@@ -23,6 +24,7 @@ extern uint8_t endOfKernelBinary;
 extern uint8_t endOfKernel;
 
 static const uint64_t PageSize = 0x1000;
+static const uint64_t Block = 0x1000 / 128;
 static const uint64_t MaxPages = 1024;
 
 typedef int (*EntryPoint)();
@@ -84,7 +86,7 @@ void * initializeKernelBinary()
 }
 
 int main() {
-	create(shellModuleAddress, "SHELL", FORE);
+	create(shellModuleAddress, "SHELL", FORE, 0, 0);
 	while (!checkLoaded());
 	// create(processAModuleAddress, "SHELL", FORE);
 	// while (!checkLoaded());

@@ -1,5 +1,9 @@
-#ifndef VIDEODRIVER_H_
-#define VIDEODRIVER_H_
+/***************************************************
+                    VideoDriver.h
+****************************************************/
+
+#ifndef _VIDEODRIVER_H_
+#define _VIDEODRIVER_H_
 
 #include <stdint.h>
 #include <lib.h>

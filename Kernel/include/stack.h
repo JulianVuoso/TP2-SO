@@ -1,13 +1,11 @@
 /***************************************************
-    Stack.h
+   					Stack.h
 ****************************************************/
 
 #ifndef _STACK_H_
 #define _STACK_H_
 
-#include <stdint.h>
-
-typedef struct StackFrame {
+typedef struct stack_frame {
     uint64_t r15;
 	uint64_t r14;
 	uint64_t r13;
@@ -31,6 +29,7 @@ typedef struct StackFrame {
     uint64_t returnAddress;
 } StackFrame;
 
+/* Initializes stack */
 StackFrame initStack(void * entryPoint, void * stackBase);
 
 #endif /* _STACK_H_ */

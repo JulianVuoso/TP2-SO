@@ -1,5 +1,9 @@
-#ifndef TYPES_H_
-#define TYPES_H_
+/***************************************************
+                    Types.h
+****************************************************/
+
+#ifndef _TYPES_H_
+#define _TYPES_H_
 
 typedef struct Color{
     int r;

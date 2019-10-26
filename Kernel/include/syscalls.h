@@ -1,8 +1,7 @@
-#ifndef SYSCALLS_H_
-#define SYSCALLS_H_
+#ifndef _SYSCALLS_H_
+#define _SYSCALLS_H_
 
 #include <stdint.h>
-#include <lib.h>
 #include <process.h>
 
 void read_handler(uint64_t fd, char * buff, uint64_t count);

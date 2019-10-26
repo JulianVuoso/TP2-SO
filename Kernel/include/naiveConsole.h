@@ -1,5 +1,9 @@
-#ifndef NAIVE_CONSOLE_H
-#define NAIVE_CONSOLE_H
+/***************************************************
+                    NaiveConsole.h
+****************************************************/
+
+#ifndef _NAIVE_CONSOLE_H_
+#define _NAIVE_CONSOLE_H_
 
 #include <stdint.h>
 

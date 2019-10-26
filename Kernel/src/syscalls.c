@@ -1,17 +1,19 @@
 // This is a personal academic project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
-#include <syscalls.h>
+#include <process.h>
+#include <stdint.h>
+#include <lib.h>
 #include <keyboard.h>
 #include <timelib.h>
 #include <console.h>
 #include <naiveConsole.h>
 #include <sound.h>
 #include <memoryManager.h>
-#include <process.h>
 #include <scheduler.h>
 #include <interrupts.h>
-#include <write.h>
 #include <moduleAddresses.h>
+#include <fileDescriptors.h>
+#include <syscalls.h>
 
 extern void hang(); // Ubicada en loader.asm
 static void * getModuleAddress(char * name);
@@ -87,7 +89,7 @@ uint64_t create_handler(char * name, uint64_t argc, char ** argv, level context,
     void * entryPoint = getModuleAddress(name);
     if (entryPoint == 0) // NOT FOUND
         return 0;
-    return create(entryPoint, name, context);
+    return create(entryPoint, name, context, inFd, outFd);
 }
 
 static int strcmp (const char *t, const char *s) {
@@ -134,8 +136,7 @@ uint64_t setPriority_handler(uint64_t pid, uint8_t prio) {
 
 uint64_t changeState_handler(uint64_t pid) {
     states state = getState(pid);
-	switch (state)
-	{
+	switch (state) {
 		case READY:
 			return setState(pid, BLOCKED);
 		case BLOCKED:

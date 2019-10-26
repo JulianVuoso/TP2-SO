@@ -1,10 +1,12 @@
-#include <stack.h>
+#include <stdint.h>
 #include <scheduler.h>
 #include <process.h>
 
+#include <stack.h>
+
+/* Initializes stack */
 StackFrame initStack(void * entryPoint, void * stackBase) {
     StackFrame ret;
-    // No hace falta inicializar los registros.
     ret.r15 = 0x0;
 	ret.r14 = 0x0;
 	ret.r13 = 0x0;

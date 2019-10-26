@@ -1,11 +1,5 @@
-// This is a personal academic project. Dear PVS-Studio, please check it.
-// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
-//
-// Created by nacho on 12/06/19.
-//
-
-#include <strings.h>
 #include <stdint.h>
+#include <strings.h>
 
 int strlen(char * str){
     int ret = 0;
@@ -13,15 +7,33 @@ int strlen(char * str){
     return ret;
 }
 
-uint32_t int_to_string(uint64_t value, char * buffer, uint32_t base)
-{
+/* Copies one string onto a destination */
+void stringcp(char * destination, char * origin) {
+	while (*origin) {
+		*destination = *origin;
+		destination++;
+		origin++;
+	}
+}
+
+/* Compares two strings */
+int stringcmp(char * str1, char * str2) {
+	while (*str1 && *str2) {
+		if (*str1 != *str2) return 0;
+		str1++;
+		str2++;
+	}
+	if (*str1 == *str2) return 1;
+	return 0;
+}
+
+uint32_t int_to_string(uint64_t value, char * buffer, uint32_t base) {
     char *p = buffer;
     char *p1, *p2;
     uint32_t digits = 0;
 
     //Se calcula el digito correspondiente para cada caracter
-    do
-    {
+    do {
         uint32_t remainder = value % base;
         *p++ = (remainder < 10) ? remainder + '0' : remainder + 'A' - 10;
         digits++;

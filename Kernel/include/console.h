@@ -1,5 +1,5 @@
-#ifndef CONSOLE_H_
-#define CONSOLE_H_
+#ifndef _CONSOLE_H_
+#define _CONSOLE_H_
 
 #include <stdint.h>
 #include <types.h>
