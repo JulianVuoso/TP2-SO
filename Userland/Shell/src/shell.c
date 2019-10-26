@@ -342,12 +342,12 @@ void filter_cmd(int argc, char * argv[], int ground, int inFd, int outFd) {
 
 /* Sem Built-in Command - Prints current semaphore list & status */
 void sem_cmd(int argc, char * argv[], int ground, int inFd, int outFd) {
-    sem_status(outFd);
+    semStatus(outFd);
 }
 
 /* Pipe Built-in Command - Prints current pipes list & status */
 void pipe_cmd(int argc, char * argv[], int ground, int inFd, int outFd) {
-    pipe_status(outFd);
+    pipeStatus(outFd);
 }
 
 /* Phylo Command - Creates a process that implements the phylosophers problem */
