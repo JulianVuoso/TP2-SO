@@ -1,5 +1,12 @@
 // This is a personal academic project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
+#include <stdint.h>
+#include <lib.h>
+#include <interrupts.h>
+#include <memoryManager.h>
+#include <scheduler.h>
+#include <process.h>
+
 #include <timelib.h>
 
 /* Some static functions for list management */
@@ -31,7 +38,7 @@ void sleep(uint64_t millis) {
     if (millis < 55) return;
     uint64_t pid = getPid();
     addNodeT(pid, millis);
-    block(-1);
+    block(0);
 }
 
 /* Updates the values off all the waiting processes */

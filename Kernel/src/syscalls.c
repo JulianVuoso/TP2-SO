@@ -1,5 +1,18 @@
 // This is a personal academic project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
+#include <process.h>
+#include <stdint.h>
+#include <lib.h>
+#include <keyboard.h>
+#include <timelib.h>
+#include <console.h>
+#include <naiveConsole.h>
+#include <sound.h>
+#include <memoryManager.h>
+#include <scheduler.h>
+#include <interrupts.h>
+#include <fileDescriptors.h>
+
 #include <syscalls.h>
 
 extern void hang(); // Ubicada en loader.asm

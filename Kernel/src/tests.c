@@ -1,3 +1,8 @@
+#include <stdint.h>
+#include <syscalls.h>
+#include <console.h>
+#include <memoryManager.h>
+
 #include <tests.h>
 
 void testMemoryManager() {

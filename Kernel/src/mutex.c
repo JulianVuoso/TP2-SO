@@ -1,3 +1,11 @@
+#include <stdint.h>
+#include <process.h>
+#include <memoryManager.h>
+#include <scheduler.h>
+#include <lib.h>
+#include <strings.h>
+#include <console.h>
+
 #include <mutex.h>
 
 static SemNode * list = 0;
@@ -6,7 +14,7 @@ static SemNode * list = 0;
 SemNode * newSem(char * name, uint64_t init) {
     
     /* If the semaphore already exists returns 0 */
-    if (list != 0 && open(name) != 0) return 0;
+    if (list != 0 && openSem(name) != 0) return 0;
 
     /* Creates Semaphore */
     Semaphore sem;

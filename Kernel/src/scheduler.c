@@ -1,3 +1,13 @@
+#include <stdint.h>
+#include <lib.h>
+#include <timelib.h>
+#include <memoryManager.h>
+#include <console.h>
+#include <interrupts.h>
+#include <moduleAddresses.h>
+#include <mutex.h>
+#include <process.h>
+
 #include <scheduler.h>
 
 /* Static search of a node */
@@ -119,7 +129,8 @@ uint64_t kill(uint64_t pid) {
             return pid;  
         }
         iterator = iterator->next;
-    } while (iterator != current);                 
+    } while (iterator != current);   
+    return 0;              
 }
 
 /* Sets priority of the process given its PID */

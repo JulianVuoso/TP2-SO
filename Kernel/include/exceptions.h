@@ -1,11 +1,6 @@
 #ifndef _EXCEPTIONS_H_
 #define _EXCEPTIONS_H_
 
-#include <stdint.h>
-#include <console.h>
-#include <interrupts.h>
-#include <timelib.h>	// Para usar la funcion de sleep
-
 void exceptionDispatcher(int exc);
 void getRegisters();
 

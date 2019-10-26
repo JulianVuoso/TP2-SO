@@ -5,9 +5,7 @@
 #ifndef _FILEDESC_H_
 #define _FILEDESC_H_
 
-#include <stdint.h>
 #include <mutex.h>
-#include <console.h>
 
 #define BUFFER_SIZE 50
 
@@ -20,16 +18,16 @@ typedef struct {
     Semaphore * sem;
 } FileDescriptor;
 
-typedef struct {
+typedef struct node_fd {
     FileDescriptor fd;
-    FileDescriptor * next;    
+    struct node_fd * next;    
 } NodeFd;
 
 /* Create new FD struct */
 int newFd(char * name);
 
 /* Write on buffer given fd number */
-void write(int fd, char * buffer, int count);
+void write(int fd, const char * buffer, int count);
 
 /* Read from buffer given fd number */
 void read(int fd, char * buffer, int count);

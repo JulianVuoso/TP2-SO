@@ -1,5 +1,9 @@
 // This is a personal academic project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
+#include <stdint.h>
+#include <lib.h>
+#include <console.h>
+
 #include <memoryManager.h>
 
 typedef union mem_node {
@@ -193,7 +197,7 @@ void * getLastAddress (void * ptr) {
 void printMemState() {
     node * freed = memory.freeList;
     print("\nLista de frees: \n");
-    while (free != 0) {
+    while (freed != 0) {
         print("- Size: %d", freed->n.size);
         print("- Address: 0x");
         printHex((uint64_t)freed->n.address);

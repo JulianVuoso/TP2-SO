@@ -6,8 +6,6 @@
 #ifndef _STRINGS_H_
 #define _STRINGS_H_
 
-#include <stdint.h>
-
 /* Gets lenght of string */
 int strlen(char * str);
 

@@ -5,19 +5,12 @@
 #ifndef _SCHEDULER_H_
 #define _SCHEDULER_H_
 
+#define MAX_PRIO 3
+#define SIZE 4000
 
-#include <stdint.h>
-#include <lib.h>
-#include <timelib.h>
-#include <memoryManager.h>
-#include <console.h>
-#include <interrupts.h>
-#include <moduleAddresses.h>
 #include <mutex.h>
 #include <process.h>
 
-#define MAX_PRIO 3
-#define SIZE 4000
 
 typedef struct node_sched{
     int used;

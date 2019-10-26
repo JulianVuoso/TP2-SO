@@ -1,3 +1,11 @@
+#include <mutex.h>
+#include <lib.h>
+#include <scheduler.h>
+#include <stack.h>
+#include <memoryManager.h>
+#include <console.h>
+#include <timelib.h>
+
 #include <process.h>
 
 /* Add FD with Alias to list while creating process */
@@ -52,8 +60,7 @@ void remove(Process p) {
 /* Frees all the resources used by the process */
 void freeResources(Process p) {
     if (p.state != BLOCKED) return;
-    if (p.sem == 0) return;
-    if (p.sem == -1) removeNodeT(p.pid);
+    if (p.sem == 0) removeNodeT(p.pid);
     else deallocateSem(p.sem, p.pid);    
 }
 

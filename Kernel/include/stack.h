@@ -5,10 +5,6 @@
 #ifndef _STACK_H_
 #define _STACK_H_
 
-#include <stdint.h>
-#include <scheduler.h>
-#include <process.h>
-
 typedef struct stack_frame {
     uint64_t r15;
 	uint64_t r14;

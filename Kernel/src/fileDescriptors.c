@@ -1,3 +1,8 @@
+#include <stdint.h>
+#include <console.h>
+#include <mutex.h>
+#include <process.h>
+
 #include <fileDescriptors.h>
 
 /* Find fd in list */ 
@@ -25,7 +30,7 @@ int newFd(char * name){
 }
 
 /* Write on buffer given fd number */
-void write(int fd, char * buffer, int count){
+void write(int fd, const char * buffer, int count){
     
     /* PARA PROBAR */
     if(fd == 1){
@@ -59,11 +64,11 @@ void read(int fd, char * buffer, int count){
 
 /* Initializes list of fds */
 void initList(char* name){
-    NodeFd * nodefd = (NodeFd *) malloc(sizeof(NodeFd));
-    nodefd->fd.name = name; 
-    nodefd->fd.fd = 0;
-    first = nodefd;
-    last = nodefd;
+    NodeFd * node = (NodeFd *) malloc(sizeof(NodeFd));
+    node->fd.name = name; 
+    node->fd.fd = 0;
+    first = node;
+    last = node;
 }
 
 /* Adds fd to list */
@@ -96,39 +101,3 @@ NodeFd * searchFd(int fd){
     } 
     return 0;
 }
-
-void write(int fd, char * buffer, int count){
-    
-    /*** PARA PROBAR ***/
-    if(fd == 1){
-        print_N(buffer,count);
-        return;
-    }
-    if(fd == 2){
-        printError_N(buffer,count);
-    }
-    /*******************/
-
-    NodeFd * node = searchFd(fd);
-    if(node == 0)    // Returns if FD not found
-        return;
-    
-    /* Copy buffer in FD */
-    waitSem(node->fd.sem);
-    for(int i=0; i<count; i++)
-        node->fd.buffer[i] = *(buffer++);
-    postSem(node->fd.sem);
-}
-
-void read(int fd, char * buffer, int count){
-    NodeFd * node = searchFd(fd);
-    if(node == 0)    // Returns if FD not found      
-        return;
-
-    /* Copy buffer from FD */
-    waitSem(node->fd.sem);    
-    for(int i=0; i<count; i++)
-        *(buffer++) = node->fd.buffer[i];
-    postSem(node->fd.sem);
-}
-

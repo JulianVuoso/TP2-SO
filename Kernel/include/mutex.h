@@ -6,18 +6,13 @@
 #define _MUTEX_H_
 
 #include <stdint.h>
-#include <process.h>
-#include <memoryManager.h>
-#include <scheduler.h>
-#include <lib.h>
-#include <strings.h>
 
 typedef struct wait_node {
     uint64_t pid;
     struct wait_node * next; 
 } WaitNode;
 
-typedef struct sem {
+typedef struct sem_data {
     char * name;
     uint64_t count;
     WaitNode * blocked;

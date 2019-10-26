@@ -6,12 +6,6 @@
 #define _PROCESS_H_
 
 #include <mutex.h>
-#include <lib.h>
-#include <scheduler.h>
-#include <stack.h>
-#include <memoryManager.h>
-#include <console.h>
-
 
 #define STACK_SIZE	3000
 

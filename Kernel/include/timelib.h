@@ -6,10 +6,6 @@
 #define _TIMELIB_H_
 
 #include <stdint.h>
-#include <lib.h>
-#include <interrupts.h>
-#include <memoryManager.h>
-#include <scheduler.h>
 
 #define SIZE 4000
 #define TICK_LENGTH     55  // Cantidad de ms que equivalen a un tick

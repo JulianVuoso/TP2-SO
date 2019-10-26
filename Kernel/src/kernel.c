@@ -14,6 +14,7 @@
 #include <tests.h>
 #include <scheduler.h>
 #include <moduleAddresses.h>
+#include <process.h>
 
 extern uint8_t text;
 extern uint8_t rodata;
@@ -23,7 +24,7 @@ extern uint8_t endOfKernelBinary;
 extern uint8_t endOfKernel;
 
 static const uint64_t PageSize = 0x1000;
-static const uint64_t Block = PageSize/128;
+static const uint64_t Block = 0x1000 / 128;
 static const uint64_t MaxPages = 1024;
 
 typedef int (*EntryPoint)();
