@@ -102,7 +102,3 @@ char toUpper(char car){
         car -= ('a' - 'A');
     return car;
 }
-
-unsigned int carRead () {
-    return save_index - read_index;
-} 
