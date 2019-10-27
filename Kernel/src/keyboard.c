@@ -39,7 +39,7 @@ void keyboard_handler() {
     if ((key >= 90 && key < 0x80) || key >= 0x80 + 90)
         return;
         
-    unsigned char car;
+    char car;
     if (key < 0x80){ // Aprieto tecla
         if (shift == 1)
             car = map[key];
@@ -61,13 +61,17 @@ void keyboard_handler() {
             default:
                 if (ctrl == 1) {
                     if (car == 'c'){
-                        buffer[save_index % BUFFER_SIZE] = SIGINT;
-                        write(0, buffer + save_index % BUFFER_SIZE, 1);
-                        save_index++;
+                        // buffer[save_index % BUFFER_SIZE] = SIGINT;
+                        car = SIGINT;
+                        // write(0, buffer + save_index % BUFFER_SIZE, 1);
+                        write(0, &car, 1);
+                        // save_index++;
                     } else if (car == 'd') {
-                        buffer[save_index % BUFFER_SIZE] = EOF;
-                        write(0, buffer + save_index % BUFFER_SIZE, 1);
-                        save_index++;
+                        // buffer[save_index % BUFFER_SIZE] = EOF;
+                        car = EOF;
+                        // write(0, buffer + save_index % BUFFER_SIZE, 1);
+                        write(0, &car, 1);
+                        // save_index++;
                     }
                 } else {
                     if (shift * caps == -1){ // Uno de los dos activos, paso a mayus
@@ -75,8 +79,9 @@ void keyboard_handler() {
                     } else{
                         buffer[save_index % BUFFER_SIZE] = car;
                     }
-                    write(0, buffer + save_index % BUFFER_SIZE, 1);
-                    save_index++;
+                    // write(0, buffer + save_index % BUFFER_SIZE, 1);
+                    write(0, &car, 1);
+                    // save_index++;
                 }
                 break;
         }

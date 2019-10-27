@@ -51,28 +51,40 @@ SemNode * openSem(char * name) {
 
 /* Delete NodeSem and ready next in list */
 void postSem(SemNode * sem) {
-    // print("\n##POST: Sem count: %d del semaforo %s. Sem BLOCKED esta en %d", sem->sem.count, sem->sem.name, (uint64_t)sem->sem.blocked);
+    // if (!stringcmp(sem->sem.name, "stdoutW")){
+    //     print("\n##POST: Sem count: %d del semaforo %s. Sem BLOCKED esta en 0x", sem->sem.count, sem->sem.name);
+    //     printHex((uint64_t)sem->sem.blocked);
+    // }    
     /* When count is > 0 or no process in list */
     if (sem->sem.count > 0 || sem->sem.blocked == 0) {
         atom_swap(&(sem->sem.count), sem->sem.count + 1);
-        // print("\n##POST: Sem count: %d del semaforo %s", sem->sem.count, sem->sem.name);
+        // if (!stringcmp(sem->sem.name, "stdoutW")) print("\n##POST: Sem count: %d del semaforo %s", sem->sem.count, sem->sem.name);
         return;
     }
 
     /* If count 0 and we have blocked processes */
     WaitNode * p = sem->sem.blocked;
+    print("\nSem: %s\t##SemBlo valia: 0x", sem->sem.name);
+    printHex((uint64_t) sem->sem.blocked);
+    print("\t##Con next: 0x");
+    printHex((uint64_t) sem->sem.blocked->next);
     sem->sem.blocked = sem->sem.blocked->next;
     setState(p->pid, READY);
-    free(p);
+    print("\t##Liber: 0x");
+    printHex((uint64_t) p);
+
+    print("\t##SemBlo quedo: 0x");
+    printHex((uint64_t) sem->sem.blocked);
+    free((void *)p);
 }
 
 /* Add NodeSem to list and block process */
 void waitSem(SemNode * sem) {
-    // print("\n##WAIT: Sem count: %d del semaforo %s", sem->sem.count, sem->sem.name);
+    // if (!stringcmp(sem->sem.name, "stdoutW")) print("\n##WAIT: Sem count: %d del semaforo %s", sem->sem.count, sem->sem.name);
     /* When count is >= 1 do not block or add to list */
     if (sem->sem.count >= 1) {
         atom_swap(&(sem->sem.count), sem->sem.count - 1);
-        // print("\n##WAIT: Sem count: %d del semaforo %s", sem->sem.count, sem->sem.name);
+        // if (!stringcmp(sem->sem.name, "stdoutW")) print("\n##WAIT: Sem count: %d del semaforo %s", sem->sem.count, sem->sem.name);
         return;
     }
 
@@ -81,11 +93,24 @@ void waitSem(SemNode * sem) {
     WaitNode * node = (WaitNode *)malloc(sizeof(WaitNode));
     node->pid = getPid();
     node->next = 0;
+
+    print("\nSem: %s\t##Mal: 0x", sem->sem.name);
+    printHex((uint64_t) node);
     
+    print("\t##SemBlo valia: 0x");
+    printHex((uint64_t) sem->sem.blocked);
+
+    print("\t##SemLast valia: 0x");
+    printHex((uint64_t) sem->sem.last);
     /* Add node to the list */
     if (sem->sem.blocked == 0) sem->sem.blocked = node;
     else sem->sem.last->next = node;
     sem->sem.last = node;
+
+    print("\t##SemBlo quedo: 0x");
+    printHex((uint64_t) sem->sem.blocked);
+    print("\t##Con next: 0x");
+    printHex((uint64_t) sem->sem.blocked->next);
 
     /* Block the current process with sem */
     block(sem);

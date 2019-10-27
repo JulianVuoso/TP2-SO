@@ -124,8 +124,8 @@ void printfFd(uint64_t fd, char * str, ...) {
     syscall(WRITE_ID, fd, (uint64_t) newStr, len, 0, 0, 0);
 }
 
-uint8_t getchar() {
-    uint8_t character;
+char getchar() {
+    char character;
     syscall(READ_ID, STDIN, (uint64_t) &character, 1, 0, 0, 0);
     return character;
 }
@@ -135,7 +135,7 @@ uint8_t getchar() {
 int gets(char * string, uint64_t size) {
     uint64_t index = 0;
     uint8_t car;
-    while (index < size - 1 && (car = getcharFd(STDIN)) != '\n' && car >= 0) {
+    while (index < size - 1 && (car = getcharFd(STDIN)) != '\n' && car != EOF) {
         if (car == '\b') {
             if (index > 0) {
                 index--;
@@ -147,13 +147,13 @@ int gets(char * string, uint64_t size) {
         }
     }
     string[index++] = 0;
-    if (car >= 0)
+    if (car != EOF)
         return index;
     return -1;
 }
 
-uint8_t getcharFd(uint64_t fd) {
-    uint8_t character;
+char getcharFd(uint64_t fd) {
+    char character;
     syscall(READ_ID, fd, (uint64_t) &character, 1, 0, 0, 0);
     return character;
 }

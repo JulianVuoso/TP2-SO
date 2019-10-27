@@ -50,22 +50,22 @@ void write(int fd, const char * buffer, int count){
     if(node == 0)                   // Returns if FD not found
         return;
 
-    waitSem(node->fd.sem);          // Waiting for main semaphore in this fd 
+    waitSem(node->fd.semWrite);          // Waiting for main semaphore in this fd 
 
     if(fd < 3){
         switch (fd)
         {
-            case 0: if (*buffer == -1 || (node->fd.count > 0 && node->fd.count <= (node->fd.write_index - node->fd.read_index)))
+            case 0: node->fd.buffer[node->fd.write_index++] = *(buffer);
+                    if (*buffer == -1 || (node->fd.count > 0 && node->fd.count <= (node->fd.write_index - node->fd.read_index)))
                         postSem(node->fd.semCant);
-                    node->fd.buffer[node->fd.write_index++] = *(buffer);
                     // print("\n\t\tRecibi tecla: ");
                     // print_char(*buffer);
                     // print(". Estoy esperando llegar a %d y voy %d", node->fd.count, node->fd.write_index - node->fd.read_index);
                     break;
             case 1: print_N(buffer, count); 
-                    postSem(node->fd.sem); break;
+                    break;
             case 2: printError_N(buffer, count);            
-                    postSem(node->fd.sem); break;
+                    break;
             default: break;
         }
     }
@@ -85,7 +85,7 @@ void write(int fd, const char * buffer, int count){
             // eof = 0;
         }
     }
-    postSem(node->fd.sem);
+    postSem(node->fd.semWrite);
 }
 
 /* Read from buffer given fd number */
@@ -142,14 +142,19 @@ void read(int fd, char * buffer, int count){
 /* Initializes list of fds */
 void initList(char* name){
     NodeFd * nodefd = (NodeFd *) malloc(sizeof(NodeFd));
-    nodefd->fd.name = name; 
+    nodefd->fd.name = (char *)malloc(strlen(name) + 1);
+    stringcp(nodefd->fd.name, name);
     nodefd->fd.fd = 0;
     nodefd->fd.sem = newSem(name, 1);
 
-    char aux[strlen(name) + 1], aux2[]="2";
+    char aux[strlen(name) + 1], aux2[]="2", aux3[]="W";
     stringcp(aux, name);
     strcat(aux, aux2);
     nodefd->fd.semCant = newSem(aux, 0);
+    stringcp(aux, name);
+    strcat(aux, aux3);
+    nodefd->fd.semWrite = newSem(aux, 1);
+
     nodefd->fd.count = 0;
     nodefd->fd.read_index = 0;
     nodefd->fd.write_index = 0;
@@ -162,14 +167,19 @@ void initList(char* name){
 /* Adds fd to list */
 void addFdList(char* name){
     NodeFd * nodefd = (NodeFd *) malloc(sizeof(NodeFd));
-    nodefd->fd.name = name; 
+    nodefd->fd.name = (char *)malloc(strlen(name) + 1);
+    stringcp(nodefd->fd.name, name);
     nodefd->fd.fd = last->fd.fd + 1;
     nodefd->fd.sem = newSem(name, 1);
 
-    char aux[strlen(name) + 1], aux2[]="2";
+    char aux[strlen(name) + 1], aux2[]="2", aux3[]="W";
     stringcp(aux, name);
     strcat(aux, aux2);
     nodefd->fd.semCant = newSem(aux, 0);
+    stringcp(aux, name);
+    strcat(aux, aux3);
+    nodefd->fd.semWrite = newSem(aux, 1);
+
     nodefd->fd.count = 0;
     nodefd->fd.read_index = 0;
     nodefd->fd.write_index = 0;
@@ -182,7 +192,7 @@ void addFdList(char* name){
 int searchName(char * name){
     NodeFd * aux = first;
     while(aux != 0){
-        if (aux->fd.name == name)
+        if (stringcmp(aux->fd.name, name))
             return aux->fd.fd;
         aux = aux->next;  
     } 

@@ -21,7 +21,9 @@
 #define FOREGROUND      0
 #define BACKGROUND      1
 
-#define MAX_LENGTH  100
+#define EOF         255
+
+#define MAX_LENGTH  200
 
 void puts(const char * string);
 void putsFd(const char * string, uint64_t fd);
@@ -30,9 +32,9 @@ void putchar(uint8_t character);
 void putcharFd(uint8_t character, uint64_t fd);
 void printf(char * str, ...);
 void printfFd(uint64_t fd, char * str, ...);
-uint8_t getchar(void);
+char getchar(void);
 int gets(char * string, uint64_t size);
-uint8_t getcharFd(uint64_t fd);
+char getcharFd(uint64_t fd);
 int getsFd(char * string, uint64_t size, uint64_t fd);
 void clearScreen(void);
 char * getDate(char * date);

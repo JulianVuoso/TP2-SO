@@ -18,11 +18,12 @@ char * strcat (char *destination, char *origin) {
 
 /* Copies one string onto a destination */
 void stringcp(char * destination, char * origin) {
-	while (*origin) {
+    while (*origin != 0) {
 		*destination = *origin;
 		destination++;
 		origin++;
-	}
+	};
+	*destination = 0;
 }
 
 /* Compares two strings */

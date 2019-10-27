@@ -18,6 +18,7 @@ typedef struct {
     int write_index; 
     SemNode * sem;
     SemNode * semCant;
+    SemNode * semWrite;
 } FileDescriptor;
 
 typedef struct NodeFd {
