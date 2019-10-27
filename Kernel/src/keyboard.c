@@ -8,6 +8,8 @@
 #define EOF     -1
 #define SIGINT  -2
 
+#define BUFFER_SIZE 100
+
 char buffer[BUFFER_SIZE];
 unsigned int save_index = 0;
 unsigned int read_index = 0;
@@ -62,12 +64,12 @@ void keyboard_handler() {
                 if (ctrl == 1) {
                     if (car == 'c'){
                         buffer[save_index % BUFFER_SIZE] = SIGINT;
+                        write(0, buffer + save_index % BUFFER_SIZE, 1);
                         save_index++;
-                        write(0, buffer, 1);
                     } else if (car == 'd') {
                         buffer[save_index % BUFFER_SIZE] = EOF;
+                        write(0, buffer + save_index % BUFFER_SIZE, 1);
                         save_index++;
-                        write(0, buffer, 1);
                     }
                 } else {
                     if (shift * caps == -1){ // Uno de los dos activos, paso a mayus
@@ -75,8 +77,8 @@ void keyboard_handler() {
                     } else{
                         buffer[save_index % BUFFER_SIZE] = car;
                     }
+                    write(0, buffer + save_index % BUFFER_SIZE, 1);
                     save_index++;
-                    write(0, buffer, 1);
                 }
                 break;
         }
@@ -102,3 +104,7 @@ char toUpper(char car){
         car -= ('a' - 'A');
     return car;
 }
+
+unsigned int carRead () {
+    return save_index - read_index;
+} 

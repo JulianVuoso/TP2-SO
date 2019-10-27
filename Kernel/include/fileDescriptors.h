@@ -20,9 +20,9 @@ typedef struct {
     Semaphore * semCant;
 } FileDescriptor;
 
-typedef struct node_fd {
+typedef struct NodeFd {
     FileDescriptor fd;
-    struct node_fd * next;    
+    struct NodeFd * next;    
 } NodeFd;
 
 /* Create new FD struct */

@@ -4,6 +4,7 @@
 #include <process.h>
 #include <memoryManager.h>
 
+#include <keyboard.h>
 #include <fileDescriptors.h>
 
 /* Find fd in list */ 
@@ -40,37 +41,41 @@ void initFds(){
 /* Write on buffer given fd number */
 void write(int fd, const char * buffer, int count){
     
-    if(count == 0) return 0;
+    if(count == 0) return;
+
+    NodeFd * node = searchFd(fd);
+    if(node == 0)                   // Returns if FD not found
+        return;
+
+    waitSem(node->fd.sem);          // Waiting for main semaphore in this fd 
 
     if(fd < 3){
         switch (fd)
         {
-            case 1: print_N(buffer,count); 
-                    postSem(searchFd(1)); break;
+            case 0: if (*buffer == -1 || (node->fd.count > 0 && node->fd.count < carRead()))
+                        postSem(node->fd.semCant);
+                    break;
+            case 1: print_N(buffer, count); 
+                    postSem(node->fd.sem); break;
             case 2: printError_N(buffer, count);            
-                    postSem(searchFd(2)); break;
+                    postSem(node->fd.sem); break;
             default: break;
         }
     }
-    else{
-        NodeFd * node = searchFd(fd);
-        if(node == 0)                   // Returns if FD not found
-            return;
-        
+    else{    
         /* Copy buffer in FD */
         int eof = 0, i;
-        node->fd.count++;
-        waitSem(node->fd.sem);          // Waiting for main semaphore in this fd 
-        for(i = node->fd.write_index ; i < count && eof == 0 ; i++){
+        // node->fd.count++;
+        for(i = node->fd.write_index ; i < (count + node->fd.write_index) && eof == 0 ; i++){
             node->fd.buffer[i] = *(buffer++);
             if(*buffer == -1)
                 eof = 1;                // Must leave the writing 
         }
         node->fd.write_index = i;
-        node->fd.count--;
-        if (node->fd.count != 0 || eof == 1){
+        // node->fd.count--;
+        if (eof == 1 || (node->fd.count > 0 && node->fd.count < count)){
             postSem(node->fd.semCant);  // Posting secondary semaphore for sync
-            eof = 0;
+            // eof = 0;
         }
         postSem(node->fd.sem);
     }
@@ -88,23 +93,25 @@ void read(int fd, char * buffer, int count){
 
     /* If characters not enough, increase variable and wait for them */
     if( (node->fd.write_index - node->fd.read_index) < count ){
-        node->fd.count++;     
+        // node->fd.count++;     
+        node->fd.count = count;
         waitSem(node->fd.semCant);
     }
     
     /* Copy buffer from FD if number of characters is enough */
-    int i=node->fd.read_index;
-    for(i; i<count && eof==0; i++){
+    int i;
+    for(i = node->fd.read_index; i < node->fd.read_index + count && eof == 0; i++){
         *(buffer++) = node->fd.buffer[i++ % BUFFER_SIZE];
         if(*buffer == -1)
             eof = 1;
     }
     node->fd.read_index = i;            // Update index in fd
 
-    if(node->fd.count!=0 || eof!=0){           
+    /*
+    if(node->fd.count != 0 || eof != 0){           
         postSem(node->fd.semCant);      // Posting secondary semaphore for sync
         eof = 0;
-    }
+    }*/
 
     /* Occasionally reset indexes */
     if(node->fd.read_index == node->fd.write_index){
@@ -132,7 +139,7 @@ void addFdList(char* name){
     nodefd->fd.name = name; 
     nodefd->fd.fd = last->fd.fd + 1;
     nodefd->fd.sem = newSem(name, 1);
-    nodefd->fd.semCant = newSem(name + '2', 1);
+    nodefd->fd.semCant = newSem(name + '2', 0);
     last->next = nodefd;
     last = nodefd;
 }

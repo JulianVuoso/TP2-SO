@@ -5,8 +5,6 @@
 #ifndef _KEYBOARD_H_
 #define _KEYBOARD_H_
 
-#define BUFFER_SIZE 50
-
 #define UP_KEY  24
 #define LEFT_KEY  27
 #define RIGHT_KEY  26
@@ -17,5 +15,7 @@ void keyboard_handler();
 
 /* Returns the char in Upper */
 char toUpper(char car);
+
+unsigned int carRead();
 
 #endif
