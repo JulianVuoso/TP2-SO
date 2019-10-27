@@ -8,8 +8,6 @@
 #define EOF     -1
 #define SIGINT  -2
 
-#define BUFFER_SIZE 100
-
 char buffer[BUFFER_SIZE];
 unsigned int save_index = 0;
 unsigned int read_index = 0;

@@ -51,9 +51,11 @@ SemNode * openSem(char * name) {
 
 /* Delete NodeSem and ready next in list */
 void postSem(SemNode * sem) {
+    // print("\n##POST: Sem count: %d del semaforo %s. Sem BLOCKED esta en %d", sem->sem.count, sem->sem.name, (uint64_t)sem->sem.blocked);
     /* When count is > 0 or no process in list */
     if (sem->sem.count > 0 || sem->sem.blocked == 0) {
         atom_swap(&(sem->sem.count), sem->sem.count + 1);
+        // print("\n##POST: Sem count: %d del semaforo %s", sem->sem.count, sem->sem.name);
         return;
     }
 
@@ -66,9 +68,11 @@ void postSem(SemNode * sem) {
 
 /* Add NodeSem to list and block process */
 void waitSem(SemNode * sem) {
+    // print("\n##WAIT: Sem count: %d del semaforo %s", sem->sem.count, sem->sem.name);
     /* When count is >= 1 do not block or add to list */
     if (sem->sem.count >= 1) {
         atom_swap(&(sem->sem.count), sem->sem.count - 1);
+        // print("\n##WAIT: Sem count: %d del semaforo %s", sem->sem.count, sem->sem.name);
         return;
     }
 
@@ -76,6 +80,7 @@ void waitSem(SemNode * sem) {
     /* Create node to add */
     WaitNode * node = (WaitNode *)malloc(sizeof(WaitNode));
     node->pid = getPid();
+    node->next = 0;
     
     /* Add node to the list */
     if (sem->sem.blocked == 0) sem->sem.blocked = node;

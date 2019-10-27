@@ -7,6 +7,15 @@ int strlen(char * str){
     return ret;
 }
 
+/* Copies origin to the end of destination */
+char * strcat (char *destination, char *origin) {
+	char * aux=destination;
+	while (*destination)
+		destination++;
+	stringcp(destination, origin);
+	return aux;
+}
+
 /* Copies one string onto a destination */
 void stringcp(char * destination, char * origin) {
 	while (*origin) {

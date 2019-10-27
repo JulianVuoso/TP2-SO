@@ -3,9 +3,12 @@
 #include <mutex.h>
 #include <process.h>
 #include <memoryManager.h>
-
 #include <keyboard.h>
+
 #include <fileDescriptors.h>
+
+
+#include <strings.h>
 
 /* Find fd in list */ 
 static int searchName(char * name);
@@ -52,8 +55,12 @@ void write(int fd, const char * buffer, int count){
     if(fd < 3){
         switch (fd)
         {
-            case 0: if (*buffer == -1 || (node->fd.count > 0 && node->fd.count < carRead()))
+            case 0: if (*buffer == -1 || (node->fd.count > 0 && node->fd.count <= (node->fd.write_index - node->fd.read_index)))
                         postSem(node->fd.semCant);
+                    node->fd.buffer[node->fd.write_index++] = *(buffer);
+                    // print("\n\t\tRecibi tecla: ");
+                    // print_char(*buffer);
+                    // print(". Estoy esperando llegar a %d y voy %d", node->fd.count, node->fd.write_index - node->fd.read_index);
                     break;
             case 1: print_N(buffer, count); 
                     postSem(node->fd.sem); break;
@@ -77,8 +84,8 @@ void write(int fd, const char * buffer, int count){
             postSem(node->fd.semCant);  // Posting secondary semaphore for sync
             // eof = 0;
         }
-        postSem(node->fd.sem);
     }
+    postSem(node->fd.sem);
 }
 
 /* Read from buffer given fd number */
@@ -88,20 +95,27 @@ void read(int fd, char * buffer, int count){
     if(node == 0)                       // Returns if FD not found      
         return;
 
+    // print("\n--Entre a read.");
     static int eof = 0;                 // End Of File reception flag 
     waitSem(node->fd.sem);              // Waiting for main semaphore in this fd
 
+    // print("\n--Pase el primer semaforo.");
+
     /* If characters not enough, increase variable and wait for them */
     if( (node->fd.write_index - node->fd.read_index) < count ){
-        // node->fd.count++;     
+        // node->fd.count++;
+        // print("\n--Seteo count.");
         node->fd.count = count;
         waitSem(node->fd.semCant);
     }
     
+    // print("\n--Pase el segundo semaforo.");
+
     /* Copy buffer from FD if number of characters is enough */
     int i;
     for(i = node->fd.read_index; i < node->fd.read_index + count && eof == 0; i++){
-        *(buffer++) = node->fd.buffer[i++ % BUFFER_SIZE];
+        *buffer = node->fd.buffer[i % BUFFER_SIZE];
+        buffer++;
         if(*buffer == -1)
             eof = 1;
     }
@@ -119,18 +133,30 @@ void read(int fd, char * buffer, int count){
         node->fd.write_index = 0;
     }
 
+    node->fd.count = 0;
     postSem(node->fd.sem);              // Posting main semaphore in this fd
 
+    // print("\n--Saliending.");
 }
 
 /* Initializes list of fds */
 void initList(char* name){
-    NodeFd * node = (NodeFd *) malloc(sizeof(NodeFd));
-    node->fd.name = name; 
+    NodeFd * nodefd = (NodeFd *) malloc(sizeof(NodeFd));
+    nodefd->fd.name = name; 
+    nodefd->fd.fd = 0;
+    nodefd->fd.sem = newSem(name, 1);
 
-    node->fd.fd = 0;
-    first = node;
-    last = node;
+    char aux[strlen(name) + 1], aux2[]="2";
+    stringcp(aux, name);
+    strcat(aux, aux2);
+    nodefd->fd.semCant = newSem(aux, 0);
+    nodefd->fd.count = 0;
+    nodefd->fd.read_index = 0;
+    nodefd->fd.write_index = 0;
+    // nodefd->fd.buffer??????
+
+    first = nodefd;
+    last = nodefd;
 }
 
 /* Adds fd to list */
@@ -139,7 +165,15 @@ void addFdList(char* name){
     nodefd->fd.name = name; 
     nodefd->fd.fd = last->fd.fd + 1;
     nodefd->fd.sem = newSem(name, 1);
-    nodefd->fd.semCant = newSem(name + '2', 0);
+
+    char aux[strlen(name) + 1], aux2[]="2";
+    stringcp(aux, name);
+    strcat(aux, aux2);
+    nodefd->fd.semCant = newSem(aux, 0);
+    nodefd->fd.count = 0;
+    nodefd->fd.read_index = 0;
+    nodefd->fd.write_index = 0;
+    // nodefd->fd.buffer??????
     last->next = nodefd;
     last = nodefd;
 }

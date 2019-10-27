@@ -7,7 +7,7 @@
 
 #include <mutex.h>
 
-#define BUFFER_SIZE 50
+#define BUFFER_SIZE 100
 
 typedef struct {
     char * name;
@@ -16,8 +16,8 @@ typedef struct {
     char buffer[BUFFER_SIZE];
     int read_index;
     int write_index; 
-    Semaphore * sem;
-    Semaphore * semCant;
+    SemNode * sem;
+    SemNode * semCant;
 } FileDescriptor;
 
 typedef struct NodeFd {

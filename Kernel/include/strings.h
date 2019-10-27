@@ -15,6 +15,9 @@ void stringcp(char * destination, char * origin);
 /* Compares two strings */
 int stringcmp(char * str1, char * str2);
 
+/* Copies origin to the end of destination */
+char * strcat (char *destination, char *origin);
+
 uint32_t int_to_string(uint64_t value, char * buffer, uint32_t base);
 
 #endif /* STRINGS_H_ */

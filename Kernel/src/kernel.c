@@ -15,6 +15,7 @@
 #include <scheduler.h>
 #include <moduleAddresses.h>
 #include <process.h>
+#include <fileDescriptors.h>
 
 extern uint8_t text;
 extern uint8_t rodata;
@@ -76,6 +77,7 @@ void * initializeKernelBinary()
 	void * startOfMem = (void *)(((uint8_t *) endOfModules + PageSize - (uint64_t) endOfModules % PageSize));
 	create_manager(startOfMem, PageSize, MaxPages);
 	initScheduler();
+	initFds();
 	initVideoDriver();
   	init_console();
  	
