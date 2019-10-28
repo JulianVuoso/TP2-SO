@@ -95,6 +95,9 @@ static void * find_block(node * n, uint64_t level) {
         if (n->state != F) return 0;
         else {
             n->state = O;
+            uint64_t aux = pow(2, n->level - header.minLevel);
+            header.free -= aux;
+            header.occupied += aux;
             return n->address;
         }
     }
@@ -130,6 +133,9 @@ static void merge_childs(node * n) {
 static uint64_t delete_block(node * n, void * ptr) {
     if (n->address == ptr) {
         n->state = F;
+        uint64_t aux = pow(2, n->level - header.minLevel);
+        header.free += aux;
+        header.occupied -= aux;
         return 1;
     }
     
@@ -146,7 +152,7 @@ static uint64_t delete_block(node * n, void * ptr) {
 
 /* Frees space on memory */
 void free(void * ptr) {
-    delete_block(header.nodes, ptr);
+    delete_block(header.nodes, ptr); 
 }
 
 /* Gets memory status */
