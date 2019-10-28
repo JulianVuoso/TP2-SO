@@ -53,4 +53,6 @@ fdPointer * addFd(int fd);
 /* Print process stack */
 void printProcessStack(Process p);
 
+void sigInt();
+
 #endif /* _PROCESS_H_ */

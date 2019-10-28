@@ -7,6 +7,7 @@
 #include <memoryManager.h>
 #include <console.h>
 #include <timelib.h>
+#include <strings.h>
 
 #include <process.h>
 
@@ -128,4 +129,9 @@ static fdPointer * addFdAlias(int inAlias, int outAlias){
     
     /* Return Node direction for being inserted in Process List */
     return in; 
+}
+
+void sigInt() {
+    if (getPid() > 1)
+        killCurrent();
 }

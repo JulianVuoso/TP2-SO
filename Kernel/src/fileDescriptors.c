@@ -58,7 +58,7 @@ void write(int fd, const char * buffer, int count){
         switch (fd)
         {
             case 0: node->fd.buffer[node->fd.write_index++] = *(buffer);
-                    if (*buffer == -1 || (node->fd.count > 0 && node->fd.count <= (node->fd.write_index - node->fd.read_index)))
+                    if (*buffer == EOF || (node->fd.count > 0 && node->fd.count <= (node->fd.write_index - node->fd.read_index)))
                         postSem(node->fd.semCant);
                     // print("\n\t\tRecibi tecla: ");
                     // print_char(*buffer);
@@ -77,7 +77,7 @@ void write(int fd, const char * buffer, int count){
         // node->fd.count++;
         for(i = node->fd.write_index ; i < (count + node->fd.write_index) && eof == 0 ; i++){
             node->fd.buffer[i] = *(buffer++);
-            if(*buffer == -1)
+            if(*buffer == EOF)
                 eof = 1;                // Must leave the writing 
         }
         node->fd.write_index = i;
@@ -118,7 +118,7 @@ void read(int fd, char * buffer, int count){
     for(i = node->fd.read_index; i < node->fd.read_index + count && eof == 0; i++){
         *buffer = node->fd.buffer[i % BUFFER_SIZE];
         buffer++;
-        if(*buffer == -1)
+        if(*buffer == EOF)
             eof = 1;
     }
     node->fd.read_index = i;            // Update index in fd

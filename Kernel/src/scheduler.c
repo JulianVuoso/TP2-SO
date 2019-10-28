@@ -35,7 +35,7 @@ uint64_t scheduler(uint64_t sp) {
         case 3: haltProcess->process.sp = sp; break;
         default: init = 3; return haltProcess->process.sp;
     }
-    print("\n--CURRENT: %d - %s, estado %d, init: %d", (uint64_t) current, current->process.name, current->process.state, init);
+    // print("\n--CURRENT: %d - %s, estado %d, init: %d", (uint64_t) current, current->process.name, current->process.state, init);
     /* If current process wasn't blocked and did not reach times */
     if(init != 3 && ++(current->times) < pow(2, MAX_PRIO - current->process.priority) && current->process.state != BLOCKED)
         return current->process.sp;
@@ -48,7 +48,7 @@ uint64_t scheduler(uint64_t sp) {
     /* Search for the next non blocked process on list */
     Node * aux = current;
     do {
-        print("Curr: %s", current->process.name);
+        // print("Curr: %s", current->process.name);
         current = current->next;
     } while (current->process.state != READY && aux->process.pid != current->process.pid);
 
@@ -123,8 +123,10 @@ uint8_t add(Process p) {
 /* Kills current process */
 void killCurrent() {
     int ppid = getPPid();
-    if (ppid >= 1 && current->process.context == FORE)
+    if (ppid >= 1 && current->process.context == FORE){
+        print("\n--PPID: %d", ppid);
         setState(ppid, READY);
+    }
     kill(getPid());
     force_timer_tick();
 }

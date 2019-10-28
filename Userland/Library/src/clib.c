@@ -134,8 +134,8 @@ char getchar() {
 /* Return # characters read if pressed Enter. Returns -1 if EOF recieved */
 int gets(char * string, uint64_t size) {
     uint64_t index = 0;
-    uint8_t car;
-    while (index < size - 1 && (car = getcharFd(STDIN)) != '\n' && car != EOF) {
+    int car;
+    while (index < size - 1 && (car = getcharFd(STDIN)) != '\n' && car >= 0) {
         if (car == '\b') {
             if (index > 0) {
                 index--;
@@ -147,7 +147,7 @@ int gets(char * string, uint64_t size) {
         }
     }
     string[index++] = 0;
-    if (car != EOF)
+    if (car >= 0)
         return index;
     return -1;
 }

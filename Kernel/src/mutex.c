@@ -68,17 +68,17 @@ void postSem(SemNode * sem) {
 
     /* If count 0 and we have blocked processes */
     WaitNode * p = sem->sem.blocked;
-    print("\nSem: %s\t##SemBlo valia: 0x", sem->sem.name);
-    printHex((uint64_t) sem->sem.blocked);
-    print("\t##Con next: 0x");
-    printHex((uint64_t) sem->sem.blocked->next);
+    // print("\nSem: %s\t##SemBlo valia: 0x", sem->sem.name);
+    // printHex((uint64_t) sem->sem.blocked);
+    // print("\t##Con next: 0x");
+    // printHex((uint64_t) sem->sem.blocked->next);
     sem->sem.blocked = sem->sem.blocked->next;
     setState(p->pid, READY);
-    print("\t##Liber: 0x");
-    printHex((uint64_t) p);
+    // print("\t##Liber: 0x");
+    // printHex((uint64_t) p);
 
-    print("\t##SemBlo quedo: 0x");
-    printHex((uint64_t) sem->sem.blocked);
+    // print("\t##SemBlo quedo: 0x");
+    // printHex((uint64_t) sem->sem.blocked);
     free((void *)p);
 }
 
@@ -99,23 +99,23 @@ void waitSem(SemNode * sem) {
     node->pid = getPid();
     node->next = 0;
 
-    print("\nSem: %s\t##Mal: 0x", sem->sem.name);
-    printHex((uint64_t) node);
+    // print("\nSem: %s\t##Mal: 0x", sem->sem.name);
+    // printHex((uint64_t) node);
     
-    print("\t##SemBlo valia: 0x");
-    printHex((uint64_t) sem->sem.blocked);
+    // print("\t##SemBlo valia: 0x");
+    // printHex((uint64_t) sem->sem.blocked);
 
-    print("\t##SemLast valia: 0x");
-    printHex((uint64_t) sem->sem.last);
+    // print("\t##SemLast valia: 0x");
+    // printHex((uint64_t) sem->sem.last);
     /* Add node to the list */
     if (sem->sem.blocked == 0) sem->sem.blocked = node;
     else sem->sem.last->next = node;
     sem->sem.last = node;
 
-    print("\t##SemBlo quedo: 0x");
-    printHex((uint64_t) sem->sem.blocked);
-    print("\t##Con next: 0x");
-    printHex((uint64_t) sem->sem.blocked->next);
+    // print("\t##SemBlo quedo: 0x");
+    // printHex((uint64_t) sem->sem.blocked);
+    // print("\t##Con next: 0x");
+    // printHex((uint64_t) sem->sem.blocked->next);
 
     /* Block the current process with sem */
     block(sem);

@@ -8,6 +8,8 @@
 #include <mutex.h>
 
 #define BUFFER_SIZE 100
+#define EOF     -1
+#define SIGINT  -2
 
 typedef struct {
     char * name;

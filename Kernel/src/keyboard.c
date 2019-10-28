@@ -5,8 +5,7 @@
 
 #include <keyboard.h>
 
-#define EOF     -1
-#define SIGINT  -2
+#include <process.h>
 
 char buffer[BUFFER_SIZE];
 unsigned int save_index = 0;
@@ -64,7 +63,8 @@ void keyboard_handler() {
                         // buffer[save_index % BUFFER_SIZE] = SIGINT;
                         car = SIGINT;
                         // write(0, buffer + save_index % BUFFER_SIZE, 1);
-                        write(0, &car, 1);
+                        // write(0, &car, 1);
+                        sigInt();
                         // save_index++;
                     } else if (car == 'd') {
                         // buffer[save_index % BUFFER_SIZE] = EOF;
@@ -76,11 +76,13 @@ void keyboard_handler() {
                 } else {
                     if (shift * caps == -1){ // Uno de los dos activos, paso a mayus
                         buffer[save_index % BUFFER_SIZE] = toUpper(car);
+                        car = toUpper(car);
                     } else{
                         buffer[save_index % BUFFER_SIZE] = car;
                     }
                     // write(0, buffer + save_index % BUFFER_SIZE, 1);
-                    write(0, &car, 1);
+                    if (car != 0)
+                        write(0, &car, 1);
                     // save_index++;
                 }
                 break;
