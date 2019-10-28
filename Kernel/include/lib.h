@@ -28,6 +28,6 @@ uint64_t pow(int base, int exponent);
 uint64_t exp2(uint64_t number);
 
 /* Returns max given two values */
-uint64_t max(uint64_t n1, uint64_t n2)
+uint64_t max(uint64_t n1, uint64_t n2);
 
 #endif
