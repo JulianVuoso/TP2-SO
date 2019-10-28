@@ -1,0 +1,11 @@
+1. Buscar la direccion IP de la maquina. Para obtenerla, hay dos opciones:
+		ifconfig | grep "status: active" -B4 | grep "inet " | xargs | cut -d " " -f2 | pbcopy
+	Si eso no funciona porque no tienen ipconfig, hacer 
+		hostname --ip-address
+	Buscar la IP que no sea 192.168.0.XX y que arranque con 192.168.
+2. Copiar y pegar esa direccion en la primera linea del .gdbinit, donde dice target remote 192.168.122.1:1234 (dejar el :1234 como esta)
+3. Correr el programa con el argumento gdb
+	./docker.sh jtallar gdb
+4. Correr gdb con el siguiente comando para que busque y ejecute correctamente el .gdbinit:
+	gdb -iex 'add-auto-load-safe-path .'
+
