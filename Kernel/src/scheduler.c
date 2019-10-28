@@ -1,3 +1,5 @@
+// This is a personal academic project. Dear PVS-Studio, please check it.
+// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <stdint.h>
 #include <lib.h>
 #include <timelib.h>
@@ -33,7 +35,7 @@ uint64_t scheduler(uint64_t sp) {
         case 3: haltProcess->process.sp = sp; break;
         default: init = 3; return haltProcess->process.sp;
     }
-
+    print("\n--CURRENT: %d - %s, estado %d, init: %d", (uint64_t) current, current->process.name, current->process.state, init);
     /* If current process wasn't blocked and did not reach times */
     if(init != 3 && ++(current->times) < pow(2, MAX_PRIO - current->process.priority) && current->process.state != BLOCKED)
         return current->process.sp;
@@ -46,6 +48,7 @@ uint64_t scheduler(uint64_t sp) {
     /* Search for the next non blocked process on list */
     Node * aux = current;
     do {
+        print("Curr: %s", current->process.name);
         current = current->next;
     } while (current->process.state != READY && aux->process.pid != current->process.pid);
 
@@ -69,6 +72,7 @@ void initScheduler() {
     /* Initializes the halt process */
     Process aux = createNoSched(idleModuleAddress, "IDLE", FORE, 0, 0);
     haltProcess = (Node *)malloc(sizeof(Node));
+    if (haltProcess == 0) return; // No more memory
     haltProcess->times = 0;
     haltProcess->process = aux;
     haltProcess->next = haltProcess;
@@ -78,6 +82,7 @@ void initScheduler() {
 uint8_t add(Process p) {
     /* Create new node */
     Node * node = (Node *)malloc(sizeof(Node));
+    if (node == 0) return 1; // No more memory
     node->times = 0;
     node->process = p;
     node->next = node;
@@ -91,6 +96,28 @@ uint8_t add(Process p) {
         current->next = node;
     }
     return 0;
+
+    // if (init == 0)
+    //     init = 1;
+
+    // Node * node = (Node *)malloc(sizeof(Node));
+    // node->times = 0;
+    // node->process = p;
+
+    // /* Add to list */
+    // if (current == 0) {  
+    //     current = node;
+    //     node->next = node;
+    // } else {
+    //     Node * aux;
+    //     aux = current->next;
+    //     current->next = node;
+    //     node->next = aux;
+
+    //     // node->next = current->next;
+    //     // current->next = node;
+    // }
+    // return 0;
 }
 
 /* Kills current process */
@@ -106,6 +133,37 @@ void killCurrent() {
 uint64_t kill(uint64_t pid) {
     if (current == 0 || pid < 1)
         return 0;
+
+    // if (current == current->next) {
+    //     if (current->process.pid != pid)
+    //         return 0;
+    //     Node * aux = current; 
+    //     uint64_t pid = aux->process.pid;
+    //     remove(aux->process);
+    //     free(aux);
+    //     current = 0;
+    //     init = 0;
+    //     // ToDo Ver si esto de aca abajo se va o no
+    //     halt();
+    //     return pid;
+    // }
+    // Node * node = current;
+    // do {
+    //     if (pid == node->next->process.pid) {
+    //         Node * aux = node->next; 
+    //         // uint64_t pid = aux->process.pid;
+    //         node->next = aux->next;
+    //         if (current == aux) {
+    //             current = aux->next;
+    //             init = 1;
+    //         }
+    //         remove(aux->process);
+    //         free(aux);
+    //         return pid;
+    //     }
+    //     node = node->next;
+    // } while (node != current); // si el siguiente no lo vi aun
+    // return 0; 
 
     /* Search of the process */
     Node * iterator = current;

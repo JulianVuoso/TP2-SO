@@ -1,3 +1,5 @@
+// This is a personal academic project. Dear PVS-Studio, please check it.
+// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <stdint.h>
 #include <console.h>
 #include <mutex.h>
@@ -23,16 +25,16 @@ static void addFdList(char* name);
 static NodeFd * first = 0;
 static NodeFd * last = 0;
 
-/* Create new FD struct */
-int newFd(char * name){
-    int resultFd;
-    if(first == 0)
-        initList(name);
-    else if((resultFd = searchName(name)) == -1)
-            addFdList(name);
-    addFd(resultFd);
-    return resultFd;
-}
+// /* Create new FD struct */
+// int newFd(char * name){
+//     int resultFd;
+//     if(first == 0)
+//         initList(name);
+//     else if((resultFd = searchName(name)) == -1)
+//             addFdList(name);
+//     addFd(resultFd);
+//     return resultFd;
+// }
 
 void initFds(){
     /* Initialize List with fds: 0 1 2 */
@@ -142,6 +144,7 @@ void read(int fd, char * buffer, int count){
 /* Initializes list of fds */
 void initList(char* name){
     NodeFd * nodefd = (NodeFd *) malloc(sizeof(NodeFd));
+    if (nodefd == 0) return; // No more memory
     nodefd->fd.name = (char *)malloc(strlen(name) + 1);
     stringcp(nodefd->fd.name, name);
     nodefd->fd.fd = 0;
@@ -167,6 +170,7 @@ void initList(char* name){
 /* Adds fd to list */
 void addFdList(char* name){
     NodeFd * nodefd = (NodeFd *) malloc(sizeof(NodeFd));
+    if (nodefd == 0) return; // No more memory
     nodefd->fd.name = (char *)malloc(strlen(name) + 1);
     stringcp(nodefd->fd.name, name);
     nodefd->fd.fd = last->fd.fd + 1;

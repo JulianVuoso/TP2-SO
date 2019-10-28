@@ -2,7 +2,7 @@
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <clib.h>
 int main() {
-	int millis = 50000;
+	int millis = 5000;
     sleep(millis);
 	return 0;
 } 

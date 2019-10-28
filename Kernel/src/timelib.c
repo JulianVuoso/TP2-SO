@@ -12,6 +12,7 @@
 /* Some static functions for list management */
 static void addNodeT(uint64_t pid, uint64_t time);
 static void updateList();
+static void removeNextT(NodeTime * node);
 
 /* static variables */
 static NodeTime * firstT = 0;
@@ -43,31 +44,55 @@ void sleep(uint64_t millis) {
 
 /* Updates the values off all the waiting processes */
 static void updateList() {
-    NodeTime * iterator = firstT;
+    int var = 0;
     NodeTime * prev = firstT;
+    do {
+        var = 0;
+        for (NodeTime * aux = prev; aux != 0; aux = aux->next) {
+            if (--(aux->time) == 0) {
+                uint64_t pid = aux->pid;
+                if (prev == aux) {
+                    firstT = firstT->next;
+                    free(aux);
+                    prev = firstT;
+                } 
+                else{
+                    removeNextT(prev);
+                    prev = prev->next;  
+                } 
+                setState(pid, READY);
+                var = 1;
+                break;
+            }
+            prev = aux;
+        }
+    } while (var);
 
-    /* We iterate on list */
-    while (iterator != 0) {
+    // NodeTime * iterator = firstT;
+    // NodeTime * prev = firstT;
 
-        /* We free the process */
-        if (--(iterator->time) == 0) {
-            NodeTime * next = iterator->next;
-            setState(iterator->pid, READY);
-            free(iterator);
+    // /* We iterate on list */
+    // while (iterator != 0) {
 
-            /* First node */
-            if (prev->next == next) {
-                firstT = next;
-                prev = next;
-            } else prev->next = next;
-            iterator = next;
+    //     /* We free the process */
+    //     if (--(iterator->time) == 0) {
+    //         NodeTime * next = iterator->next;
+    //         setState(iterator->pid, READY);
+    //         free(iterator);
 
-        } else {
-            /* Normal iteration */
-            prev = iterator;
-            iterator = iterator->next;
-        }        
-    }
+    //         /* First node */
+    //         if (prev->next == next) {
+    //             firstT = next;
+    //             prev = next;
+    //         } else prev->next = next;
+    //         iterator = next;
+
+    //     } else {
+    //         /* Normal iteration */
+    //         prev = iterator;
+    //         iterator = iterator->next;
+    //     }        
+    // }
 }
 
 /* Removes the next node of the given one */

@@ -1,3 +1,5 @@
+// This is a personal academic project. Dear PVS-Studio, please check it.
+// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <stdint.h>
 #include <process.h>
 #include <memoryManager.h>
@@ -18,17 +20,19 @@ SemNode * newSem(char * name, uint64_t init) {
 
     /* Creates Semaphore */
     Semaphore sem;
-    sem.name = (char *)malloc(strlen(name));
+    sem.name = (char *)malloc(strlen(name) + 1);
     stringcp(sem.name, name);
     sem.blocked = 0;
     sem.last = 0;
 
     /* Checks if init has a valid value, default = 1 */
+    //ToDo Si es uint64_t, es al pedo ver si es >= 0
     if (init >= 0) sem.count = init;
     else sem.count = 1;
     
     /* Creates node */
     SemNode * node = (SemNode *)malloc(sizeof(SemNode));
+    if (node == 0) return 0; // No more memory
     node->next = 0;
     node->sem = sem;
 
@@ -91,6 +95,7 @@ void waitSem(SemNode * sem) {
     /* If count is 0 */
     /* Create node to add */
     WaitNode * node = (WaitNode *)malloc(sizeof(WaitNode));
+    if (node == 0) return; // No more memory
     node->pid = getPid();
     node->next = 0;
 

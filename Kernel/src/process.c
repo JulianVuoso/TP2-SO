@@ -1,3 +1,5 @@
+// This is a personal academic project. Dear PVS-Studio, please check it.
+// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <mutex.h>
 #include <lib.h>
 #include <scheduler.h>
@@ -40,7 +42,8 @@ Process createNoSched(void * entryPoint, char * name, level context, int inAlias
     
     /* Creates process data */
     Process data;
-    data.name = name;
+    data.name = (char *)malloc(strlen(name) + 1);
+    stringcp(data.name, name);
     data.pid = c_pid++;
     data.ppid = getPid();
     data.sp = (uint64_t) lastAddress - sizeof(StackFrame);
@@ -73,7 +76,8 @@ fdPointer * addFd(int fd){
 
     /* Create aux Process for being built with FD list and then charged again */
     Process p = getCurrent()->process;
-    fdPointer * fdp = (fdPointer *) malloc(sizeof(fdPointer));  
+    fdPointer * fdp = (fdPointer *) malloc(sizeof(fdPointer));
+    if (fdp == 0) return 0; // No more memory 
     fdp->fd = fd;
 
     /* Start list or add Node to it */
@@ -106,7 +110,12 @@ void printProcessStack(Process p) {
 /* Adds the alias for stdin and stdout */
 static fdPointer * addFdAlias(int inAlias, int outAlias){
     fdPointer * in = (fdPointer *) malloc(sizeof(fdPointer));
+    if (in == 0) return 0; // No more memory
     fdPointer * out = (fdPointer *) malloc(sizeof(fdPointer));
+    if (out == 0){
+        free((void *) in);
+        return 0;
+    }  // No more memory
 
     /* Generate Node of STDIN FD with given alias */
     in->fd = 0;

@@ -189,7 +189,7 @@ static void merge_next(node * block) {
 /* Returns the first address from the next block, 
 ** assuming ptr is a valid return from malloc */
 void * getLastAddress (void * ptr) {
-    node * aux = (node *) (ptr - sizeof(node));
+    node * aux = (node *) ((uint8_t *) ptr - sizeof(node));
     return aux->n.address + aux->n.size * memory.pageSize;
 }
 

@@ -3,7 +3,7 @@
 #include <clib.h>
 int main() {
 	int car;
-	uint64_t lines = 0;
+	int lines = 0;
 	while ((car = getchar()) >= 0) {
 		if (car == '\n')
 			lines++;
