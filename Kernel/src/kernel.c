@@ -56,11 +56,9 @@ void * initializeKernelBinary()
 
 	// Llena con los addresses a donde copia los modulos
 	void * moduleAddresses[] = {
-		sampleCodeModuleAddress,
-		sampleDataModuleAddress,
+		shellModuleAddress,
 		processAModuleAddress,
 		processBModuleAddress,
-		shellModuleAddress,
 		idleModuleAddress,
 		sleepModuleAddress,
 		loopModuleAddress,
