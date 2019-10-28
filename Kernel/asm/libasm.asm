@@ -11,6 +11,19 @@ atom_swap:
 	xchg [rdi], rsi
 	ret
 
+mutex_acquire:
+	push rsi
+
+	mov rsi, 1
+	xchg [rdi], rsi
+	mov rax, [rdi]
+
+	pop rsi
+	ret
+
+; Me devuelve el estado previo al mutex_acquire
+; Si me devuelve 0, fui el primero. Si me devuelve 1, ya estaba adquirido --> me bloqueo
+
 ; void write_port(char port, char reg)
 write_port:
 	mov al, sil

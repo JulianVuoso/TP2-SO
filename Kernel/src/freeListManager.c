@@ -126,7 +126,7 @@ void free(void * ptr) {
     node * prev = iterator;
     
     /* Search for the pointer */
-    while (iterator != 0 && iterator->n.address != pointer) {
+    while (iterator != 0 && iterator->n.address != pointer) { // tOdO: cambiar para que sea < y que si sale por eso, salir
         prev = iterator;
         iterator = iterator->n.next;
     }
