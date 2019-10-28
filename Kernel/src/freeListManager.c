@@ -180,9 +180,9 @@ void status(uint64_t * total, uint64_t * occupied, uint64_t * free) {
 
 /* Prints memory status */
 void printStatus() {
-    uint64_t total = (memory.free + memory.occupied) * memory.pageSize;
     uint64_t occupied = memory.occupied * memory.pageSize;
     uint64_t freed = memory.free * memory.pageSize;
+    uint64_t total = occupied + freed;
 
     print("\n----- Estado de la memoria -----");
     print("\nTotal Size: %d\nOcuppied Size: %d\nFree Size: %d", total, occupied, freed);
