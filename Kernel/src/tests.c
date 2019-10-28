@@ -13,20 +13,22 @@ void testMemoryManager() {
 	clear_console();
 	while (i < 5){
 		printMemState();
-		sleep_handler(3000);
+		// sleep_handler(3000);
 		vec[i] = malloc(10);
+		print("\n\tMalloqueo: 0x");
+		printHex((uint64_t) vec[i]);
 		i++;
 	}
 
 	
 	printMemState();
-	sleep_handler(3000);
+	// sleep_handler(3000);
 	free(vec[3]);
 	printMemState();
-	sleep_handler(3000);
+	// sleep_handler(3000);
 	free(vec[1]);
 	printMemState();
-	sleep_handler(3000);
+	// sleep_handler(3000);
 	free(vec[2]);
 	printMemState();
 }

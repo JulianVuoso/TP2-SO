@@ -21,6 +21,7 @@ static fdPointer * first = 0;
 uint64_t create(void * entryPoint, char * name, level context, int inAlias, int outAlias) {
     Process data = createNoSched(entryPoint, name, context, inAlias, outAlias);
     /* Add process to scheduler */
+    // print("n\tScheduler: ");
     add(data);
     if (context == FORE && data.pid > 1)
         block(0);
@@ -30,6 +31,7 @@ uint64_t create(void * entryPoint, char * name, level context, int inAlias, int 
 
 /* Creates a new process */
 Process createNoSched(void * entryPoint, char * name, level context, int inAlias, int outAlias) {
+    // print("\n\tStack: ");
     void * processStack = malloc(STACK_SIZE);
     if (processStack == 0) { // ERROR --> NO HAY MAS MEMORIA --> VER QUE DEVUELVO
         // return 0;
@@ -43,6 +45,7 @@ Process createNoSched(void * entryPoint, char * name, level context, int inAlias
     
     /* Creates process data */
     Process data;
+    // print("\tName: ");
     data.name = (char *)malloc(strlen(name) + 1);
     stringcp(data.name, name);
     data.pid = c_pid++;
@@ -63,6 +66,13 @@ Process createNoSched(void * entryPoint, char * name, level context, int inAlias
 void remove(Process p) {
     freeResources(p);
     free(p.stack);
+    free(p.name);
+    fdPointer * aux = p.first;
+    while (aux != 0){
+        fdPointer * aux2 = aux;
+        aux = aux->next;
+        free(aux2);
+    }
 }
 
 /* Frees all the resources used by the process */
@@ -110,8 +120,10 @@ void printProcessStack(Process p) {
 
 /* Adds the alias for stdin and stdout */
 static fdPointer * addFdAlias(int inAlias, int outAlias){
+    // print("\tInFd: ");
     fdPointer * in = (fdPointer *) malloc(sizeof(fdPointer));
     if (in == 0) return 0; // No more memory
+    // print("\tOutFd: ");
     fdPointer * out = (fdPointer *) malloc(sizeof(fdPointer));
     if (out == 0){
         free((void *) in);
@@ -126,6 +138,7 @@ static fdPointer * addFdAlias(int inAlias, int outAlias){
     /* Generate Node of STDOUT FD with given alias after in Node in list */
     out->fd = 1;
     out->alias = outAlias;
+    out->next = 0;
     
     /* Return Node direction for being inserted in Process List */
     return in; 

@@ -89,6 +89,11 @@ void * malloc(uint64_t bytes) {
             memory.freeList = (node *) newNode.n.address;
         else
             found->n.prev->n.next = (node *) newNode.n.address;
+    } else {
+        if (found->n.prev == 0)
+            memory.freeList = found->n.next;
+        else
+            found->n.prev->n.next = found->n.next;
     }
 
     /* Update properties of the extrcted node and add to usedList */
@@ -101,6 +106,9 @@ void * malloc(uint64_t bytes) {
     memory.occupied += pageCount;
     memory.free -= pageCount;
 
+    // print("\tDirec Mal: 0x");
+    // printHex((uint64_t) found->n.address);
+
     /* Returns extracted node */
     return (void *) (found->n.address + sizeof(node));
 }
@@ -110,6 +118,9 @@ void free(void * ptr) {
     /* SEARCH of the ptr on used list */
     /* Creates a pointer to the real start of the block */
     uint8_t * pointer = (uint8_t *)ptr - sizeof(node);
+
+    // print("\tDirec Free: 0x");
+    // printHex((uint64_t) pointer);
 
     node * iterator = memory.usedList;
     node * prev = iterator;

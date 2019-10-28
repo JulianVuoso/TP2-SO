@@ -124,7 +124,7 @@ uint8_t add(Process p) {
 void killCurrent() {
     int ppid = getPPid();
     if (ppid >= 1 && current->process.context == FORE){
-        print("\n--PPID: %d", ppid);
+        // print("\n--PPID: %d", ppid);
         setState(ppid, READY);
     }
     kill(getPid());
