@@ -31,7 +31,7 @@ static const uint64_t MaxPages = 1024;
 typedef int (*EntryPoint)();
 
 void goToUserland(){
-	((EntryPoint)sampleCodeModuleAddress)();
+	((EntryPoint)shellModuleAddress)();
 }
 
 void clearBSS(void * bssAddress, uint64_t bssSize)
