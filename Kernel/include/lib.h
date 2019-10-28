@@ -24,4 +24,10 @@ uint64_t force_timer_tick();
 /* Gets pow */
 uint64_t pow(int base, int exponent);
 
+/* Converts a number to base 2, returns exponent */
+uint64_t exp2(uint64_t number);
+
+/* Returns max given two values */
+uint64_t max(uint64_t n1, uint64_t n2)
+
 #endif
