@@ -50,9 +50,16 @@ void freeResources(Process p);
 /* Add new file descriptor to list */
 fdPointer * addFd(int fd);
 
+/* Remove file descriptor from list */
+void removeFd(int fd);
+
 /* Print process stack */
 void printProcessStack(Process p);
 
+/* Return realFd for the current process, or -1 if not listed */
+int getAlias(int fd);
+
+/* Control Ctrl C action */
 void sigInt();
 
 #endif /* _PROCESS_H_ */

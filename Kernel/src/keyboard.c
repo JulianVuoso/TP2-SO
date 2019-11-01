@@ -75,10 +75,10 @@ void keyboard_handler() {
                     }
                 } else {
                     if (shift * caps == -1){ // Uno de los dos activos, paso a mayus
-                        buffer[save_index % BUFFER_SIZE] = toUpper(car);
+                        // buffer[save_index % BUFFER_SIZE] = toUpper(car);
                         car = toUpper(car);
                     } else{
-                        buffer[save_index % BUFFER_SIZE] = car;
+                        // buffer[save_index % BUFFER_SIZE] = car;
                     }
                     // write(0, buffer + save_index % BUFFER_SIZE, 1);
                     if (car != 0)

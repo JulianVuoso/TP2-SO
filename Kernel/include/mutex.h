@@ -46,4 +46,7 @@ void deallocateSem(SemNode * sem, uint64_t pid);
 /* Prints all semaphores */
 void showAllSem();
 
+/* Print Blocked processes from a semaphore */
+void printBlockedProcesses(SemNode * sem);
+
 #endif /* _MUTEX_H_ */

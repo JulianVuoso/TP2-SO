@@ -13,18 +13,30 @@
 #define EXIT_ID     7
 #define PIXEL_ID    8
 
-#define MALLOC_ID   9
-#define FREE_ID     10
-#define STATUS_ID   11
+#define MALLOC_ID       9
+#define FREE_ID         10
+#define PRINT_STATUS_ID 11
+#define GET_STATUS_ID   12
 
-#define NEW_PROC_ID     12
-#define KILL_ID         13
-#define PID_ID          14
-#define PS_ID           15
-#define SET_PRIO_ID     16
-#define SET_STATE_ID    17
+#define NEW_PROC_ID     13
+#define KILL_ID         14
+#define PID_ID          15
+#define PS_ID           16
+#define SET_PRIO_ID     17
+#define SET_STATE_ID    18
+#define HALT_ID         19
 
-#define HALT_ID     18
+#define PIPE_NEW_ID     20
+#define PIPE_OPEN_ID    21
+#define PIPE_CLOSE_ID   22
+#define PIPE_STATUS_ID  23
+
+#define SEM_NEW_ID      24
+#define SEM_OPEN_ID     25
+#define SEM_CLOSE_ID    26
+#define SEM_WAIT_ID     27
+#define SEM_POST_ID     28
+#define SEM_STATUS_ID   29
 
 #define MAX_BUFFER 100
 
@@ -261,12 +273,12 @@ void free(void * ptr) {
 
 /* Print memory size, occupied memory and free memory (STDOUT) */
 void memStatus() {
-    syscall(STATUS_ID, STDOUT, 0, 0, 0, 0, 0);
+    syscall(PRINT_STATUS_ID, STDOUT, 0, 0, 0, 0, 0);
 }
 
 /* Print memory size, occupied memory and free memory (outFd) */
 void memStatusFd(uint64_t outFd) {
-    syscall(STATUS_ID, outFd, 0, 0, 0, 0, 0);
+    syscall(PRINT_STATUS_ID, outFd, 0, 0, 0, 0, 0);
 }
 
 /* Create a new process based on an entryPoint */
@@ -277,8 +289,16 @@ uint64_t fork(void * entryPoint, char * name) {
 
 /* Create a new process based on its name */
 uint64_t newProcess(const char * name, uint64_t argc, char * argv[], uint64_t ground, uint64_t inFd, uint64_t outFd) {
+    if (inFd > 9999 || outFd > 9999) return 0;
+    char auxBuf[10];
+    itoa(inFd, auxBuf, 10);
+    int len = strlen(auxBuf);
+    auxBuf[len++] = ' ';
+    auxBuf[len] = 0;
+    itoa(outFd, auxBuf + len, 10);
     if (ground == FOREGROUND || ground == BACKGROUND)
-        return syscall(NEW_PROC_ID, (uint64_t) name, argc, (uint64_t) argv, ground, inFd, outFd);
+        return syscall(NEW_PROC_ID, (uint64_t) name, argc, (uint64_t) argv, ground, (uint64_t) auxBuf, 0);
+        // return syscall(NEW_PROC_ID, (uint64_t) name, outFd, (uint64_t) argv, ground, inFd, outFd);
     return 0;
 }
 
@@ -313,32 +333,61 @@ uint64_t changeState(uint64_t pid) {
 }
 
 /* Create a new named pipe */
-uint64_t newPipe(char * name) {
-    // return syscall(PIPE_ID, name, 0, 0, 0, 0, 0);
-    return 0;
+int newPipe(char * name) {
+    return syscall(PIPE_NEW_ID, (uint64_t) name, 0, 0, 0, 0, 0);
+}
+
+/* Open an existing named pipe */
+int pipeOpen(char * name) {
+    return syscall(PIPE_OPEN_ID, (uint64_t) name, 0, 0, 0, 0, 0);
+}
+
+/* Close an existing named pipe */
+void pipeClose(int fd) {
+    syscall(PIPE_CLOSE_ID, fd, 0, 0, 0, 0, 0);
 }
 
 /* List all pipes (STDOUT) */
 void pipeStatus() {
-    // syscall(PIPE_STATUS_ID, STDOUT, 0, 0, 0, 0, 0);
+    syscall(PIPE_STATUS_ID, STDOUT, 0, 0, 0, 0, 0);
 }
 
 /* List all pipes (outFd) */
 void pipeStatusFd(uint64_t outFd) {
-    // syscall(PIPE_STATUS_ID, outFd, 0, 0, 0, 0, 0);
+    syscall(PIPE_STATUS_ID, outFd, 0, 0, 0, 0, 0);
 }
 
-// newSem
-// closeSem
-// wait
-// post
+/* Create a new named semaphore */
+uint64_t newSem(char * name, uint64_t init) {
+    return syscall(SEM_NEW_ID, (uint64_t) name, init, 0, 0, 0, 0);
+}
+
+/* Open an existing named semaphore */
+uint64_t semOpen(char * name) {
+    return syscall(SEM_OPEN_ID, (uint64_t) name, 0, 0, 0, 0, 0);
+}
+
+/* Close an existing named semaphore */
+void semClose(uint64_t sem) {
+    syscall(SEM_CLOSE_ID, sem, 0, 0, 0, 0, 0);
+}
+
+/* Wait for a named semaphore */
+void semWait(uint64_t sem) {
+    syscall(SEM_WAIT_ID, sem, 0, 0, 0, 0, 0);
+}
+
+/* Post on a named semaphore */
+void semPost(uint64_t sem) {
+    syscall(SEM_POST_ID, sem, 0, 0, 0, 0, 0);
+}
 
 /* List all semaphores (STDOUT) */
 void semStatus() {
-    // syscall(SEM_STATUS_ID, STDOUT, 0, 0, 0, 0, 0);
+    syscall(SEM_STATUS_ID, STDOUT, 0, 0, 0, 0, 0);
 }
 
 /* List all semaphores (outFd) */
 void semStatusFd(uint64_t outFd) {
-    // syscall(SEM_STATUS_ID, outFd, 0, 0, 0, 0, 0);
+    syscall(SEM_STATUS_ID, outFd, 0, 0, 0, 0, 0);
 }

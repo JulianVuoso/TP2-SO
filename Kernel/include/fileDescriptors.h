@@ -7,7 +7,7 @@
 
 #include <mutex.h>
 
-#define BUFFER_SIZE 100
+#define BUFFER_SIZE 255
 #define EOF     -1
 #define SIGINT  -2
 
@@ -17,19 +17,20 @@ typedef struct {
     int count;
     char buffer[BUFFER_SIZE];
     int read_index;
-    int write_index; 
+    int write_index;
+    int pipe;
     SemNode * sem;
     SemNode * semCant;
     SemNode * semWrite;
 } FileDescriptor;
 
-typedef struct NodeFd {
+typedef struct fd_node {
     FileDescriptor fd;
-    struct NodeFd * next;    
+    struct fd_node * next;    
 } NodeFd;
 
-/* Create new FD struct */
-int newFd(char * name);
+/* Create new FD struct and add to the list */
+NodeFd * newFd(char * name);
 
 /* Add STDIN, OUT and ERROR fd nodes to fd list */
 void initFds();
@@ -39,5 +40,23 @@ void write(int fd, const char * buffer, int count);
 
 /* Read from buffer given fd number */
 void read(int fd, char * buffer, int count);
+
+/* Add new FileDescriptor to the list */
+NodeFd * addFdList(char* name);
+
+/* Remove a node from the list */
+void removeFdList(int fd);
+
+/* Create new named Pipe */
+int newPipe(char * name);
+
+/* Opens an existing Pipe */
+int openPipe(char * name);
+
+/* Closes an existing Pipe */
+void closePipe(int fd);
+
+/* Prints all Pipes */
+void showAllPipes();
 
 #endif /* _FILEDESC_H_ */

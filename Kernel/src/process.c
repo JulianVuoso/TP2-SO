@@ -15,7 +15,7 @@
 static fdPointer * addFdAlias(int inAlias, int outAlias);
 
 static uint64_t c_pid = 0;
-static fdPointer * first = 0;
+// static fdPointer * first = 0;
 
 /* Creates a new process and adds it to scheduler */
 uint64_t create(void * entryPoint, char * name, level context, int inAlias, int outAlias) {
@@ -31,6 +31,7 @@ uint64_t create(void * entryPoint, char * name, level context, int inAlias, int 
 
 /* Creates a new process */
 Process createNoSched(void * entryPoint, char * name, level context, int inAlias, int outAlias) {
+    // print("\n\tPROCESS.C\tIN: %d, OUT: %d", inAlias, outAlias);
     // print("\n\tStack: ");
     void * processStack = malloc(STACK_SIZE);
     if (processStack == 0) { // ERROR --> NO HAY MAS MEMORIA --> VER QUE DEVUELVO
@@ -38,7 +39,7 @@ Process createNoSched(void * entryPoint, char * name, level context, int inAlias
     }
 
     /* Creates stack for process */
-    char * lastAddress = (char *) getLastAddress(processStack);
+    char * lastAddress = (char *) get_last_address(processStack);
     char * stackBase = lastAddress - sizeof(uint64_t);
     StackFrame stack = initStack(entryPoint, (void *) stackBase);
     memcpy(lastAddress - sizeof(StackFrame), &stack, sizeof(StackFrame));
@@ -57,7 +58,8 @@ Process createNoSched(void * entryPoint, char * name, level context, int inAlias
     data.state = READY;
     data.stack = processStack;
     data.sem = 0;
-    data.first = addFdAlias(inAlias, outAlias);
+    data.first = addFdAlias(0, inAlias);
+    if (data.first != 0) data.first->next = addFdAlias(1, outAlias);
 
     return data;
 }
@@ -85,27 +87,79 @@ void freeResources(Process p) {
 /* Add new file descriptor to list */
 fdPointer * addFd(int fd){
 
-    /* Create aux Process for being built with FD list and then charged again */
+    /* Create aux Process to modify fd list */
     Process p = getCurrent()->process;
+
+    fdPointer * iterator = p.first;
+    fdPointer * prev = iterator;
+    while (iterator != 0) {
+        if (iterator->fd == fd)
+            return 0;
+        prev = iterator;
+        iterator = iterator->next;
+    }
+
     fdPointer * fdp = (fdPointer *) malloc(sizeof(fdPointer));
     if (fdp == 0) return 0; // No more memory 
     fdp->fd = fd;
+    fdp->alias = fd;
+    fdp->next = 0;
 
     /* Start list or add Node to it */
     if(p.first == 0)
         p.first = fdp;
-    else {
-        fdPointer * aux = first;
-        first = fdp;
-        fdp->next = aux;
-    }
+    else
+        prev->next = fdp;
     getCurrent()->process = p;
     return fdp;
 }
 
+/* Remove file descriptor from list */
+void removeFd(int fd) {
+
+    /* Create aux Process to modify fd list */
+    Process p = getCurrent()->process;
+    if (p.first == 0) return;
+
+    fdPointer * iterator = p.first;
+
+    /* Check if its the first node */
+    if (p.first->fd == fd) {
+        p.first = p.first->next;
+        free(iterator);
+        return;
+    }
+
+    /* If first is not null and not the one to delete */
+    while (iterator->next != 0) {
+        if (iterator->next->fd == fd) {
+            fdPointer * toDelete = iterator->next;
+            iterator->next = iterator->next->next;
+            free(toDelete);
+            return;
+        }
+        iterator = iterator->next;
+    }
+
+    getCurrent()->process = p;
+}
+
+/* Return realFd for the current process, or -1 if not listed */
+int getAlias(int fd) {
+    /* Create aux Process to modify fd list */
+    Process p = getCurrent()->process;
+    fdPointer * iterator = p.first;
+    while (iterator != 0) {
+        if (iterator->fd == fd)
+            return iterator->alias;
+        iterator = iterator->next;
+    }
+    return -1;
+}
+
 /* Print process stack */
 void printProcessStack(Process p) {
-    char * lastAddress = (char *) getLastAddress(p.stack);
+    char * lastAddress = (char *) get_last_address(p.stack);
     print("\nProcess %d \n", p.pid);
     uint64_t * aux;
     for (aux = (uint64_t *) p.sp; aux < (uint64_t *) lastAddress; aux++) {
@@ -118,32 +172,45 @@ void printProcessStack(Process p) {
     print("\n-----------------------\n");
 }
 
-/* Adds the alias for stdin and stdout */
-static fdPointer * addFdAlias(int inAlias, int outAlias){
-    // print("\tInFd: ");
-    fdPointer * in = (fdPointer *) malloc(sizeof(fdPointer));
-    if (in == 0) return 0; // No more memory
-    // print("\tOutFd: ");
-    fdPointer * out = (fdPointer *) malloc(sizeof(fdPointer));
-    if (out == 0){
-        free((void *) in);
-        return 0;
-    }  // No more memory
+// /* Adds the alias for stdin and stdout */
+// static fdPointer * addFdAlias(int inAlias, int outAlias){
+//     // print("\tInFd: ");
+//     fdPointer * in = (fdPointer *) malloc(sizeof(fdPointer));
+//     if (in == 0) return 0; // No more memory
+//     // print("\tOutFd: ");
+//     fdPointer * out = (fdPointer *) malloc(sizeof(fdPointer));
+//     if (out == 0){
+//         free((void *) in);
+//         return 0;
+//     }  // No more memory
 
-    /* Generate Node of STDIN FD with given alias */
-    in->fd = 0;
-    in->alias = inAlias;
-    in->next = out;
+//     /* Generate Node of STDIN FD with given alias */
+//     in->fd = 0;
+//     in->alias = inAlias;
+//     in->next = out;
 
-    /* Generate Node of STDOUT FD with given alias after in Node in list */
-    out->fd = 1;
-    out->alias = outAlias;
-    out->next = 0;
+//     /* Generate Node of STDOUT FD with given alias after in Node in list */
+//     out->fd = 1;
+//     out->alias = outAlias;
+//     out->next = 0;
     
-    /* Return Node direction for being inserted in Process List */
-    return in; 
+//     /* Return Node direction for being inserted in Process List */
+//     return in; 
+// }
+
+static fdPointer * addFdAlias(int oldFd, int newFd) {
+    fdPointer * ptr = (fdPointer *) malloc(sizeof(fdPointer));
+    if (ptr == 0) return 0; // No more memory
+
+    // print("\n\t\tFD: %d, ALIAS: %d", oldFd, newFd);
+    ptr->fd = oldFd;
+    ptr->alias = newFd;
+    ptr->next = 0;
+
+    return ptr;
 }
 
+// AGREGAR QUE NO PUEDAN CORTAR AL PHYLO
 void sigInt() {
     if (getPid() > 1)
         killCurrent();

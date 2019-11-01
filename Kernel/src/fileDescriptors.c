@@ -13,13 +13,11 @@
 #include <strings.h>
 
 /* Find fd in list */ 
-static int searchName(char * name);
+static NodeFd * searchName(char * name);
 static NodeFd * searchFd(int fd);
 
-/* If empty list, create first node */
-static void initList(char* name);
-/* If node not found, create and add before adding to process list */
-static void addFdList(char* name);
+// /* If empty list, create first node */
+// static void initList(char* name);
 
 /* Useful pointers to list ends */
 static NodeFd * first = 0;
@@ -38,9 +36,65 @@ static NodeFd * last = 0;
 
 void initFds(){
     /* Initialize List with fds: 0 1 2 */
-    initList("stdin");
+    addFdList("stdin");
     addFdList("stdout");
     addFdList("stderr");
+}
+
+// ToDo: ver si funciona el error en -1 (si es que se puede)
+/* Create new named Pipe. Returns -1 if error */
+int newPipe(char * name) {
+    print(name);
+
+    /* Check if name already exists */
+    if (searchName(name) != 0) return -1;
+
+    print("\nBarrera");
+
+    /* Add node to fileDescriptors list */
+    NodeFd * node = addFdList(name);
+    if (node == 0) return -1;
+    node->fd.pipe = 1; // Indico que es un pipe
+    int fd = node->fd.fd;
+
+    print("\t\t--%d", fd);
+
+    /* Add node to process fileDescriptors list */
+    addFd(fd);
+
+    return fd;
+}
+
+/* Opens an existing Pipe. Returns 0 if error */
+int openPipe(char * name) {
+    /* Check if name exists. If not, return */
+    NodeFd * node = searchName(name);
+    if (node == 0 || node->fd.pipe == 0) return -1;
+
+    int fd = node->fd.fd;
+
+    /* Add node to process fileDescriptors list */
+    addFd(fd);
+
+    return fd;
+}
+
+/* Closes an existing Pipe */
+void closePipe(int fd) {
+    /* Check if name exists. If not, return */
+    NodeFd * node = searchFd(fd);
+    if (node == 0 || node->fd.pipe == 0) return;
+
+    /* Check if someone else is waiting to write */
+    SemNode * sem = node->fd.semWrite;
+    if (sem != 0 && sem->sem.blocked == 0){ // ToDo: check lock variable from mutex
+        /* Send EOF signal to pipe */
+        char aux = EOF;
+        write(fd, &aux, 1);
+    }
+
+    /* Remove node from process fileDescriptors list */
+    removeFd(fd);
 }
 
 /* Write on buffer given fd number */
@@ -48,16 +102,22 @@ void write(int fd, const char * buffer, int count){
     
     if(count == 0) return;
 
-    NodeFd * node = searchFd(fd);
-    if(node == 0)                   // Returns if FD not found
-        return;
+    int aliasFd = getAlias(fd);
+    if (aliasFd < 0) return; // Returns if fd not listed
+
+    NodeFd * node = searchFd(aliasFd);
+    if(node == 0) return;    // Returns if FD not found
+
+    // if (node->fd.fd >= 3) print("\n\n\t\t---Esperando primer sem\n\n");
 
     waitSem(node->fd.semWrite);          // Waiting for main semaphore in this fd 
 
-    if(fd < 3){
-        switch (fd)
+
+    if(node->fd.fd < 3){
+        switch (node->fd.fd)
         {
-            case 0: node->fd.buffer[node->fd.write_index++] = *(buffer);
+            case 0: node->fd.buffer[node->fd.write_index % BUFFER_SIZE] = *(buffer);
+                    node->fd.write_index++;
                     if (*buffer == EOF || (node->fd.count > 0 && node->fd.count <= (node->fd.write_index - node->fd.read_index)))
                         postSem(node->fd.semCant);
                     // print("\n\t\tRecibi tecla: ");
@@ -76,7 +136,7 @@ void write(int fd, const char * buffer, int count){
         int eof = 0, i;
         // node->fd.count++;
         for(i = node->fd.write_index ; i < (count + node->fd.write_index) && eof == 0 ; i++){
-            node->fd.buffer[i] = *(buffer++);
+            node->fd.buffer[i % BUFFER_SIZE] = *(buffer++);
             if(*buffer == EOF)
                 eof = 1;                // Must leave the writing 
         }
@@ -93,12 +153,15 @@ void write(int fd, const char * buffer, int count){
 /* Read from buffer given fd number */
 void read(int fd, char * buffer, int count){
     if(count == 0) return;
-    NodeFd * node = searchFd(fd);
-    if(node == 0)                       // Returns if FD not found      
-        return;
+
+    int aliasFd = getAlias(fd);
+    if (aliasFd < 0) return; // Returns if fd not listed
+
+    NodeFd * node = searchFd(aliasFd);
+    if(node == 0) return;    // Returns if FD not found      
 
     // print("\n--Entre a read.");
-    static int eof = 0;                 // End Of File reception flag 
+    int eof = 0;                 // End Of File reception flag 
     waitSem(node->fd.sem);              // Waiting for main semaphore in this fd
 
     // print("\n--Pase el primer semaforo.");
@@ -142,38 +205,45 @@ void read(int fd, char * buffer, int count){
 }
 
 /* Initializes list of fds */
-void initList(char* name){
-    NodeFd * nodefd = (NodeFd *) malloc(sizeof(NodeFd));
-    if (nodefd == 0) return; // No more memory
-    nodefd->fd.name = (char *)malloc(strlen(name) + 1);
-    stringcp(nodefd->fd.name, name);
-    nodefd->fd.fd = 0;
-    nodefd->fd.sem = newSem(name, 1);
+// void initList(char* name){
+//     NodeFd * nodefd = (NodeFd *) malloc(sizeof(NodeFd));
+//     if (nodefd == 0) return; // No more memory
+//     nodefd->fd.name = (char *)malloc(strlen(name) + 1);
+//     stringcp(nodefd->fd.name, name);
+//     nodefd->fd.fd = 0;
+//     nodefd->fd.sem = newSem(name, 1);
 
-    char aux[strlen(name) + 1], aux2[]="2", aux3[]="W";
-    stringcp(aux, name);
-    strcat(aux, aux2);
-    nodefd->fd.semCant = newSem(aux, 0);
-    stringcp(aux, name);
-    strcat(aux, aux3);
-    nodefd->fd.semWrite = newSem(aux, 1);
+//     char aux[strlen(name) + 1], aux2[]="2", aux3[]="W";
+//     stringcp(aux, name);
+//     strcat(aux, aux2);
+//     nodefd->fd.semCant = newSem(aux, 0);
+//     stringcp(aux, name);
+//     strcat(aux, aux3);
+//     nodefd->fd.semWrite = newSem(aux, 1);
 
-    nodefd->fd.count = 0;
-    nodefd->fd.read_index = 0;
-    nodefd->fd.write_index = 0;
-    // nodefd->fd.buffer??????
+//     nodefd->fd.count = 0;
+//     nodefd->fd.read_index = 0;
+//     nodefd->fd.write_index = 0;
 
-    first = nodefd;
-    last = nodefd;
-}
+//     first = nodefd;
+//     last = nodefd;
+// }
 
 /* Adds fd to list */
-void addFdList(char* name){
+NodeFd * addFdList(char* name) {
     NodeFd * nodefd = (NodeFd *) malloc(sizeof(NodeFd));
-    if (nodefd == 0) return; // No more memory
+    if (nodefd == 0) return 0; // No more memory
     nodefd->fd.name = (char *)malloc(strlen(name) + 1);
     stringcp(nodefd->fd.name, name);
-    nodefd->fd.fd = last->fd.fd + 1;
+    if (first == 0) {
+        nodefd->fd.fd = 0;
+        first = nodefd;
+        last = nodefd;
+    } else {
+        nodefd->fd.fd = last->fd.fd + 1;
+        last->next = nodefd;
+        last = nodefd;
+    }
     nodefd->fd.sem = newSem(name, 1);
 
     char aux[strlen(name) + 1], aux2[]="2", aux3[]="W";
@@ -187,20 +257,46 @@ void addFdList(char* name){
     nodefd->fd.count = 0;
     nodefd->fd.read_index = 0;
     nodefd->fd.write_index = 0;
-    // nodefd->fd.buffer??????
-    last->next = nodefd;
-    last = nodefd;
+    nodefd->fd.pipe = 0;
+    
+    return nodefd;
+}
+
+// ToDo: Ver si hay que liberar a todos los procesos o que hacemos
+/* Remove a node from the list */
+void removeFdList(int fd) {
+    if (first == 0) return;
+
+    NodeFd * aux = first;
+
+    /* Check if its the first node */
+    if (first->fd.fd == fd) {
+        first = first->next;
+        free(aux);
+        return;
+    }
+
+    /* If first is not null and not the one to delete */
+    while (aux->next != 0) {
+        if (aux->next->fd.fd == fd) {
+            NodeFd * toDelete = aux->next;
+            aux->next = aux->next->next;
+            free(toDelete);
+            return;
+        }
+        aux = aux->next;
+    }
 }
 
 /* Search if the fd with name exists */
-int searchName(char * name){
+NodeFd * searchName(char * name){
     NodeFd * aux = first;
     while(aux != 0){
         if (stringcmp(aux->fd.name, name))
-            return aux->fd.fd;
+            return aux;
         aux = aux->next;  
     } 
-    return -1;
+    return 0;
 }
 
 /* Search for a node given its fd */
@@ -212,4 +308,30 @@ NodeFd * searchFd(int fd){
         aux = aux->next;  
     } 
     return 0;
+}
+
+/* Prints all Pipes */
+void showAllPipes() {
+    /* If there are no pipes */
+    if (first == 0) {
+        print("\tThere are no Pipes created");
+        return;
+    }
+    
+    int printed = 0;
+    NodeFd * iterator = first;
+    print("\nName\t\tState\t\tBlocked Processes\n");
+    while (iterator != 0) {
+        if (iterator->fd.pipe) {
+            print(iterator->fd.name); print("\t\t");
+            printBlockedProcesses(iterator->fd.sem);
+            printBlockedProcesses(iterator->fd.semWrite);
+            printBlockedProcesses(iterator->fd.semCant);
+            print("\n");
+            printed = 1;
+        }
+        iterator = iterator->next;        
+    }
+
+    if (!printed) print("\tThere are no Pipes created");
 }

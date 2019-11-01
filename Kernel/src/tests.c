@@ -12,7 +12,7 @@ void testMemoryManager() {
 	void * vec[10];
 	clear_console();
 	while (i < 5){
-		printMemState();
+		mm_print_state();
 		// sleep_handler(3000);
 		vec[i] = malloc(10);
 		print("\n\tMalloqueo: 0x");
@@ -21,16 +21,16 @@ void testMemoryManager() {
 	}
 
 	
-	printMemState();
+	mm_print_state();
 	// sleep_handler(3000);
 	free(vec[3]);
-	printMemState();
+	mm_print_state();
 	// sleep_handler(3000);
 	free(vec[1]);
-	printMemState();
+	mm_print_state();
 	// sleep_handler(3000);
 	free(vec[2]);
-	printMemState();
+	mm_print_state();
 }
 
 #include <process.h>

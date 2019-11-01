@@ -30,7 +30,7 @@ uint64_t scheduler(uint64_t sp) {
     /* Start case scenario, do not use sp given */
     switch(init){
         case 0: return sp; 
-        case 1: init = 2; current->process.state = RUNNING; break;
+        case 1: init = 2; if (current->process.state == READY) current->process.state = RUNNING; break;
         case 2: current->process.sp = sp; break;
         case 3: haltProcess->process.sp = sp; break;
         default: init = 3; return haltProcess->process.sp;

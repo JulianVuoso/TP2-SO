@@ -25,13 +25,18 @@ extern uint8_t endOfKernelBinary;
 extern uint8_t endOfKernel;
 
 static const uint64_t PageSize = 0x1000;
-static const uint64_t Block = 0x1000 / 128;
-static const uint64_t MaxPages = 1024;
+/* Total amount of memory 512MB */
+static const uint64_t totalBytes = 0x20000000;
 
 typedef int (*EntryPoint)();
 
 void goToUserland(){
-	((EntryPoint)shellModuleAddress)();
+	// listAll();
+	kill(1); // NO PUEDO MATAR A LA SHELL, no seguiria ejecutando esto
+	// listAll();
+	create(shellModuleAddress, "SHELL", FORE, 0, 1);
+	while (!checkLoaded());
+	// ((EntryPoint)shellModuleAddress)();
 }
 
 void clearBSS(void * bssAddress, uint64_t bssSize)
@@ -73,7 +78,7 @@ void * initializeKernelBinary()
 	clearBSS(&bss, &endOfKernel - &bss);
 
 	void * startOfMem = (void *)(((uint8_t *) endOfModules + PageSize - (uint64_t) endOfModules % PageSize));
-	create_manager(startOfMem, PageSize, MaxPages);
+	create_manager(startOfMem, totalBytes);
 	initScheduler();
 	initFds();
 	initVideoDriver();
@@ -86,8 +91,9 @@ void * initializeKernelBinary()
 }
 
 int main() {
-	create(shellModuleAddress, "SHELL", FORE, 0, 1);
-	while (!checkLoaded());
+	goToUserland();
+	// create(shellModuleAddress, "SHELL", FORE, 0, 1);
+	// while (!checkLoaded());
 	// create(processAModuleAddress, "SHELL", FORE);
 	// while (!checkLoaded());
 	// create(processAModuleAddress, "SHELL");

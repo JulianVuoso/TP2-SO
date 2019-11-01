@@ -5,7 +5,7 @@ int main() {
 	int pid = getPid();
 	while (1) {
 		printf("\n\n-- Hola! Soy Loop. Mi PID es %d --\n", pid);
-		sleep(300);
+		sleep(100);
 	}
 	return 0;
 } 

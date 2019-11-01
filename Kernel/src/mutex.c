@@ -10,6 +10,8 @@
 
 #include <mutex.h>
 
+static int searchSem(SemNode * sem);
+
 static SemNode * list = 0;
 
 /* Create new Semaphore */
@@ -53,12 +55,25 @@ SemNode * openSem(char * name) {
     return 0;    
 }
 
+static int searchSem(SemNode * sem) {
+    SemNode * iterator = list;
+    while (iterator != 0) {
+        if (iterator == sem) return 1;
+        iterator = iterator->next;
+    }
+    return 0;
+}
+
 /* Delete NodeSem and ready next in list */
 void postSem(SemNode * sem) {
     // if (!stringcmp(sem->sem.name, "stdoutW")){
     //     print("\n##POST: Sem count: %d del semaforo %s. Sem BLOCKED esta en 0x", sem->sem.count, sem->sem.name);
     //     printHex((uint64_t)sem->sem.blocked);
-    // }    
+    // }
+    
+    /* If address does not correspond to a semaphore, exit */
+    if (!searchSem(sem)) return;
+
     /* When count is > 0 or no process in list */
     if (sem->sem.count > 0 || sem->sem.blocked == 0) {
         atom_swap(&(sem->sem.count), sem->sem.count + 1);
@@ -85,6 +100,10 @@ void postSem(SemNode * sem) {
 /* Add NodeSem to list and block process */
 void waitSem(SemNode * sem) {
     // if (!stringcmp(sem->sem.name, "stdoutW")) print("\n##WAIT: Sem count: %d del semaforo %s", sem->sem.count, sem->sem.name);
+    
+    /* If address does not correspond to a semaphore, exit */
+    if (!searchSem(sem)) return;
+
     /* When count is >= 1 do not block or add to list */
     if (sem->sem.count >= 1) {
         atom_swap(&(sem->sem.count), sem->sem.count - 1);
@@ -151,22 +170,31 @@ void deallocateSem(SemNode * sem, uint64_t pid) {
     free(curr);
 }
 
-
-
 /* Prints all semaphores */
-void showAllSems() {
-    /* If there is no semaphores */
+void showAllSem() {
+    /* If there are no semaphores */
     if (list == 0) {
-        print("\tThere is no Semaphores created");
+        print("\tThere are no Semaphores created");
         return;
     }
     
     SemNode * iterator = list;
     print("\nName\t\tState\t\tCount\n");
     while (iterator != 0) {
-        print(iterator->sem.name); print("\t"); 
-        print((iterator->sem.count == 0) ? "Locked" : "Unlocked"); print("\t");
-        printHex(iterator->sem.count); print("\n");
+        print(iterator->sem.name); print("\t\t"); 
+        print((iterator->sem.count == 0) ? "Locked" : "Unlocked"); print("\t\t");
+        print("%d", iterator->sem.count); print("\n");
+        iterator = iterator->next;
+    }
+}
+
+/* Print Blocked processes from a semaphore */
+void printBlockedProcesses(SemNode * sem) {
+    if (sem == 0) return;
+    
+    WaitNode * iterator = sem->sem.blocked;
+    while (iterator != 0) {
+        print("%d", iterator->pid); print("\t");
         iterator = iterator->next;
     }
 }

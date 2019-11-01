@@ -17,14 +17,27 @@ void pixel_handler(uint64_t x, uint64_t y, uint64_t rgb);
 void * malloc_handler(uint64_t bytes);
 void free_handler(void * ptr);
 void printStatus_handler();
+void mm_get_status_handler(uint64_t * total, uint64_t * occupied, uint64_t * free);
 // uint64_t create_handler(void * entryPoint, char * name, level context);
-uint64_t create_handler(char * name, uint64_t argc, char ** argv, level context, uint64_t inFd, uint64_t outFd);
+uint64_t create_handler(char * name, uint64_t argc, char ** argv, level context, char * inFd);
+// uint64_t create_handler(char * name, uint64_t argc, char ** argv, level context, uint64_t inFd, uint64_t outFd);
 uint64_t kill_handler(uint64_t pid);
 uint64_t getPid_handler();
 void listAllProcess_handler();
 uint64_t setPriority_handler(uint64_t pid, uint8_t prio);
 uint64_t changeState_handler(uint64_t pid);
 void halt_handler();
+
+int new_pipe_handler(char * name);
+int pipe_open_handler(char * name);
+void pipe_close_handler(int fd);
+void pipe_status_handler();
+uint64_t new_sem_handler(char * name, uint64_t init);
+uint64_t sem_open_handler(char * name);
+void sem_close_handler(SemNode * sem);
+void sem_wait_handler(SemNode * sem);
+void sem_post_handler(SemNode * sem);
+void sem_status_handler();
 
 uint64_t handleSyscall(uint64_t sirq, uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t rcx, uint64_t r8, uint64_t r9);
 
