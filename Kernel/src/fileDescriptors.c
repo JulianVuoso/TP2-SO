@@ -49,7 +49,7 @@ int newPipe(char * name) {
     /* Check if name already exists */
     if (searchName(name) != 0) return -1;
 
-    print("\nBarrera");
+    // print("\nBarrera");
 
     /* Add node to fileDescriptors list */
     NodeFd * node = addFdList(name);
@@ -57,7 +57,7 @@ int newPipe(char * name) {
     node->fd.pipe = 1; // Indico que es un pipe
     int fd = node->fd.fd;
 
-    print("\t\t--%d", fd);
+    // print("\t\t--%d", fd);
 
     /* Add node to process fileDescriptors list */
     addFd(fd);

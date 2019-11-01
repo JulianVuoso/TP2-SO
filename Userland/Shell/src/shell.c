@@ -78,13 +78,13 @@ int getCommand(char * input){
     /* Command Loop */
     do {
         nextCmd = 0;
-        printf("\nLEYENDO");
+        // printf("\nLEYENDO");
         /* Get the index of the written command if valid. Return if not valid */
         command = getCommandIndex(input + cursor, &cursor);
         if (command == NO_CMD)
             return command;
 
-        printf("\nLEI %d, CURSOR: %d", command, cursor);
+        // printf("\nLEI %d, CURSOR: %d", command, cursor);
         char arg1[MAX_LENGTH] = {0}, arg2[MAX_LENGTH] = {0};
         char * argv[] = {arg1, arg2, 0};
         int argc = 0;
@@ -97,7 +97,7 @@ int getCommand(char * input){
             
             haveArgs = strcpyUntilSpace(vec, input + cursor);
             cursor += haveArgs;
-            printf("\nARGS %d, CURSOR: %d, VEC: %s", haveArgs, cursor, vec);    
+            // printf("\nARGS %d, CURSOR: %d, VEC: %s", haveArgs, cursor, vec);    
             /* There are still arguments to process */
             if (haveArgs != 0) {
                 switch (vec[0]) {
@@ -114,7 +114,7 @@ int getCommand(char * input){
                         itoa(pipeNumber++, pipeNumberBuf, 10);
                         int pipeFd = newPipe(strcat(pipeName, pipeNumberBuf));
                         if (pipeFd < 0) break;
-                        printf("\tPIPED: FDIN: %d\tFDOUT: %d", nextStdin, pipeFd);
+                        // printf("\tPIPED: FDIN: %d\tFDOUT: %d", nextStdin, pipeFd);
                         command_functions[command](argc, argv, FOREGROUND, nextStdin, pipeFd);
                         pipeClose(pipeFd);
                         /* Change STDIN for next command to read from pipe. */
@@ -131,7 +131,7 @@ int getCommand(char * input){
                 }
             } else {
                 /* Create a foreground process that executes the command (if not a built-in) */
-                printf("\tYENDING: FDIN: %d\tFDOUT: %d", nextStdin, STDOUT);
+                // printf("\tYENDING: FDIN: %d\tFDOUT: %d", nextStdin, STDOUT);
                 command_functions[command](argc, argv, FOREGROUND, nextStdin, STDOUT);
             }
         } while (haveArgs != 0);
