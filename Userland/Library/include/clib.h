@@ -18,8 +18,8 @@
 #define STDOUT      1
 #define STDERR      2
 
-#define FOREGROUND      0
-#define BACKGROUND      1
+#define FOREGROUND  0
+#define BACKGROUND  1
 
 #define EOF         255
 
@@ -91,7 +91,7 @@ void semClose(uint64_t sem);
 void semWait(uint64_t sem);
 
 /* Post on a named semaphore */
-void semWait(uint64_t sem);
+void semPost(uint64_t sem);
 
 /* List all semaphores (STDOUT) */
 void semStatus();

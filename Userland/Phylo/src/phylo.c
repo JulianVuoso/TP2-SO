@@ -1,7 +1,6 @@
 // This is a personal academic project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
-#include <clib.h>
-#include <utils.h>
+
 #include <phylo.h>
 
 typedef enum {NONE = 0, WAIT, EAT} ph_state;
@@ -57,7 +56,7 @@ void addPhylo(){
 	ph_qty++;
 	char *name=PH_NAME;
 	strcat(name,ph_qty);
-	pids[ph_qty]=create(pMA/* ni idea */, name, FORE, 0,0);
+	pids[ph_qty]=newProcess(name, 0, 0, BACKGROUND, 0, 1);
 	strcat(name=PH_NAME, pids[ph_qty]);
 	newSem(name,1);
 
