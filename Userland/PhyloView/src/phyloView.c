@@ -4,7 +4,7 @@
 #include <phyloView.h>
 
 int main() {
-	int mutex = semOpen("buffer");
+	uint64_t mutex = semOpen("buffer");
 	while(1){
 		sleep(5000);
 		for(int i = 0; i < ph_qty ; i++){
