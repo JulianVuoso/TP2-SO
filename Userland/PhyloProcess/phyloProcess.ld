@@ -2,7 +2,7 @@ OUTPUT_FORMAT("binary")
 ENTRY(_start)
 SECTIONS
 {
-	.text 0xF00000 :
+	.text 0x1000000 :
 	{
 		*(.text*)
 		. = ALIGN(0x1000);

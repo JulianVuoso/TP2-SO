@@ -165,6 +165,10 @@ static void * getModuleAddress(char * name) {
         return filterModuleAddress;
     if (strcmp(name, "PHYLO") == 0)
         return phyloModuleAddress;
+    if (strcmp(name, "PHYLO_PROCESS") == 0)
+        return phyloProcessModuleAddress;
+    if (strcmp(name, "PHYLO_VIEW") == 0)
+        return phyloViewModuleAddress;
     return 0;
 }
 

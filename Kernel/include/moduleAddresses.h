@@ -17,5 +17,7 @@ static void * const catModuleAddress = (void*)0xC00000;
 static void * const wcModuleAddress = (void*)0xD00000;
 static void * const filterModuleAddress = (void*)0xE00000;
 static void * const phyloModuleAddress = (void*)0xF00000;
+static void * const phyloProcessModuleAddress = (void*)0x1000000;
+static void * const phyloViewModuleAddress = (void*)0x1100000;
 
 #endif

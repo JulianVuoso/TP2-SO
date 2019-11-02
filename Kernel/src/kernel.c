@@ -70,7 +70,9 @@ void * initializeKernelBinary()
 		catModuleAddress,
 		wcModuleAddress,
 		filterModuleAddress,
-		phyloModuleAddress
+		phyloModuleAddress,
+		phyloProcessModuleAddress,
+		phyloViewModuleAddress
 	};
 
 	void * endOfModules = loadModules(&endOfKernelBinary, moduleAddresses);

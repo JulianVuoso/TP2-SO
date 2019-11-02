@@ -1,12 +1,6 @@
 /***************************************************
                     Phylo.h
 ****************************************************/
-
-#include <clib.h>
-#include <mutex.h>
-#include <utils.h>
-#include <process.h>
-
 #define INIT_PH 5
 #define INIT_FORKS 5
 #define MAX_PHYLO 15
