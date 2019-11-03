@@ -2,8 +2,6 @@
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <phyloProcess.h>
 
-/* Recibo int phnumber e int ** states */
-
 char my_sem[20];
 uint64_t phnumber;
 uint64_t * states[];

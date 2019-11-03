@@ -17,9 +17,6 @@ typedef enum {NONE = 0, WAIT, EAT} ph_state;
 /* Start Phylo process: create philosophers and semaphores */
 void initialize();
 
-/* Create one semaphore for each philosopher */
-void phylo_sems(int cant);
-
 /* Add new philosopher */
 void addPhylo();
 
