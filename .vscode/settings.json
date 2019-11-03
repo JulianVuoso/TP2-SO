@@ -35,7 +35,8 @@
         "mutex.h": "c",
         "typeinfo": "c",
         "*.tcc": "c",
-        "list": "c"
+        "list": "c",
+        "phylo.h": "c"
     },
     "files.exclude": {
         "**/*.o": true,

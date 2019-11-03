@@ -3,64 +3,59 @@
 
 #include <phylo.h>
 
-typedef enum {NONE = 0, WAIT, EAT} ph_state;
-
-int ph_qty = INIT_PH;
-
-int state[];
-int pids[];
-
-//SemNode * table, filo, mutex; 
+uint64_t ph_qty = INIT_PH;
+uint64_t pids[];
+static uint16_t * states[MAX_PHYLO];
 
 int main() {
 	puts("\n\n-- Programa de Filosofos --\n");
 	
-	char in=0;
-
 	initialize();
-
+	uint64_t argc = 2;
+	char * argv[] = {&ph_qty , states};
+	newProcess("PHYLO_VIEW", argc, argv, BACKGROUND, 0, 1);
+	char in = 0;
 	while ((in=getchar()) != 'q' || in!='a'|| in!='r') {
 		switch(in){
-			case 'a': addPhylo(); break;
-			case 'r': removePhylo(); break;
-			case 'q': quitPhylo(); break;
-			default: break;
+			case 'a': if(ph_qty+1 < MAX_PHYLO) addPhylo(); 	
+					  break;
+			case 'r': removePhylo(); 
+					  break;
+			case 'q': quitPhylo(); 
+					  break;
+			default:  break;
 		}
 	}
 	return 0;
 } 
 
-static void * const pMA = (void*)0x1500000;	// Cambiar numero
-
 void initialize(){
 	char name[20], num[5];
-	int pid;
-	for(int p = 0; p < INIT_PH; p++, strcpy(name, PH_NAME)){
-		pid = newProcess("PHYLO_PROCESS", 0, 0, BACKGROUND, 0, 1); // TODO: Ver si hay que pasarle args
+	int pid, argc = 2;
+	char * argv[] = {0 , states};
+	for(uint64_t p = 0; p < INIT_PH; p++, strcpy(name, PH_NAME)){
+		argv[0] = p;
+		pid = newProcess("PHYLO_PROCESS", argc, argv, BACKGROUND, 0, 1); // TODO: Ver si hay que pasarle args
 		itoa(pid, num, 10);
 		strcat(name, num);
-		newSem(name, 1);
-		//wait(pid);
+		newSem(name, 1);		// Phylo sem -> PH_NAME + pid 
+		waitSem(pid);			// Pid sem for 
 		pids[p] = pid;
-		// strcat(name=PH_NAME, pid);
-		// newSem(name,1);
-		// post(pid);
+		newSem(num,1);
+		post(pid);
 	}
 	newSem("buffer", 1);
 	newSem(SEM_TABLE, 1);
-
-	return;
 }
 
 void addPhylo(){
-	ph_qty++;
-	char *name=PH_NAME;
+	uint64_t argc = 2;
+	char * argv[] = {++ph_qty, states};
+	char *name = PH_NAME;
 	strcat(name,ph_qty);
-	pids[ph_qty]=newProcess(name, 0, 0, BACKGROUND, 0, 1);
+	pids[ph_qty] = newProcess(name, argc, argv, BACKGROUND, 0, 1);
 	strcat(name=PH_NAME, pids[ph_qty]);
 	newSem(name,1);
-
-	return;
 }
 
 void removePhylo(){
@@ -68,5 +63,8 @@ void removePhylo(){
 	char * name = SEM_PHYLO;
 	strcat(name,pids[ph_qty--]);
 	closeSem(name);
-	return;
+}
+
+void quitPhylo(){
+	exit();
 }

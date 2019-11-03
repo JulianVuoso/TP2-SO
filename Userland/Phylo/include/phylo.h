@@ -12,9 +12,7 @@
 #define SEM_PHYLO "phyloSem"
 #define PH_NAME "phyloNumber"
 
-char * buffer[];
-
-int ph_qty;
+typedef enum {NONE = 0, WAIT, EAT} ph_state;
 
 /* Start Phylo process: create philosophers and semaphores */
 void initialize();
